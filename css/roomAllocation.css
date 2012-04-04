@@ -1,0 +1,142 @@
+.ui-widget { font-size: 12px; }
+.ui-widget *{
+  outline : none;
+}
+.ui-autocomplete {
+  max-height  : 200px;
+  width       : 260px;
+  overflow-y  : auto;
+  overflow-x  : hidden;
+}
+
+*{
+  font-family : arial;
+  font-size   : 9pt;
+}
+
+a{
+  text-decoration : none;
+  color           : #4787BF;
+}
+a:hover, a:focus{
+  color : crimson;
+}
+a:active{
+  color : green;
+}
+
+input, textarea, select, a{
+  outline : none;
+}
+select, a{
+  cursor  : pointer;
+}
+input, textarea, select{
+  border    : 1px solid #ccc;
+  padding   : 2px 4px;
+}
+input:focus, input:active, textarea:focus, select:focus{
+  background  : #FFE591!important;
+}
+
+button, input[type="button"], input[type="submit"], select{
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#ccc));
+  background: -webkit-linear-gradient(top, #fff, #ccc);
+  background: -moz-linear-gradient(top, #fff, #ccc);
+  background: -ms-linear-gradient(top, #fff, #ccc);
+  background: -o-linear-gradient(top, #fff, #ccc);
+}
+
+body{
+  background  : #f6f6f6;
+}
+
+#main{
+  position  : relative;
+  border    : 1px solid #ccc;
+  width     : 620px;
+  margin    : 20px auto;
+}
+
+#wrapper{
+  position    : relative;
+  background  : #fff;
+}
+.content{
+  position  : relative;
+}
+.content .wrapper{
+  margin  : 10px;
+}
+.content h3{
+  border-bottom : 1px solid #ccc;
+  margin        : 0 0 6px 0;
+  padding       : 0 0 2px 0;
+  font-size     : 10pt;
+  font-weight   : bold;
+  text-indent   : 5px;
+}
+
+#login{
+  border-bottom : 1px solid #ccc;
+  background    : #E3F2FF;
+  padding       : 10px;
+  text-align    : right;
+}
+#login input{
+  margin  : 1px;
+}
+
+#searchBox{
+  position  : relative;
+  border    : 1px solid #ccc;
+}
+#searchBox #search{
+  display       : block;
+  border        : 0;
+  width         : 100%;
+  height        : 26px;
+  padding       : 0 40px 0 3px;
+}
+#searchBox #addRoommate{
+  position    : absolute;
+  right       : 0;
+  top         : 0;
+  border      : 0;
+  border-left : 1px solid #ccc;
+  width       : 36px;
+  height      : 26px;
+  font-size   : 9pt;
+}
+
+.face{
+  border      : 1px solid #aaa;
+  background  : #f0f0f0;
+  margin      : 5px 0;
+}
+.face .country{
+  background  : lightblue;
+  position    : relative;
+  border-top  : 1px solid #666;
+  padding     : 2px 0;
+  text-indent : 10px;
+}
+.face .country img{
+  position  : absolute;
+  right     : 3px;
+  bottom    : -2px;
+}
+
+.clearBoth{
+  visibility  : hidden;
+  clear       : both;
+}
+
+#footer{
+  position    : static;
+  display     : block;
+  border      : 0;
+  padding     : 5px;
+  font-weight : bold;
+  text-align  : right;
+}
