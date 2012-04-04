@@ -51,7 +51,7 @@
             <h3>Current Roommates</h3>
             <div id="current-roommates">
               <?php
-                $q      = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_ROOMMATES." m WHERE m.eid_a='${_SESSION[eid]}' AND p.eid=m.eid_b";
+                $q      = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_ROOMMATES." m WHERE m.eid_a='${_SESSION['eid']}' AND p.eid=m.eid_b";
                 $res    = sqlToArray( mysql_query( $q ) );
                 $hidden = count( $res ) == 1 ? 'display:none' : '';
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
@@ -65,7 +65,7 @@
             <h3>Requests received</h3>
             <div id="requests-received">
               <?php
-                $q      = "SELECT p.* FROM People p, Requests r WHERE r.eid_to='${_SESSION[eid]}' AND p.eid=r.eid_from";
+                $q      = "SELECT p.* FROM People p, Requests r WHERE r.eid_to='${_SESSION['eid']}' AND p.eid=r.eid_from";
                 $res    = sqlToArray( mysql_query( $q ) );
                 $hidden = count( $res ) == 1 ? 'display:none' : '';
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
@@ -79,7 +79,7 @@
             <h3>Requests sent</h3>
             <div id="requests-sent">
               <?php
-                $q      = "SELECT p.* FROM People p, Requests r WHERE r.eid_from='${_SESSION[eid]}' AND p.eid=r.eid_to";
+                $q      = "SELECT p.* FROM People p, Requests r WHERE r.eid_from='${_SESSION['eid']}' AND p.eid=r.eid_to";
                 $res    = sqlToArray( mysql_query( $q ) );
                 $hidden = count( $res ) == 1 ? 'display:none' : '';
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';

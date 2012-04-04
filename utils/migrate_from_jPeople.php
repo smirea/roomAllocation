@@ -43,7 +43,7 @@
       $status = '<b style="color:red">FAIL</b>';
       $error  = mysql_error();
     }
-    echo "<tr><td>$status</td><td>'${info[fname]}, ${info[lname]}'<td>${info[eid]}</td></td><td>$error</td></tr>";
+    echo "<tr><td>$status</td><td>'${info['fname']}, ${info['lname']}'<td>${info['eid']}</td></td><td>$error</td></tr>";
   }
   
 ?>

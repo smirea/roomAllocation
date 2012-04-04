@@ -1,7 +1,5 @@
 <?php
   
-  session_start();
-  
   require_once 'config.php';
   require_once 'campusnet.php';
   
@@ -23,7 +21,7 @@
       && (DEBUG || isset($_POST['password']))
       && !($message = check_login($_POST['username'], $_POST['password']))
     ){
-      $q    = "SELECT * FROM ".TABLE_PEOPLE." WHERE account='${_POST[username]}'";
+      $q    = "SELECT * FROM ".TABLE_PEOPLE." WHERE account='${_POST['username']}'";
       $info = mysql_fetch_array( mysql_query( $q ) );
       $_SESSION['username'] = $info['account'];
       $_SESSION['eid']      = $info['eid'];
