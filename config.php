@@ -17,6 +17,8 @@
 
   dbConnect( DB_USER, DB_PASS, DB_NAME );
   
+  session_start();
+  
   /******************
   ******* URLS ******
   ******************/
