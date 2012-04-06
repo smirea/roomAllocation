@@ -23,7 +23,7 @@
         $$v = $this->{"get$v"}();
       }
       return <<<HTML
-        <table cellspacing="0" cellpadding="0" id="eid-$eid" class="room $status $classes">
+        <table cellspacing="0" cellpadding="0" id="room-$number" class="room $status $classes">
           <tr>
             <td class="info">
               <div class="number">$number</div>
@@ -61,7 +61,7 @@ HTML;
     }
   }
   
-  function renderMap( array $map ){
+  function renderMap( array $map, array $classes = array() ){
     $h = '';
     $emptyRoom = new Room();
     $h .= '<div class="floorPlan">';
@@ -76,12 +76,16 @@ HTML;
           for( $i=0; $i<count($floor); ++$i ){
             $h .= '<td class="room-wrapper">';
             list( $no, $tel ) = $floor[$i][$k];
+            $roomNumber = "$name-$no";
             switch( getRoomType( $no, $tel ) ){
               case 'blank': $h .= '&nbsp;'; break;
               case 'empty': $h .= $emptyRoom->toString( 'disabled' ); break;
               default:
-                $tmp = new Room( array( 'number'=>"$name-$no", 'phone'=>$tel ) );
-                $h .= $tmp->toString();
+                $tmp = new Room( array( 'number'=>$roomNumber, 'phone'=>$tel ) );
+                if( $classes[$roomNumber] )
+                  $h .= $tmp->toString( $classes[$roomNumber] );
+                else
+                  $h .= $tmp->toString();
             }
             $h .= '</td>';
           }

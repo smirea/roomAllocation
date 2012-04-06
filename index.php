@@ -1,6 +1,11 @@
 <?php
   require_once 'config.php';
   require_once 'utils.php';
+  require_once 'floorPlan/utils.php';
+  require_once 'floorPlan/Mercator.php';
+  require_once 'floorPlan/Krupp.php';
+  require_once 'floorPlan/College3.php';
+  require_once 'floorPlan/Nordmetall.php';
 ?>
 <html>
   <head>
@@ -8,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="css/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/messages.css" />
     <link rel="stylesheet" type="text/css" href="css/gh-buttons.css" />
+    <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
 
     <script src="js/jquery.js"></script>
@@ -32,17 +38,39 @@
           <div class="wrapper">
             <h3>Profile</h3>
             <?php
-                $q = "select eid,fname,lname,country,year from ".TABLE_PEOPLE." where account='".USERNAME."'";
-                $info = sqlToArray( mysql_query( $q ) );
-                echo getFaceHTML( $info[0] );
+                $q = "SELECT * FROM ".TABLE_PEOPLE." WHERE eid='${_SESSION['eid']}'";
+                $info = mysql_fetch_assoc( mysql_query( $q ) );
+                echo getFaceHTML( $info );
             ?>
             
+            <br />
             <h3>Add a new roommate</h3>
             <form id="searchBox" method="post">
               <input type="hidden" name="eid" id="roommate-eid" />
               <input type="text" id="search" placeholder="start typing your roommate's name..." />
               <input type="submit" id="addRoommate" value="Add" />
             </form>
+            
+            <br />
+            <h3>Points</h3>
+            <?php
+                /**
+                * @brief Check if all the countries in the database are assigned to a world region
+                *
+                $countries = "SELECT DISTINCT country FROM ".TABLE_PEOPLE;
+                $countries = sqlToArray( mysql_query( $countries ) );
+                $countries = array_map( function($v){ return $v['country']; }, $countries );
+                foreach( $countries as $v ){
+                  if( !$WorldRegions_Inv[ $v ] ){
+                    echo "<div style=\"color:red\">$v</div>";
+                  }
+                }
+                */
+                
+                $q_roommates = "SELECT * FROM ".TABLE_PEOPLE." p, ".TABLE_ROOMMATES." r WHERE r.eid_b='${_SESSION['eid']}' AND p.eid=r.eid_a";
+                $roommates = sqlToArray( mysql_query( $q_roommates ) );
+                echo print_score( array_merge( array($info), $roommates ) );
+            ?>
           </div>
         </div>
         
@@ -92,6 +120,43 @@
         </div>
         
         <div class="clearBoth"></div>
+        <div class="content" id="floorPlan">
+          <div class="wrapper">
+            <h3>Room Choices</h3>
+            <ol>
+              <?php
+                $room_select = array();
+                
+                for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
+                  echo '<li>'.$room_select.'</li>';
+                }
+              ?>
+            </ol>
+            
+            <br />
+            <h3>Floor Plan</h3>
+            <?php
+              
+              $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='${_SESSION['eid']}'";
+              $d = mysql_fetch_assoc( mysql_query( $q ) );
+              
+              if( $d['college'] ){
+                $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." WHERE college='${d['college']}'";
+                $taken = sqlToArray( mysql_query( $q ) );
+                $taken = array_map(function($v){ return $v['room']; }, $taken);
+                switch( $d['college'] ){
+                  case 'Krupp':       echo renderMap( $Krupp, $taken ); break;
+                  case 'Mercator':    echo renderMap( $Mercator, $taken ); break;
+                  case 'College-III': echo renderMap( $College3, $taken ); break;
+                  case 'Nordmetall':  echo renderMap( $Nordmetall, $taken ); break;
+                  default:            echo "Unknown college: <b>${d['college']}<br />";
+                }
+              } else {
+                echo 'You are not assigned to any college';
+              }
+            ?>
+          </div>
+        </div>
         <?php
           } else {
         ?>

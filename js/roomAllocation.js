@@ -21,6 +21,7 @@ var sendResponse;
     alter_jquery_ui();
     set_variables();
     init_roommate_search();
+    add_floorplan_events();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( function(){ window.location.reload() }, 20 * 60 * 1000 );
   });
@@ -141,6 +142,23 @@ var sendResponse;
     });
   }
 
+  var add_floorplan_events = function(){
+    $('.room').bind('mouseover mouseout', function(){
+      var id      = $(this).attr('id');
+      var prefix  = '#' + id.substr( 0, id.length-3 );
+      var no      = Number(id.split('-')[2]);
+      var $rooms  = $();
+      if( no <= 103 ){
+        $rooms = $(prefix+'101,'+prefix+'102,'+prefix+'103');
+      } else if( no % 2 == 0 ){
+        $rooms = $(this).add( $(prefix+(no+1)) );
+      } else {
+        $rooms = $(this).add( $(prefix+(no-1)) );
+      }
+      $rooms.toggleClass('selected');
+    })
+  }
+  
   function message( type, message ){
     var msg = messages.filter('.'+type);
     if( msg.length > 0 ){

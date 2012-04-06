@@ -114,17 +114,55 @@ body{
   background  : #f0f0f0;
   margin      : 5px 0;
 }
-.face .country{
-  background  : lightblue;
+.face .name, .face .year, .face .country{
+  padding : 1px 3px;
+}
+.face .name{
+  width : 100%;
+}
+.face .country-photo{
   position    : relative;
   border-top  : 1px solid #666;
   padding     : 2px 0;
   text-indent : 10px;
 }
-.face .country img{
+.face .country-photo img{
   position  : absolute;
   right     : 3px;
   bottom    : -2px;
+}
+
+.points{
+  display : block;
+  border  : 1px solid #ccc;
+  width   : 100%;
+  margin  : 0 auto;
+}
+.points td{
+  padding : 1px 10px;
+}
+.points .section{
+  background  : orange;
+  font-weight : bold;
+  text-align  : center;
+  color       : white;
+}
+.points .value{
+  background  : lightgreen;
+  padding     : 1px 3px;
+  font-weight : bold;
+  text-align  : center;
+}
+
+.level{
+  display : block;
+  margin  : 10px auto;
+}
+.room{
+  cursor  : pointer;
+}
+.room.selected{
+  background  : orange;
 }
 
 .clearBoth{

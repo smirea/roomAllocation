@@ -1,6 +1,6 @@
 <?php
   
-  $Mercator = array(
+  $College3 = array(
     'A' => array(
       bottom_floor( 5347, 5330, '', '' ),
       upper_floor( 2, 5365 ),
@@ -17,5 +17,5 @@
       upper_floor( 3, 5503 )
     )
   );
-
+  
 ?>

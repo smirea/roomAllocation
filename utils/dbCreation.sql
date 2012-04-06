@@ -41,3 +41,9 @@ CREATE TABLE Allocations(
   UNIQUE KEY(eid),
   UNIQUE KEY(room)
 ) ENGINE = MYISAM ;
+
+DROP TABLE IF EXISTS Apartment_Choices;
+CREATE TABLE Room_Choices(
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `
+) ENGINE = MYISAM ;

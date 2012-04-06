@@ -4,6 +4,7 @@
   
   /** General config */
   define( 'MAX_ROOMMATES', 1 );
+  define( 'MAX_ROOM_CHOICES', 9 );
   
   /** Database config */
   define( 'DB_USER', 'jPerson' );

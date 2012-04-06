@@ -40,22 +40,22 @@
   -moz-animation    : animate-bg 5s linear infinite;
 }
 
-.info{
+.message.info{
   background-color  : #4ea5cd;
   border-color      : #3b8eb5;
 }
 
-.error{
+.message.error{
   background-color  : #de4343;
   border-color      : #c43d3d;
 }
      
-.warning{
+.message.warning{
   background-color  : #eaaf51;
   border-color      : #d99a36;
 }
 
-.success{
+.message.success{
   background-color  : #61b832;
   border-color      : #55a12c;
 }

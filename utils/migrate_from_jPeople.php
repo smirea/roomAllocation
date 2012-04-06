@@ -21,13 +21,17 @@
   
   /** Add info to the database */
   $columns .= ',query';
-  echo '<table>';
-  echo '<tr><td>status</td><td>name</td><td>eid</td><td>mysql_error()</td></tr>';
+  $h = '<table>';
+  $h .= '<tr><td>status</td><td>name</td><td>eid</td><td>mysql_error()</td></tr>';
   foreach( $info as $row ){
     $row['query'] = $row['fname'].' '.$row['lname'];
-    addToDb( $row );
+    $h .= addToDb( $row );
   }
-  echo '</table>';
+  $h .= '</table>';
+  
+  $q = "INSERT INTO Allocations(eid) SELECT p.eid FROM People p";
+  echo "<div>Copying data into Allocations table: ".(mysql_query($q) ? 'OK' : 'FAIL: '.mysql_error())." </div>";
+  echo "<hr />$h";
   
   /**
    * @brief Adds a person to the database and prints an apropriate message
@@ -43,7 +47,7 @@
       $status = '<b style="color:red">FAIL</b>';
       $error  = mysql_error();
     }
-    echo "<tr><td>$status</td><td>'${info['fname']}, ${info['lname']}'<td>${info['eid']}</td></td><td>$error</td></tr>";
+    return "<tr><td>$status</td><td>'${info['fname']}, ${info['lname']}'<td>${info['eid']}</td></td><td>$error</td></tr>";
   }
   
 ?>
