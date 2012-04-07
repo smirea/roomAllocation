@@ -42,6 +42,7 @@
       <?php
         if( DEBUG ){
           echo '<div style="color:green">Debug mode enabled. No password required!</div>';
+          echo '<div>If you do not know what username to use, try: <b>smirea, bmatican, cprodescu, jbrenstein</b></div>';
         }
       ?>
       <input type="hidden" name="login" value="true" />
