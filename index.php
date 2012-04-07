@@ -41,7 +41,7 @@
                         WHERE i.group_id='${group['group_id']}' 
                         AND p.eid=i.eid AND i.eid<>'$eid' ";
             $roommates = sqlToArray( mysql_query( $q ) );
-            $hidden = count( $roommate ) == 1 ? 'display:none' : '';
+            $hidden = count( $roommates ) == 1 ? 'display:none' : '';
           
         ?>
         <div style="float:left;width:50%;" class="content">

@@ -166,6 +166,7 @@ var sendResponse;
         });
       $('#choose_rooms')
         .bind('click.chooseRooms', function(){
+          var choices =
           $.get( ajax_file, {
             action  : 'chooseRooms',
             choices : choices

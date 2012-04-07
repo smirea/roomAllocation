@@ -111,7 +111,12 @@
       break;
     case 'chooseRooms':
       e_assert_isset( $_GET, 'choices' );
+      e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
+      
+      foreach( $_GET['choices'] as $k => $v ){
+        
+      }
       break;
     default: 
       outputError( 'Unknown action' );

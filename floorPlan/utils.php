@@ -82,7 +82,7 @@ HTML;
               case 'empty': $h .= $emptyRoom->toString( 'disabled' ); break;
               default:
                 $tmp = new Room( array( 'number'=>$roomNumber, 'phone'=>$tel ) );
-                if( $classes[$roomNumber] )
+                if( isset($classes[$roomNumber]) )
                   $h .= $tmp->toString( $classes[$roomNumber] );
                 else
                   $h .= $tmp->toString();
@@ -111,11 +111,6 @@ HTML;
   }
   
   function trunk( $phone_start, $room_start ){
-    if( count($side_1) != count($side_2) ){
-      trigger_error( 'sides do not have the same size', E_USER_WARNING );
-      return null;
-    }
-    
     $phones = array(
       appartment_pattern( 4, $phone_start, 0, -1 ),
       array_reverse( appartment_pattern( 4, $phone_start-8, 0, -1 ) )
