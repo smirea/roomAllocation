@@ -127,13 +127,11 @@ body{
   text-indent : 10px;
 }
 .face .country-photo img{
-  position  : absolute;
   right     : 3px;
   bottom    : -2px;
 }
 
 .points{
-  display : block;
   border  : 1px solid #ccc;
   width   : 100%;
   margin  : 0 auto;
@@ -154,6 +152,20 @@ body{
   text-align  : center;
 }
 
+.room-choices{
+  display : inline-block;
+}
+.room-choices li{
+  text-align  : right;
+}
+.room-choices input[type="text"]{
+  text-transform  : uppercase;
+  width           : 130px;
+}
+.room-choices input{
+  margin  : 1px 0;
+}
+
 .level{
   display : block;
   margin  : 10px auto;
@@ -163,6 +175,28 @@ body{
 }
 .room.selected{
   background  : orange;
+}
+
+#apartment-selection{
+  position    : absolute;
+  border      : 1px solid #ccc;
+  background  : #DEECFF;
+  width       : 330px;
+  padding     : 4px;
+  text-align  : center;
+}
+#apartment-selection .choice{
+  display : inline-block;
+  margin  : 1px;
+}
+#apartment-selection .choice .title{
+  display       : block;
+  border        : 1px solid #ccc;
+  padding       : 1px 3px;
+  font-weight   : bold;
+}
+#apartment-selection .choice input{
+  width : 100px;
 }
 
 .clearBoth{

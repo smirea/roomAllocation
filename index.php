@@ -33,6 +33,16 @@
       <div id="wrapper">
         <?php
           if( LOGGED_IN ){
+            
+            /** GET ALL YOUR ROOMMATES */
+            $group  = group_info( $_SESSION['info']['eid'] );
+            $eid    = $_SESSION['info']['eid'];
+            $q      = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i 
+                        WHERE i.group_id='${group['group_id']}' 
+                        AND p.eid=i.eid AND i.eid<>'$eid' ";
+            $roommates = sqlToArray( mysql_query( $q ) );
+            $hidden = count( $roommate ) == 1 ? 'display:none' : '';
+          
         ?>
         <div style="float:left;width:50%;" class="content">
           <div class="wrapper">
@@ -67,8 +77,6 @@
                 }
                 */
                 
-                $q_roommates = "SELECT * FROM ".TABLE_PEOPLE." p, ".TABLE_ROOMMATES." r WHERE r.eid_b='${_SESSION['eid']}' AND p.eid=r.eid_a";
-                $roommates = sqlToArray( mysql_query( $q_roommates ) );
                 echo print_score( array_merge( array($info), $roommates ) );
             ?>
           </div>
@@ -79,11 +87,9 @@
             <h3>Current Roommates</h3>
             <div id="current-roommates">
               <?php
-                $q      = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_ROOMMATES." m WHERE m.eid_a='${_SESSION['eid']}' AND p.eid=m.eid_b";
-                $res    = sqlToArray( mysql_query( $q ) );
-                $hidden = count( $res ) == 1 ? 'display:none' : '';
+                $hidden = count( $roommates ) > 0 ? 'display:none' : '';
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
-                foreach( $res as $person ){
+                foreach( $roommates as $person ){
                   echo getFaceHTML( $person );
                 }
               ?>
@@ -123,13 +129,16 @@
         <div class="content" id="floorPlan">
           <div class="wrapper">
             <h3>Room Choices</h3>
-            <ol>
+            <div class="hint">*
+              <b>Note:</b> you can use the floor-plan bellow to choose your rooms more easily.<br />
+              Just click on the apartment you want and then select it as what choice you want it to be
+            </div>
+            <ol class="room-choices">
               <?php
-                $room_select = array();
-                
                 for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
-                  echo '<li>'.$room_select.'</li>';
+                  echo '<li><input type="text" id="input-room-choice-'.$i.'" name="choice[]" /></li>';
                 }
+                echo '<li style="list-style-type:none"><input type="submit" value="Apply!" id="choose_rooms" /></li>';
               ?>
             </ol>
             

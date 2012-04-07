@@ -1,6 +1,7 @@
 console = console || {log:function(){}, warn:function(){}, error:function(){}};
 
-var ajax_file = 'ajax.php';
+var MAX_ROOMS_CHOICES = 9;
+var ajax_file         = 'ajax.php';
 
 var sendResponse;
 
@@ -124,7 +125,6 @@ var sendResponse;
       if( !data.error && data.result ){
         var $face = $('#face-eid-'+eid);
         var $cr = $('#current-roommates');
-        console.log( $face.siblings(':visible').length );
         if( $face.siblings(':visible').length == 0 ){
           $face.parent().find('.none').slideDown();
         }
@@ -142,22 +142,94 @@ var sendResponse;
     });
   }
 
-  var add_floorplan_events = function(){
-    $('.room').bind('mouseover mouseout', function(){
-      var id      = $(this).attr('id');
+  var add_floorplan_events = (function(){
+    
+    var $selection      = $(document.createElement('div'));
+    var current_choice  = null;
+    var no_choice       = '--none--';
+    var close_timeout   = null;
+    
+    return function(){
+      create_selection();
+      $('.room')
+        .bind('mouseover mouseout', function(){
+          var $rooms = getApartment( $(this) );
+          $rooms.toggleClass('selected');
+        })
+        .bind('click.selectRoom', function(){
+          var $apartment = getApartment( $(this) );
+          current_choice = $apartment
+                            .map(function(i,v){ return v.id.slice(5); })
+                            .get()
+                            .join(', ');
+          show_selection( $apartment.eq(0) );
+        });
+      $('#choose_rooms')
+        .bind('click.chooseRooms', function(){
+          $.get( ajax_file, {
+            action  : 'chooseRooms',
+            choices : choices
+          }, function(){
+            
+          });
+        });
+    };
+    
+    function create_selection(){
+      var h = '';
+      for( var i=0; i<MAX_ROOMS_CHOICES; ++i ){
+        h += '<label class="choice">\
+                <span class="title">Option '+(i+1)+'</span>\
+                <input type="button" value="'+no_choice+'" id="room-choice-'+i+'" />\
+              </label>';
+      }
+      $selection
+        .attr( 'id',  'apartment-selection' )
+        .appendTo( 'body' )
+        .html( h )
+        .find('.choice input')
+        .bind('click.setChoice', function(){
+          if( current_choice ){
+            $(this).val( current_choice );
+            $('#input-'+$(this).attr('id')).val( current_choice );
+            close_timeout   = setTimeout(function(){ hide_selection(); }, 2000 );
+            current_choice  = null;
+          } else {
+            hide_selection();
+          }
+        });
+    }
+    
+    function show_selection( $element ){
+      clearTimeout( close_timeout );
+      $selection
+        .fadeIn()
+        .css({
+          top   : $element.offset().top - $selection.outerHeight(),
+          left  : $element.offset().left
+        });
+    }
+    
+    function hide_selection(){
+      clearTimeout( close_timeout );
+      $selection.fadeOut();
+    }
+    
+    function getApartment( $element ){
+      var id      = $element.attr('id');
       var prefix  = '#' + id.substr( 0, id.length-3 );
       var no      = Number(id.split('-')[2]);
       var $rooms  = $();
       if( no <= 103 ){
         $rooms = $(prefix+'101,'+prefix+'102,'+prefix+'103');
       } else if( no % 2 == 0 ){
-        $rooms = $(this).add( $(prefix+(no+1)) );
+        $rooms = $element.add( $(prefix+(no+1)) );
       } else {
-        $rooms = $(this).add( $(prefix+(no-1)) );
+        $rooms = $element.add( $(prefix+(no-1)) );
       }
-      $rooms.toggleClass('selected');
-    })
-  }
+      return $rooms;
+    }
+  })();
   
   function message( type, message ){
     var msg = messages.filter('.'+type);
