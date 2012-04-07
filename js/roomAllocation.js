@@ -166,12 +166,14 @@ var sendResponse;
         });
       $('#choose_rooms')
         .bind('click.chooseRooms', function(){
-          var choices =
+          var choices = $('.room-choices input[name="choice[]"]')
+                          .map(function(i,v){ return $(this).val(); })
+                          .get();
           $.get( ajax_file, {
             action  : 'chooseRooms',
             choices : choices
-          }, function(){
-            
+          }, function(r){
+            console.log(r);
           });
         });
     };
@@ -207,7 +209,7 @@ var sendResponse;
         .fadeIn()
         .css({
           top   : $element.offset().top - $selection.outerHeight(),
-          left  : $element.offset().left
+          left  : $element.offset().left - ($selection.outerWidth()-$element.outerWidth())/2
         });
     }
     

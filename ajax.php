@@ -114,9 +114,29 @@
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
       
+      $rooms = array();
       foreach( $_GET['choices'] as $k => $v ){
-        
+        if( $v && $v != '' ){
+          $tmp = explode(',', $v);
+          $tmp = array_map( 'trim', $tmp );
+      //    foreach( $tmp as $room ) $rooms[] = $room;
+          $rooms[] = $tmp;
+        }
       }
+      //TODO: FIX GROUP_ID AJAX BUG (not updating)
+      $group_id = $_SESSION['info']['group_id'];
+      $values   = array();
+      foreach( $rooms as $k => $v ){
+        foreach( $v as $room ){
+          $values[] = "('$room','$group_id','$k')";
+        }
+      }
+      var_export( $values );
+      $values = implode(', ', $values);
+      
+      mysql_query( "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='$group_id'" );
+      $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,group_id,choice) VALUES $values";
+      jsonOutput( array( 'result' => mysql_query($q) ) );
       break;
     default: 
       outputError( 'Unknown action' );

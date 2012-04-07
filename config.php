@@ -12,7 +12,7 @@
   define( 'DB_NAME', 'RoomAllocation' );
   
   define( 'TABLE_ALLOCATIONS', 'Allocations' );
-  define( 'TABLE_APARTMENT_CHOICES', 'Allocations' );
+  define( 'TABLE_APARTMENT_CHOICES', 'Apartment_Choices' );
   define( 'TABLE_PEOPLE', 'People' );
   define( 'TABLE_REQUESTS', 'Requests' );
   define( 'TABLE_GROUPS', 'Groups' );

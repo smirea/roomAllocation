@@ -135,8 +135,16 @@
             </div>
             <ol class="room-choices">
               <?php
+                $group_id = $_SESSION['info']['group_id'];
+                $q_choices = "SELECT * FROM ".TABLE_APARTMENT_CHOICES." 
+                                WHERE group_id='$group_id'";
+                $choices = array_fill( 0, MAX_ROOM_CHOICES, array() );
+                $res = sqlToArray( mysql_query( $q_choices ) );
+                foreach( $res as $row ){
+                  $choices[(int)$row['choice']][] = $row['number'];
+                }
                 for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
-                  echo '<li><input type="text" id="input-room-choice-'.$i.'" name="choice[]" /></li>';
+                  echo '<li><input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" /></li>';
                 }
                 echo '<li style="list-style-type:none"><input type="submit" value="Apply!" id="choose_rooms" /></li>';
               ?>
