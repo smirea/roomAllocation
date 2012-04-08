@@ -109,11 +109,29 @@ body{
   font-size   : 9pt;
 }
 
-.face{
+.face-wrapper, .face{
   border      : 1px solid #aaa;
   background  : #f0f0f0;
   margin      : 5px 0;
 }
+/** Uncomment this when you implement group merge ^.^
+.face-wrapper{
+  background  : #fff;
+  margin      : 10px 0;
+}
+.face-wrapper .face:first-child{
+  border-top  : 0;
+  margin-top  : 0;
+}
+.face-wrapper .face:last-of-type{
+  border-bottom : 0;
+  margin-bottom : 0;
+}
+.face-wrapper .face:only-of-type{
+  margin  : 0;
+  border  : 0;
+}
+**/
 .face .name, .face .year, .face .country{
   padding : 1px 3px;
 }
@@ -175,6 +193,10 @@ body{
 }
 .room.selected{
   background  : orange;
+}
+.room.chosen{
+  background  : lightgreen;
+  font-weight : bold;
 }
 
 #apartment-selection{

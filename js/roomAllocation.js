@@ -5,6 +5,17 @@ var ajax_file         = 'ajax.php';
 
 var sendResponse;
 
+/**
+ * contains all available remote-procedural calls
+ *  a.k.a. the interface available to the backend
+ */
+var RPC = {
+  reload  : function(){ window.location.reload(); },
+  updatePoints  : function(){
+    
+  }
+};
+
 (function($){
   
   var $searchBox;
@@ -14,19 +25,73 @@ var sendResponse;
   var $loading;
   var messages = $();
   var message_timeout;
-  var rpc = {
-    reload  : function(){ window.location.reload(); }
-  };
   
   $(function(){
     alter_jquery_ui();
     set_variables();
     init_roommate_search();
     add_floorplan_events();
+    register_global_ajax_handlers();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( function(){ window.location.reload() }, 20 * 60 * 1000 );
   });
   
+  var register_global_ajax_handlers = (function(){
+    
+    return function(){
+      $('body').ajaxSuccess(function( e, xhr, settings, json ){
+        if( $.isPlainObject( json ) ){
+          handle_rpc( json );
+          handle_messages( json );
+          handle_roommates( json );
+          handle_points( json );
+        }
+      });
+    };
+    
+    function handle_points( json ){
+      if( json.points ){
+        $('#total-points').html( json.points );
+        delete json.points;
+      }
+    };
+    
+    function handle_roommates( json ){
+      if( $.isArray(json.roommates) ){
+        var $cr = $('#current-roommates');
+        if( json.roommates.length > 0 ){
+          $cr.append( json.roommates.join("\n") );
+          $cr.find('.none').slideUp();
+        } else {
+          $cr.find('.none').slideDown();
+        }
+        delete json.roommates;
+      }
+    };
+    
+    function handle_messages( json ){
+      var types = [ 'error', 'warning', 'info', 'success' ];
+      for( var i in types ){
+        if( json[types[i]] ){
+          var value = json[types[i]];
+          if( $.isArray( value ) ){
+            value = value.join('<br />');
+          }
+          message( types[i], value );
+          delete json[types[i]];
+          break;
+        }
+      }
+    };
+    
+    function handle_rpc( json ){
+      if( json.rpc ){
+        eval( json.rpc );
+        delete json.rpc;
+      }
+    };
+    
+  })();
   
   var alter_jquery_ui = function(){
     /* allows us to pass in HTML tags to autocomplete. Without this they get escaped */
@@ -83,12 +148,14 @@ var sendResponse;
       });
 
     // Override default select method for the autocomplete to prevent the menu from closing
-    $search.data("autocomplete").menu.options.selected = function(event, data) {
-      $search.focus();
-      $search.autocomplete('close');
-      $eid.val( data.item.data('item.autocomplete').full.eid );
-      return false;
-    };
+    if( $search.data("autocomplete") ){
+      $search.data("autocomplete").menu.options.selected = function(event, data) {
+        $search.focus();
+        $search.autocomplete('close');
+        $eid.val( data.item.data('item.autocomplete').full.eid );
+        return false;
+      };
+    }
     
     $searchBox.bind('submit.addRoommate', function(){
       $addRoommate.hide();
@@ -99,13 +166,10 @@ var sendResponse;
       }, function( data ){
         $loading.hide();
         $addRoommate.show();
-        if( !data.error && data.result ){
-          message( 'success', 'Roommate request sent successfully!' );
+        if( data.result ){
           var elem = $(document.createElement('div')).html(data.result).unwrap();
           $('#requests-sent').find('.none').slideUp().end().append( elem );
           elem.hide().slideDown();
-        } else {
-          message( 'error', data.error );
         }
       });
       return false;
@@ -122,32 +186,23 @@ var sendResponse;
       eid     : eid,
       msg     : msg
     }, function( data ){
-      if( !data.error && data.result ){
+      if( data.result ){
         var $face = $('#face-eid-'+eid);
-        var $cr = $('#current-roommates');
         if( $face.siblings(':visible').length == 0 ){
           $face.parent().find('.none').slideDown();
         }
-        if( type == 'requestReceived' && msg == 'yes' ){
-          $cr.find('.none').slideUp();
-          $face.find('.actions').hide();
-          $face.fadeOut(800).fadeIn();
-          setTimeout(function(){ $face.appendTo($cr) }, 550 );
-        } else {
-          $face.fadeOut(800);
-        }
-      } else {
-        message( 'error', data.error );
+        $face.fadeOut(800);
       }
     });
   }
 
   var add_floorplan_events = (function(){
     
-    var $selection      = $(document.createElement('div'));
-    var current_choice  = null;
-    var no_choice       = '--none--';
-    var close_timeout   = null;
+    var $selection          = $(document.createElement('div'));
+    var $current_apartment  = $();
+    var current_choice      = null;
+    var no_choice           = '   ';
+    var close_timeout       = null;
     
     return function(){
       create_selection();
@@ -157,12 +212,12 @@ var sendResponse;
           $rooms.toggleClass('selected');
         })
         .bind('click.selectRoom', function(){
-          var $apartment = getApartment( $(this) );
-          current_choice = $apartment
+          $current_apartment = getApartment( $(this) );
+          current_choice = $current_apartment
                             .map(function(i,v){ return v.id.slice(5); })
                             .get()
-                            .join(', ');
-          show_selection( $apartment.eq(0) );
+                            .join(',');
+          show_selection( $current_apartment.eq(0) );
         });
       $('#choose_rooms')
         .bind('click.chooseRooms', function(){
@@ -172,8 +227,6 @@ var sendResponse;
           $.get( ajax_file, {
             action  : 'chooseRooms',
             choices : choices
-          }, function(r){
-            console.log(r);
           });
         });
     };
@@ -193,10 +246,20 @@ var sendResponse;
         .find('.choice input')
         .bind('click.setChoice', function(){
           if( current_choice ){
+            if( $(this).val() !== no_choice ){
+              var old_apartment = $(this)
+                                      .val()
+                                      .split(',')
+                                      .map(function(v){return '#room-'+v;})
+                                      .join(',');
+              $(old_apartment).removeClass('chosen');
+            }
+            $current_apartment.addClass( 'chosen' );
             $(this).val( current_choice );
             $('#input-'+$(this).attr('id')).val( current_choice );
-            close_timeout   = setTimeout(function(){ hide_selection(); }, 2000 );
-            current_choice  = null;
+            close_timeout       = setTimeout(function(){ hide_selection(); }, 2000 );
+            $current_apartment  = $();
+            current_choice      = null;
           } else {
             hide_selection();
           }
@@ -210,6 +273,12 @@ var sendResponse;
         .css({
           top   : $element.offset().top - $selection.outerHeight(),
           left  : $element.offset().left - ($selection.outerWidth()-$element.outerWidth())/2
+        })
+        .find('input')
+        .each(function(){
+          var val = $('#input-'+$(this).attr('id')).val();
+          var val = val != '' ? val : no_choice;
+          $(this).val( val );
         });
     }
     

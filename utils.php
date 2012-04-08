@@ -1,7 +1,66 @@
 <?php
   
+  require_once 'config.php';
   require_once 'WorldRegions.php';
   
+  function get_roommates( $eid, $group_id ){
+    $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i 
+            WHERE i.group_id='$group_id' 
+            AND p.eid=i.eid AND i.eid<>'$eid' ";
+    return sqlToArray( mysql_query( $q ) );
+  }
+  
+  /**
+   * @brief Extracts only one field from a 2-d array. 
+   *          Typically used when you want to get one column from sqlToArray
+   * @param {string} $column
+   * @param {array} $array
+   * @returns {array}
+   */
+  function extract_column( $column, array $array ){
+    foreach( $array as $key => $row ){
+      $array[$key] = $row[$column];
+    }
+    return $array;
+  }
+  
+  /**
+   * @brief Appends a value to multiple keys in a 2-d array
+   * @param {mixed} $class
+   * @param {array} $keys
+   * @param {array} &$target
+   */
+  function add_class( $class, array $keys, array &$target ){
+    foreach( $keys as $room ){
+      if( !isset( $target[$room] ) ){
+        $target[$room] = array();
+      }
+      $target[$room][] = $class;
+    }
+    return $target;
+  }
+  
+  
+  function add_to_group( $eid, $group_id = null ){
+    if( $group_id === null ){
+      $q_create = "INSERT INTO ".TABLE_GROUPS."(score) VALUES(0)";
+      mysql_query( $q_create );
+      $group_id = mysql_insert_id();
+    }
+    $q = "INSERT INTO ".TABLE_IN_GROUP."(eid,group_id) VALUES ('$eid', '$group_id')";
+    mysql_query( $q );
+    return $group_id;
+  }
+  
+  function group_info( $eid ){
+    $q = "SELECT 
+            i.group_id, 
+            (SELECT COUNT(id) FROM ".TABLE_IN_GROUP." j where j.group_id=i.group_id) AS members 
+          FROM ".TABLE_IN_GROUP." i 
+          WHERE i.eid='$eid';";
+    return mysql_fetch_assoc( mysql_query( $q ) );
+  }
+
   function print_score( array $people ){
     global $WorldRegions;
     global $WorldRegions_Inv;

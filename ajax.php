@@ -12,9 +12,21 @@
   if( !isset( $_SESSION['eid'] ) ){
     jsonOutput(array(
       'error' => 'You were logged off due to timeout',
-      'rpc'   => 'reload'
+      'rpc'   => 'RPC.reload();'
     ));
   }
+  
+  $tmp_group_id = mysql_fetch_assoc( mysql_query( "SELECT group_id FROM ".TABLE_IN_GROUP." WHERE eid='${_SESSION['eid']}'") );
+  $_SESSION['info']['group_id'] = $tmp_group_id['group_id'];
+  
+  $output = array(
+    'result'  => false,
+    'rpc'     => null,
+    'error'   => '',
+    'warning' => '',
+    'info'    => '',
+    'success' => ''
+  );
   
   switch($_GET['action']){
     case 'autoComplete':
@@ -25,7 +37,7 @@
         $res      = mysql_query( "SELECT $columns FROM ".TABLE_PEOPLE." WHERE (STATUS='undergrad' OR STATUS='master') AND $clause" );
         sqlToJsonOutput( $res );
       } else {
-        outputError('Invalid query' );
+        outputError( 'Invalid query' );
       }
       break;
     case 'addRoommate':
@@ -45,11 +57,10 @@
       e_assert( mysql_num_rows( mysql_query( $q_sameReq ) ) == 0, "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
       
       $q = "INSERT INTO ".TABLE_REQUESTS."(eid_from,eid_to) VALUES ('$eid_from', '$eid_to')";
-      if( mysql_query($q) ){
-        jsonOutput( array( 'result' => getFaceHTML_sent( $info_to ) ) );
-      } else {
-        jsonOutput( array('result' => false, 'error' => mysql_error()) );
-      }
+      @mysql_query( $q );
+      $output['result']   = getFaceHTML_sent( $info_to );
+      $output['error']    = mysql_error();
+      $output['success']  = 'Roommate request sent successfully!';
       break;
     case 'requestSent':
       e_assert_isset( $_GET, 'eid,msg' );
@@ -57,7 +68,8 @@
       $eid_to     = $_GET['eid'];
       $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid_from' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid_from')";
       mysql_query( $q );
-      jsonOutput( array('result' => mysql_query( $q )) );
+      $output['result'] = mysql_query( $q );
+      $output['error']  = mysql_error();
       break;
     case 'requestReceived':
       e_assert_isset( $_GET, 'eid,msg' );
@@ -75,22 +87,41 @@
         $g_from   = group_info( $_SESSION['info']['eid'] );
         $g_to     = group_info( $info_to['eid'] );
         
+        $msg_tooMany  = "Too many roommates. The maximum allowed in this phase 
+                            is <b>'".MAX_ROOMMATES."'</b> roommate(s) !";
+        
         if( $g_from['group_id'] === null && $g_to['group_id'] === null ){
-          add_to_group( $info_to['eid'], add_to_group( $_SESSION['info']['eid'] ) );
+          e_assert( 2 <= MAX_ROOMMATES + 1, $msg_tooMany);
+          $_SESSION['info']['group_id'] = add_to_group( $info_to['eid'], add_to_group( $_SESSION['info']['eid'] ) );
         } else if( $g_from['group_id'] === null && $g_to['group_id'] !== null ){
-          add_to_group( $_SESSION['info']['eid'], $g_to['group_id'] );
+          e_assert( 
+            $g_to['members'] <= MAX_ROOMMATES, 
+            $msg_tooMany.
+            '<br /><b>'.$info_to['fname'].'</b> has '.($g_to['members']-1).' roommate(s)'
+          );
+          $_SESSION['info']['group_id'] = add_to_group( $_SESSION['info']['eid'], $g_to['group_id'] );
         } else if( $g_from['eid'] === null && $g_to['eid'] !== null ){
-          add_to_group( $info_to['eid'], $g_from['group_id'] );
+          e_assert( $g_from['members'] <= MAX_ROOMMATES, $msg_tooMany);
+          $_SESSION['info']['group_id'] = add_to_group( $info_to['eid'], $g_from['group_id'] );
         } else {
-          outputError("You and this person have more than ".MAX_ROOMMATES." roommates together");
+          outputError( $msg_tooMany );
           //TODO: MERGE GROUPS !!! ABOVE SHIT IS HACK
           e_assert( 
             $g_from['members'] + $g_to['members'] <= MAX_ROOMMATES + 1,
-            "You are only allowed a maximum of ".MAX_ROOMMATES." roommates this round.".
-            "<br />You are <b>${g_from['members']} and they are ${group_to['members']}</b>!"
+            $msg_tooMany.
+            "<br />You are <b>${g_from['members']} and they are ${group_to['members']}</b> !"
           );
         }
+        $new_roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
+        
+        $output['roommates']  = array_map(function($v){ return getFaceHTML($v); }, $new_roommates);
+        $output['points']     = print_score( array_merge( array($_SESSION['info']), $new_roommates ) );
+        
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
+        
+        $q = "DELETE FROM ".TABLE_REQUESTS." WHERE eid_to='$eid_from'";
+        $output['result']     = mysql_query( $q );
+        
         /* NOTE:  must check if limit is reach and all that bull
         $q    = "SELECT eid FROM ".TABLE_REQUESTS." WHERE eid_to='$eid_from'";
         $res  = sqlToArray( mysql_query( $q_getRejected ) );
@@ -103,11 +134,10 @@
       }
       
       $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid_from' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid_from')";
-      jsonOutput( array('result' => mysql_query( $q )) );
       break;
     case 'getFaceHTML':
       e_assert_isset( $_GET, 'eid,fname,lname,country,year' );
-      jsonOutput( array( 'result' => getFaceHTML( $_GET ) ) );
+      $output['result'] = getFaceHTML( $_GET );
       break;
     case 'chooseRooms':
       e_assert_isset( $_GET, 'choices' );
@@ -119,11 +149,9 @@
         if( $v && $v != '' ){
           $tmp = explode(',', $v);
           $tmp = array_map( 'trim', $tmp );
-      //    foreach( $tmp as $room ) $rooms[] = $room;
           $rooms[] = $tmp;
         }
       }
-      //TODO: FIX GROUP_ID AJAX BUG (not updating)
       $group_id = $_SESSION['info']['group_id'];
       $values   = array();
       foreach( $rooms as $k => $v ){
@@ -131,16 +159,19 @@
           $values[] = "('$room','$group_id','$k')";
         }
       }
-      var_export( $values );
       $values = implode(', ', $values);
       
       mysql_query( "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='$group_id'" );
       $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,group_id,choice) VALUES $values";
-      jsonOutput( array( 'result' => mysql_query($q) ) );
+      $output['result'] = mysql_query($q);
+      $output['error']  = mysql_error();
+      $output['info']   = 'Rooms updated successfully!';
       break;
     default: 
       outputError( 'Unknown action' );
   }
+  
+  jsonOutput( $output );
   
   function notifyPerson( $eid, $message ){
     //TODO: me

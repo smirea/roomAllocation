@@ -40,27 +40,6 @@
   ****** HELPER  ****
   ******************/
 
-  function add_to_group( $eid, $group_id = null ){
-    if( $group_id === null ){
-      $q_create = "INSERT INTO ".TABLE_GROUPS."(score) VALUES(0)";
-      mysql_query( $q_create );
-      $group_id = mysql_insert_id();
-    }
-    $q = "INSERT INTO ".TABLE_IN_GROUP."(eid,group_id) VALUES ('$eid', '$group_id')";
-    mysql_query( $q );
-    return $group_id;
-  }
-  
-  function group_info( $eid ){
-    $q = "SELECT 
-            i.group_id, 
-            (SELECT COUNT(id) FROM ".TABLE_IN_GROUP." j where j.group_id=i.group_id) AS members 
-          FROM ".TABLE_IN_GROUP." i 
-          WHERE i.eid='$eid';";
-    return mysql_fetch_assoc( mysql_query( $q ) );
-  }
-
-  
   /**
    * @brief check if an array is associative or not
    * @param {array} $array

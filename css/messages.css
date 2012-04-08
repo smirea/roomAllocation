@@ -27,7 +27,10 @@
   -webkit-box-shadow  : inset 0 -1px 0 rgba(255,255,255,.4);   
   box-shadow          : inset 0 -1px 0 rgba(255,255,255,.4);
   display     : none;
-  position    : absolute;
+  position    : fixed;
+  top         : 0;
+  right       : 0;
+  left        : 0;
   z-index     : 1000000;
   top         : 0;
   left        : 0;
