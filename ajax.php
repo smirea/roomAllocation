@@ -16,8 +16,11 @@
     ));
   }
   
-  $tmp_group_id = mysql_fetch_assoc( mysql_query( "SELECT group_id FROM ".TABLE_IN_GROUP." WHERE eid='${_SESSION['eid']}'") );
+  $eid = $_SESSION['eid'];
+  
+  $tmp_group_id = mysql_fetch_assoc( mysql_query( "SELECT group_id FROM ".TABLE_IN_GROUP." WHERE eid='$eid'") );
   $_SESSION['info']['group_id'] = $tmp_group_id['group_id'];
+  $college  = get_college_by_eid( $eid );
   
   $output = array(
     'result'  => false,
@@ -42,21 +45,21 @@
       break;
     case 'addRoommate':
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
-      $eid_from     = $_SESSION['eid'];
       $eid_to       = $_GET['eid'];
-      $q_hasRoom    = "SELECT id from ".TABLE_ALLOCATIONS." WHERE (eid='$eid_from' OR eid='$eid_to') AND college IS NOT NULL AND room IS NOT NULL";
+      $q_hasRoom    = "SELECT id from ".TABLE_ALLOCATIONS." WHERE (eid='$eid' OR eid='$eid_to') AND college IS NOT NULL AND room IS NOT NULL";
       $q_exists     = "SELECT * FROM ".TABLE_PEOPLE." WHERE eid='$eid_to'";
-      $q_sameReq    = "SELECT id FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid_from' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid_from')";
+      $q_sameReq    = "SELECT id FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
       
       $sql_exists = mysql_query( $q_exists );
       $info_to    = mysql_fetch_assoc( $sql_exists );
       
-      e_assert( $eid_from != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
-      e_assert( mysql_num_rows( mysql_query( $q_hasRoom ) ) == 0, "Either you or your chosen roommate already have a room" );
+      e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
       e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );
+      e_assert( get_college_by_eid( $info_to['eid'] ) == $eid, '<b>'.$info_to['fname'].'</b> is in another college!' );
+      e_assert( mysql_num_rows( mysql_query( $q_hasRoom ) ) == 0, "Either you or your chosen roommate already have a room" );
       e_assert( mysql_num_rows( mysql_query( $q_sameReq ) ) == 0, "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
       
-      $q = "INSERT INTO ".TABLE_REQUESTS."(eid_from,eid_to) VALUES ('$eid_from', '$eid_to')";
+      $q = "INSERT INTO ".TABLE_REQUESTS."(eid_from,eid_to) VALUES ('$eid', '$eid_to')";
       @mysql_query( $q );
       $output['result']   = getFaceHTML_sent( $info_to );
       $output['error']    = mysql_error();
@@ -64,19 +67,17 @@
       break;
     case 'requestSent':
       e_assert_isset( $_GET, 'eid,msg' );
-      $eid_from   = $_SESSION['eid'];
-      $eid_to     = $_GET['eid'];
-      $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid_from' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid_from')";
+      $eid_to = $_GET['eid'];
+      $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
       mysql_query( $q );
       $output['result'] = mysql_query( $q );
       $output['error']  = mysql_error();
       break;
     case 'requestReceived':
       e_assert_isset( $_GET, 'eid,msg' );
-      $eid_from   = $_SESSION['eid'];
-      $eid_to     = $_GET['eid'];
+      $eid_to = $_GET['eid'];
       
-      $q_isRequest = "SELECT id FROM ".TABLE_REQUESTS." WHERE eid_from='$eid_to' AND eid_to='$eid_from'";
+      $q_isRequest = "SELECT id FROM ".TABLE_REQUESTS." WHERE eid_from='$eid_to' AND eid_to='$eid'";
       e_assert( mysql_num_rows( mysql_query($q_isRequest) ) > 0, 'The person has not sent you any requests' );
       if( $_GET['msg'] == 'yes' ){
         $q_exists   = "SELECT * FROM ".TABLE_PEOPLE." WHERE eid='$eid_to'";
@@ -119,11 +120,11 @@
         
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
         
-        $q = "DELETE FROM ".TABLE_REQUESTS." WHERE eid_to='$eid_from'";
+        $q = "DELETE FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";
         $output['result']     = mysql_query( $q );
         
         /* NOTE:  must check if limit is reach and all that bull
-        $q    = "SELECT eid FROM ".TABLE_REQUESTS." WHERE eid_to='$eid_from'";
+        $q    = "SELECT eid FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";
         $res  = sqlToArray( mysql_query( $q_getRejected ) );
         foreach( $res as $person ){
           notifyPerson( $person['eid'], $_SESSION['fname']." has choosen another roommate" );
@@ -133,7 +134,7 @@
         notifyPerson( $_GET['eid'], $_SESSION['info']['fname']." rejected your roommate request" );
       }
       
-      $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid_from' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid_from')";
+      $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
       break;
     case 'getFaceHTML':
       e_assert_isset( $_GET, 'eid,fname,lname,country,year' );
@@ -152,17 +153,18 @@
           $rooms[] = $tmp;
         }
       }
+      
       $group_id = $_SESSION['info']['group_id'];
       $values   = array();
       foreach( $rooms as $k => $v ){
         foreach( $v as $room ){
-          $values[] = "('$room','$group_id','$k')";
+          $values[] = "('$room','$college','$group_id','$k')";
         }
       }
       $values = implode(', ', $values);
       
       mysql_query( "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='$group_id'" );
-      $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,group_id,choice) VALUES $values";
+      $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,college,group_id,choice) VALUES $values";
       $output['result'] = mysql_query($q);
       $output['error']  = mysql_error();
       $output['info']   = 'Rooms updated successfully!';

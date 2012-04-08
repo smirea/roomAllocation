@@ -53,6 +53,7 @@ DROP TABLE IF EXISTS Apartment_Choices;
 CREATE TABLE Apartment_Choices(
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `number` VARCHAR(16) NOT NULL,
+  `college` VARCHAR(64) NOT NULL,
   `group_id` VARCHAR(16) NOT NULL,
   `choice` INT(2) NOT NULL
 ) ENGINE = MYISAM ;

@@ -3,6 +3,12 @@
   require_once 'config.php';
   require_once 'WorldRegions.php';
   
+  function get_college_by_eid( $eid ){
+    $q        = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
+    $college  = mysql_fetch_assoc( mysql_query( $q ) );
+    return $college['college'];
+  }
+  
   function get_roommates( $eid, $group_id ){
     $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i 
             WHERE i.group_id='$group_id' 

@@ -187,7 +187,6 @@
               
               $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
               $d = mysql_fetch_assoc( mysql_query( $q ) );
-              
               if( $d['college'] ){
                 $classes = array();
                 

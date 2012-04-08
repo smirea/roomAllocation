@@ -53,6 +53,7 @@ DROP TABLE IF EXISTS `Apartment_Choices`;
 CREATE TABLE `Apartment_Choices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `number` varchar(16) NOT NULL,
+  `college` varchar(64) NOT NULL,
   `group_id` varchar(16) NOT NULL,
   `choice` int(2) NOT NULL,
   PRIMARY KEY (`id`)
