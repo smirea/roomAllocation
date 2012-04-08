@@ -19,6 +19,9 @@
   mysql_close();
   dbConnect( DB_USER, DB_PASS, DB_NAME );
   
+  // delete old data;
+  mysql_query( "DELETE FROM ".TABLE_PEOPLE );
+  
   /** Add info to the database */
   $columns .= ',query';
   $h = '<table>';
@@ -29,7 +32,7 @@
   }
   $h .= '</table>';
   
-  $q = "INSERT INTO Allocations(eid) SELECT p.eid FROM People p";
+  $q = "INSERT INTO Allocations(eid) SELECT p.eid FROM ".TABLE_PEOPLE." p";
   echo "<div>Copying data into Allocations table: ".(mysql_query($q) ? 'OK' : 'FAIL: '.mysql_error())." </div>";
   echo "<hr />$h";
   
