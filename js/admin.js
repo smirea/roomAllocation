@@ -24,12 +24,14 @@ $(function(){
         var $content  = $();
         for( var i in cls ){
           if( /^group-[0-9]+$/.test( cls[i] ) ){
-            $content = $content.add( $('#'+cls[i]) );
+            $content = $content.add( $('#'+cls[i]).clone() );
           }
         }
         
         if( $content.length ) {
           api.set( 'content.text', $content );
+        } else {
+          api.set( 'content-text', '-- nobody applied for this apartment :( --' );
         }
       }
     }
