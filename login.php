@@ -57,6 +57,9 @@
   if( isset($_SESSION['username']) ){
     define( 'IS_ADMIN', in_array( $_SESSION['username'], $admin ) );
     define( 'USERNAME', $_SESSION['username'] );
+  } else {
+    define( 'IS_ADMIN', false );
+    define( 'USERNAME', null );
   }
   
   function check_login( $user, $pass ){
