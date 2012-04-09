@@ -67,31 +67,48 @@
     return mysql_fetch_assoc( mysql_query( $q ) );
   }
 
-  function print_score( array $people ){
+  function get_points( array $people ){
     global $WorldRegions;
     global $WorldRegions_Inv;
     $year               = ((int)date('Y')) % 100;
-    $h                  = '';
     $countries          = array();
     $individual_points  = 0;
-    $h .= '<table class="points" cellspacing="0" cellpadding="0">';
-    $h .= '<tr><td colspan="2" class="section">Individual points</td></tr>';
+    $individual         = array();
     foreach( $people as $v ){
       $p = min(2, max(1, 3-($v['year']-$year) ) );
       $countries[$v['country']] = true;
+      $individual[] = $p;
       $individual_points += $p;
-      $h .= "<tr><td>${v['fname']}, ${v['lname']}</td><td class=\"value\">$p</td></tr>";
     }
     $country_points = count($countries) > 1 ? count($countries) : 0;
     $world_regions  = array_map(function($v){global $WorldRegions_Inv; return $WorldRegions_Inv[$v];}, array_keys($countries));
     $world_regions  = array_unique( $world_regions );
     $world_regions  = count( $world_regions ) * 0.5;
     $world_regions  = $world_regions > 0.5 ? $world_regions : 0;
-    $points = $individual_points + $country_points + $world_regions;
+    $total          = $individual_points + $country_points + $world_regions;
+    return array(
+      'people'      => $individual,
+      'individual'  => $individual_points,
+      'country'     => $country_points,
+      'world'       => $world_regions,
+      'total'       => $total
+    );
+  }
+  
+  function print_score( array $people ){
+    $points = get_points( $people );
+    $h .= '<table class="points" cellspacing="0" cellpadding="0">';
+    $h .= '<tr><td colspan="2" class="section">Individual points</td></tr>';
+    foreach( $points['people'] as $k => $value ){
+      $h .= "<tr>
+              <td>".$people[$k]['fname'].", ".$people[$k]['lname']."</td>
+              <td class=\"value\">".$value."</td>
+             </tr>";
+    }
     $h .= '<tr><td colspan="2" class="section">Bonus points</td></tr>';
-    $h .= '<tr><td>Nationalities</td><td class="value">'.$country_points.'</td></tr>';
-    $h .= '<tr><td>World Regions</td><td class="value">'.$world_regions.'</td></tr>';
-    $h .= '<tr><td class="section">Total</td><td class="value">'.$points.'</td></tr>';
+    $h .= '<tr><td>Nationalities</td><td class="value">'.$points['country'].'</td></tr>';
+    $h .= '<tr><td>World Regions</td><td class="value">'.$points['world'].'</td></tr>';
+    $h .= '<tr><td class="section">Total</td><td class="value">'.$points['total'].'</td></tr>';
     $h .= '</table>';
     return $h;
   }

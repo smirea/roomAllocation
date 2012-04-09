@@ -61,7 +61,7 @@ HTML;
     }
   }
   
-  function renderMap( array $map, array $classes = array() ){
+  function renderMap( array $map, array $classes = array(), array $args = array() ){
     $h = '';
     $emptyRoom = new Room();
     $h .= '<div class="floorPlan">';
@@ -81,7 +81,11 @@ HTML;
               case 'blank': $h .= '&nbsp;'; break;
               case 'empty': $h .= $emptyRoom->toString( 'disabled' ); break;
               default:
-                $tmp = new Room( array( 'number'=>$roomNumber, 'phone'=>$tel ) );
+                $arguments = array( 'number'=>$roomNumber, 'phone'=>$tel );
+                if( isset($args[$roomNumber]) ){
+                  $arguments = array_merge( $args[$roomNumber], $arguments );
+                }
+                $tmp = new Room( $arguments );
                 if( isset($classes[$roomNumber]) )
                   $h .= $tmp->toString( $classes[$roomNumber] );
                 else

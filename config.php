@@ -6,6 +6,10 @@
   define( 'MAX_ROOMMATES', 1 );
   define( 'MAX_ROOM_CHOICES', 9 );
   
+  /** Admin config */
+  define( 'ADMIN_ACCOUNTS', 'smirea' );
+  $admin = explode(',', ADMIN_ACCOUNTS);
+  
   /** Database config */
   define( 'DB_USER', 'jPerson' );
   define( 'DB_PASS', 'jacobsRulz' );

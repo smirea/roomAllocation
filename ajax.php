@@ -55,7 +55,7 @@
       
       e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
       e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );
-      e_assert( get_college_by_eid( $info_to['eid'] ) == $eid, '<b>'.$info_to['fname'].'</b> is in another college!' );
+      e_assert( get_college_by_eid( $info_to['eid'] ) == $college, '<b>'.$info_to['fname'].'</b> is in another college!' );
       e_assert( mysql_num_rows( mysql_query( $q_hasRoom ) ) == 0, "Either you or your chosen roommate already have a room" );
       e_assert( mysql_num_rows( mysql_query( $q_sameReq ) ) == 0, "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
       
