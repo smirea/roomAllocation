@@ -13,11 +13,13 @@
     <link rel="stylesheet" type="text/css" href="css/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/messages.css" />
     <link rel="stylesheet" type="text/css" href="css/gh-buttons.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.qtip.css" />
     <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
 
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
+    <script src="js/jquery.qtip.js"></script>
     <script src="js/roomAllocation.js"></script>
   </head>
   
@@ -25,10 +27,12 @@
     <div id="main">
       <?php require_once 'login.php'; ?>
       
-      <div id="message-info" class="info message"><div class="content"></div></div>
-      <div id="message-error" class="error message"><div class="content"></div></div>
-      <div id="message-warning" class="warning message"><div class="content"></div></div>
-      <div id="message-success" class="success message"><div class="content"></div></div>
+      <div class="message-holder">
+        <div id="message-info" class="info message"><div class="content"></div></div>
+        <div id="message-error" class="error message"><div class="content"></div></div>
+        <div id="message-warning" class="warning message"><div class="content"></div></div>
+        <div id="message-success" class="success message"><div class="content"></div></div>
+      </div>
       
       <div id="wrapper">
         <?php

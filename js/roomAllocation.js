@@ -200,13 +200,14 @@ var RPC = {
     
     var $selection          = $(document.createElement('div'));
     var $current_apartment  = $();
+    var $rooms              = $();
     var current_choice      = null;
     var no_choice           = '   ';
     var close_timeout       = null;
     
     return function(){
       create_selection();
-      $('.room')
+      $rooms
         .bind('mouseover mouseout', function(){
           var $rooms = getApartment( $(this) );
           $rooms.toggleClass('selected');
@@ -217,7 +218,6 @@ var RPC = {
                             .map(function(i,v){ return v.id.slice(5); })
                             .get()
                             .join(',');
-          show_selection( $current_apartment.eq(0) );
         });
       $('#choose_rooms')
         .bind('click.chooseRooms', function(){
@@ -232,6 +232,7 @@ var RPC = {
     };
     
     function create_selection(){
+      $rooms = $('.room');
       var h = '';
       for( var i=0; i<MAX_ROOMS_CHOICES; ++i ){
         h += '<label class="choice">\
@@ -241,8 +242,8 @@ var RPC = {
       }
       $selection
         .attr( 'id',  'apartment-selection' )
-        .appendTo( 'body' )
         .html( h )
+        //.appendTo( 'body' )
         .find('.choice input')
         .bind('click.setChoice', function(){
           if( current_choice ){
@@ -257,34 +258,49 @@ var RPC = {
             $current_apartment.addClass( 'chosen' );
             $(this).val( current_choice );
             $('#input-'+$(this).attr('id')).val( current_choice );
-            close_timeout       = setTimeout(function(){ hide_selection(); }, 2000 );
+            $rooms.qtip('toggle', false);
             $current_apartment  = $();
             current_choice      = null;
           } else {
-            hide_selection();
+            $rooms.qtip('toggle', false);
           }
         });
-    }
-    
-    function show_selection( $element ){
-      clearTimeout( close_timeout );
-      $selection
-        .fadeIn()
-        .css({
-          top   : $element.offset().top - $selection.outerHeight(),
-          left  : $element.offset().left - ($selection.outerWidth()-$element.outerWidth())/2
-        })
-        .find('input')
-        .each(function(){
-          var val = $('#input-'+$(this).attr('id')).val();
-          var val = val != '' ? val : no_choice;
-          $(this).val( val );
-        });
-    }
-    
-    function hide_selection(){
-      clearTimeout( close_timeout );
-      $selection.fadeOut();
+
+      $rooms.qtip({
+        content   : {
+          text  : $selection,
+          title: {
+            text    : 'Seelect which option you want this apartment to be',
+            button  : true
+          }
+        },
+        position: {
+          my      : 'center', // ...at the center of the viewport
+          at      : 'center',
+          target  : $(window)
+        },
+        show: {
+          event : 'click', 
+          solo  : true, 
+          modal : true
+        },
+        hide: false,
+        style: {
+          classes : 'ui-tooltip-light ui-tooltip-rounded'
+        },
+        events : {
+          show : function( event, api ){
+            var target = $(event.originalEvent.target);
+            $selection
+              .find('input')
+              .each(function(){
+                var val = $('#input-'+$(this).attr('id')).val();
+                var val = val != '' ? val : no_choice;
+                $(this).val( val );
+              });
+          }
+        }
+      });
     }
     
     function getApartment( $element ){
@@ -306,12 +322,29 @@ var RPC = {
   function message( type, message ){
     var msg = messages.filter('.'+type);
     if( msg.length > 0 ){
-      messages.stop(true,true).clearQueue().hide();
-      msg.fadeIn('slow').find('.content').html( message );
-      clearTimeout( message_timeout );
-      message_timeout = setTimeout( function(){ msg.fadeOut(); }, 10 * 1000 );
+      var container = msg.parent();
+      var clone     = msg.clone();
+      clone
+        .appendTo( container )
+        .hide()
+        .fadeIn( 800 )
+        .find('.content')
+        .html( message )
+        .data( 'timeout', setTimeout(clear_message(clone), 10 * 1000) );
+      if( container.height() > 200 ){
+        var toHide = container.find('.message:visible').first();
+        clearTimeout( toHide.data('timeout') );
+        toHide.hide();
+      }
     } else {
       console.warn( 'Unknown message type', arguments );
+    }
+    
+    function clear_message( clone, speed ){ 
+      speed = speed || 800;
+      return function(){
+        clone.fadeOut(speed, function(){ clone.remove(); });
+      }
     }
   }
   

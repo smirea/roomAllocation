@@ -53,6 +53,7 @@
   }
   
   define( 'LOGGED_IN', $login );
+  define( 'IS_ADMIN', in_array( $_SESSION['username'], $admin ) );
   define( 'USERNAME', isset($_SESSION['username']) ? $_SESSION['username'] : '' );
   
   function check_login( $user, $pass ){

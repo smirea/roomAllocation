@@ -198,10 +198,14 @@ body{
   background  : lightgreen;
   font-weight : bold;
 }
+.room.taken{
+  background  : #ddd;
+}
+.room .person{
+  display : none;
+}
 
 #apartment-selection{
-  display     : none;
-  position    : absolute;
   border      : 1px solid #ccc;
   background  : #DEECFF;
   width       : 330px;
@@ -220,6 +224,22 @@ body{
 }
 #apartment-selection .choice input{
   width : 100px;
+}
+
+.ui-tooltip, .qtip{
+  width     : auto;
+  max-width : 800; 
+  min-width : 50px;
+}
+
+.ui-tooltip-modal{
+  -moz-box-shadow: 0 0 10px 1px rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 10px 1px rgba(0,0,0,.5);
+  box-shadow: 0 0 10px 1px rgba(0,0,0,.5);
+}
+ 
+.ui-tooltip-modal .ui-tooltip-content{
+  padding: 10px;
 }
 
 .clearBoth{

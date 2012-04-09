@@ -24,9 +24,6 @@
 .room .info{
   text-align  : center;
 }
-.room .person{
-  display : none;
-}
 .room.disabled{
   background  : #ddd;
 }
