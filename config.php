@@ -7,7 +7,7 @@
   define( 'MAX_ROOM_CHOICES', 9 );
   
   /** Admin config */
-  define( 'ADMIN_ACCOUNTS', 'smirea' );
+  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal' );
   $admin = explode(',', ADMIN_ACCOUNTS);
   
   /** Database config */
