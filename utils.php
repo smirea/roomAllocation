@@ -97,7 +97,7 @@
   
   function print_score( array $people ){
     $points = get_points( $people );
-    $h .= '<table class="points" cellspacing="0" cellpadding="0">';
+    $h = '<table class="points" cellspacing="0" cellpadding="0">';
     $h .= '<tr><td colspan="2" class="section">Individual points</td></tr>';
     foreach( $points['people'] as $k => $value ){
       $h .= "<tr>
