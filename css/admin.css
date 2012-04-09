@@ -6,3 +6,24 @@
   display : table-cell!important;
 } 
 */
+.group{
+  border      : 1px solid #ccc;
+  background  : #fff;
+  width       : 300px;
+  margin      : 5px 0;
+}
+.group h4{
+  background    : lightblue;
+  margin        : 0;
+  margin-bottom : 5px;
+  padding       : 2px 5px;
+  color         : #333;
+}
+.group h4 b{
+  color : red;
+}
+.group .face{
+  border-width        : 0;
+  border-bottom-width : 1px;
+  margin              : 0;
+}

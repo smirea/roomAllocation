@@ -198,6 +198,10 @@ body{
   background  : lightgreen;
   font-weight : bold;
 }
+.room.ambiguous{
+  background  : orange;
+  font-weight : bold;
+}
 .room.taken{
   background  : #ddd;
 }

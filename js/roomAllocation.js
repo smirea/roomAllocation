@@ -209,11 +209,11 @@ var RPC = {
       create_selection();
       $rooms
         .bind('mouseover mouseout', function(){
-          var $rooms = getApartment( $(this) );
+          var $rooms = get_apartment( $(this) );
           $rooms.toggleClass('selected');
         })
         .bind('click.selectRoom', function(){
-          $current_apartment = getApartment( $(this) );
+          $current_apartment = get_apartment( $(this) );
           current_choice = $current_apartment
                             .map(function(i,v){ return v.id.slice(5); })
                             .get()
@@ -301,21 +301,6 @@ var RPC = {
           }
         }
       });
-    }
-    
-    function getApartment( $element ){
-      var id      = $element.attr('id');
-      var prefix  = '#' + id.substr( 0, id.length-3 );
-      var no      = Number(id.split('-')[2]);
-      var $rooms  = $();
-      if( no <= 103 ){
-        $rooms = $(prefix+'101,'+prefix+'102,'+prefix+'103');
-      } else if( no % 2 == 0 ){
-        $rooms = $element.add( $(prefix+(no+1)) );
-      } else {
-        $rooms = $element.add( $(prefix+(no-1)) );
-      }
-      return $rooms;
     }
   })();
   

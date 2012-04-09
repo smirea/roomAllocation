@@ -155,4 +155,17 @@
     if( $name ) mysql_select_db( $name, $connexion ) or die ("Failed to select Data Base");
   }
   
+  /**
+   * @brief Wraps var_export into a <pre></pre> tag for nice formatting
+   * @param {mixed} [$arg_n]
+   */
+  function v_export(){
+    $args = func_get_args();
+    echo '<pre>';
+    foreach( $args as $arg ){
+      var_export( $arg );
+      echo "\n";
+    }
+    echo '</pre>';
+  }
 ?>

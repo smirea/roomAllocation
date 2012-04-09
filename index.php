@@ -20,6 +20,7 @@
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.qtip.js"></script>
+    <script src="js/lib.js"></script>
     <script src="js/roomAllocation.js"></script>
   </head>
   
