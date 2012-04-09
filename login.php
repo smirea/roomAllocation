@@ -53,8 +53,11 @@
   }
   
   define( 'LOGGED_IN', $login );
-  define( 'IS_ADMIN', in_array( $_SESSION['username'], $admin ) );
-  define( 'USERNAME', isset($_SESSION['username']) ? $_SESSION['username'] : '' );
+  
+  if( isset($_SESSION['username']) ){
+    define( 'IS_ADMIN', in_array( $_SESSION['username'], $admin ) );
+    define( 'USERNAME', $_SESSION['username'] );
+  }
   
   function check_login( $user, $pass ){
     $user = strtolower( $user );
