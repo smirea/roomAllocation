@@ -1,0 +1,5 @@
+
+ - implement group merging
+ - add groups for everyone (even to forever-alone people)
+ - fix bug with add-roommate where you are alone, send request, roommate accepts,
+      you choose rooms but group_id was not updated
