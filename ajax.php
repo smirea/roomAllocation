@@ -35,9 +35,16 @@
     case 'autoComplete':
       e_assert_isset( $_GET, 'str' );
       e_assert( strlen( $_GET['str'] ) >= MIN_LIMIT, 'Query too short. Must have at least '.MIN_LIMIT.' chars' );
+      $min_year = (int)date('Y') % 100;
       $columns  = "id,eid,fname,lname,country,college";
       if( $clause = $Search->getQuery( $_GET['str'] ) ){
-        $res      = mysql_query( "SELECT $columns FROM ".TABLE_PEOPLE." WHERE (STATUS='undergrad' OR STATUS='master') AND $clause" );
+        $res      = mysql_query( "SELECT $columns FROM ".TABLE_PEOPLE." 
+                                WHERE (
+                                  (status='undergrad' AND year>'$min_year')
+                                  OR (status='foundation-year' AND year='$min_year')
+                                )
+                                AND $clause" 
+                    );
         sqlToJsonOutput( $res );
       } else {
         outputError( 'Invalid query' );

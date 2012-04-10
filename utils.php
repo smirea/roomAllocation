@@ -75,7 +75,10 @@
     $individual_points  = 0;
     $individual         = array();
     foreach( $people as $v ){
-      $p = min(2, max(1, 3-($v['year']-$year) ) );
+      if( $v['status'] == 'undergrad' )
+        $p = min(2, max(1, 3-($v['year']-$year) ) );
+      else
+        $p = 1;
       $countries[$v['country']] = true;
       $individual[] = $p;
       $individual_points += $p;

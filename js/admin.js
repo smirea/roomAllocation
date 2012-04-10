@@ -3,6 +3,7 @@ $(function(){
   var $rooms = $('.room');
   
   $('<div />').qtip({
+    overwrite : false,
     content: ' ', 
     position: {
       target    : 'event',

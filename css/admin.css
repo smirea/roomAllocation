@@ -27,3 +27,31 @@
   border-bottom-width : 1px;
   margin              : 0;
 }
+
+
+#allocation-table{
+  border      : 1px solid #ccc;
+  background  : #fff;
+  margin      : 5px auto;
+  padding     : 2px;
+}
+#allocation-table td{
+  border-bottom : 1px solid #ccc;
+  padding       : 1px 3px;
+}
+#allocation-table td:first-child{
+  border-right  : 1px solid #ccc;
+}
+#allocation-table .even{
+  background  : #E3F2FF;
+}
+.small-group{
+  display     : block;
+  padding     : 1px 0;
+}
+.small-group .total{
+  display     : inline-block;
+  background  : lightgreen;
+  padding     : 0 4px;
+  font-weight : bold;
+}

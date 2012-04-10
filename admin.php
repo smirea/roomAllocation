@@ -67,6 +67,14 @@
           $total[$group_id]   = $points[$group_id]['total'];
         }
         
+        // sort rooms
+        foreach( $rooms as $number => $value ){
+          usort( $rooms[$number], function($a, $b){ 
+            global $total;
+            return $total[$a] == $total[$b] ? 0 : ($total[$a] > $total[$b] ? -1 : 1); 
+          });
+        }
+        
         $classes    = array();
         $arguments  = array();
         foreach( $rooms as $number => $gids ){
@@ -118,7 +126,46 @@
           ';
         }
         
-        echo renderMap( $Mercator, $classes, $arguments );
+        $table = array();
+        $i = 0;
+        foreach( $rooms as $number => $gr ){
+          $h = array();
+          $h[] = '<tr class="'.($i%2==0? 'even' : 'odd').'">';
+          $h[] = '<td style="width:50px;text-align:center;font-weight:bold;">'.$number.'</td>';
+          $h[] = '<td>';
+          foreach( $gr as $g_id ){
+            $h[] = '<span class="small-group">';
+            $h[] = '<span class="total">'.$total[$g_id].'</span>';
+            foreach( $groups[$g_id] as $p_id ){
+              $person = $people[$p_id];
+              $d              = 3-((2000+(int)$person['year'])-(int)date("Y"));
+              $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
+              $h[] = '<span class="person">
+                        <img height="18" class="county" src="'.flagURL( $person['country'] ).'" />
+                        <span class="year">'.$year_of_study.'</span>
+                        <span class="name">'.$person['fname'].', '.$person['lname'].'</span>
+                      </span>';
+            }
+            $h[] = '</span>';
+          }
+          $h[] = '</td>';
+          $h[] = '</tr>';
+          $table[$i] = implode("\n", $h);
+          ++$i;
+        }
+        
+        echo ' [ <a href="javascript:void(0)" onclick="$(\'#allocation-table\').toggle();$(\'#floorPlan\').toggle();">Toggle View</a> ]';
+        
+        echo '
+          <table cellspacing="0" cellpadding="0" id="allocation-table" style="display:none;">
+            '.implode("\n", $table).'
+          </table>
+        ';
+        
+        echo '<div id="floorPlan">'.
+                renderMap( $Mercator, $classes, $arguments ).
+              '</div>';
+        
       ?>
     </div>
     
