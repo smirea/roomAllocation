@@ -232,7 +232,7 @@ var RPC = {
     };
     
     function create_selection(){
-      $rooms = $('.room:not(.taken)');
+      $rooms = $('.room:not(.taken,.disabled)');
       var h = '';
       for( var i=0; i<MAX_ROOMS_CHOICES; ++i ){
         h += '<label class="choice">\
