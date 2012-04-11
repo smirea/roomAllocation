@@ -172,7 +172,7 @@
       $q_taken = "SELECT room 
                   FROM ".TABLE_ALLOCATIONS."
                   WHERE college='$college' 
-                  AND room IN ('".$implode("','",$rooms)."')";
+                  AND room IN ('".implode("','",$rooms)."')";
       $taken = extract_column('eid', sqlToArray( mysql_query( $q_taken ) ) );
       
       if( count($taken) > 0 ){
@@ -189,7 +189,6 @@
       
       e_assert( $output['error'] == '', $output['error'] );
       
-      $rooms    = array_unique( $rooms );
       $group_id = $_SESSION['info']['group_id'];
       $values   = array();
       foreach( $rooms as $k => $v ){
