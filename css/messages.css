@@ -4,6 +4,8 @@
   top         : 0;
   right       : 0;
   left        : 0;
+  max-height  : 200px;
+  overflow    : auto;
 }
 .message{
   -webkit-background-size: 40px 40px;
@@ -40,6 +42,13 @@
   color       : #fff;
   -webkit-animation : animate-bg 5s linear infinite;
   -moz-animation    : animate-bg 5s linear infinite;
+}
+
+.message a, .message a:hover, .message a:focus{
+  color : yellow;
+}
+.message a:hover, .message a:focus{
+  text-decoration : underline;
 }
 
 .message.info{

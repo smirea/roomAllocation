@@ -315,12 +315,19 @@ var RPC = {
         .fadeIn( 800 )
         .find('.content')
         .html( message )
-        .data( 'timeout', setTimeout(clear_message(clone), 10 * 1000) );
+        .data( 'timeout', setTimeout(clear_message(clone), 10 * 1000) )
+        .bind('click.clear', function(){
+          clearTimeout( clone.data('timeout') );
+          clear_message( clone )();
+        });
+      container[0].scrollTop = container[0].scrollHeight;
+      /*
       if( container.height() > 200 ){
         var toHide = container.find('.message:visible').first();
         clearTimeout( toHide.data('timeout') );
         toHide.hide();
       }
+      */
     } else {
       console.warn( 'Unknown message type', arguments );
     }
