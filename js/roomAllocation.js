@@ -232,7 +232,7 @@ var RPC = {
     };
     
     function create_selection(){
-      $rooms = $('.room');
+      $rooms = $('.room:not(.taken)');
       var h = '';
       for( var i=0; i<MAX_ROOMS_CHOICES; ++i ){
         h += '<label class="choice">\
@@ -258,14 +258,36 @@ var RPC = {
             $current_apartment.addClass( 'chosen' );
             $(this).val( current_choice );
             $('#input-'+$(this).attr('id')).val( current_choice );
-            $rooms.qtip('toggle', false);
+            $selection.dialog('close');
             $current_apartment  = $();
             current_choice      = null;
           } else {
-            $rooms.qtip('toggle', false);
+            $selection.dialog('open');
           }
         });
 
+      $selection.dialog({
+        modal     : true,
+        title     : 'Which option should it be',
+        show      : 'slide',
+        autoOpen  : false,
+        width     : 350,
+        open      : function( e, ui ){
+          $selection
+            .find('input')
+            .each(function(){
+              var val = $('#input-'+$(this).attr('id')).val();
+              var val = val != '' ? val : no_choice;
+              $(this).val( val );
+            });
+        }
+      });
+      
+      $rooms.bind('click.showDialog', function(){
+        $selection.dialog('open');
+      });
+      
+      /*
       $rooms.qtip({
         content   : {
           text  : $selection,
@@ -301,6 +323,7 @@ var RPC = {
           }
         }
       });
+      */
     }
   })();
   
