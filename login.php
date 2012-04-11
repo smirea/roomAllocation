@@ -21,12 +21,24 @@
       && (DEBUG || isset($_POST['password']))
       && !($message = check_login($_POST['username'], $_POST['password']))
     ){
-      $q    = "SELECT p.*, (SELECT i.group_id FROM ".TABLE_IN_GROUP." i WHERE i.eid=p.eid) AS group_id FROM ".TABLE_PEOPLE." p WHERE account='${_POST['username']}'";
+      $q    = " SELECT 
+                  p.*, 
+                  (SELECT i.group_id FROM ".TABLE_IN_GROUP." i WHERE i.eid=p.eid) AS group_id 
+                FROM ".TABLE_PEOPLE." p 
+                WHERE account='${_POST['username']}'";
       $info = mysql_fetch_assoc( mysql_query( $q ) );
-      $_SESSION['username'] = $info['account'];
-      $_SESSION['eid']      = $info['eid'];
-      $_SESSION['info']     = $info;
-      header('Location:'.FILE_SELF);
+      $min_year = (int)date('Y') % 100;
+      if( ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
+          || ($info['status'] == STATUS_FOUNDATION && $info['year'] == $min_year)
+      ) {
+        $_SESSION['username'] = $info['account'];
+        $_SESSION['eid']      = $info['eid'];
+        $_SESSION['info']     = $info;
+        header('Location:'.FILE_SELF);
+      } else {
+        $message = '<div style="color:red">Records show that you are not going to be 
+                        at Jacobs next year, therefore you do not need a room</div>';
+      }
     }
     
     if( isset($_SESSION['username']) ){

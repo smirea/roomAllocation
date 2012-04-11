@@ -153,67 +153,74 @@
         <div class="content" id="floorPlan">
           <div class="wrapper">
             <h3>Apartment Choices</h3>
-            <div class="content" style="float:left;width:35%;">
-              <ol class="room-choices">
-                <?php
-                  $q_choices = "SELECT * FROM ".TABLE_APARTMENT_CHOICES." 
-                                  WHERE group_id='${group['group_id']}'";
-                  $choices            = array_fill( 0, MAX_ROOM_CHOICES, array() );
-                  $apartment_choices  = sqlToArray( mysql_query( $q_choices ) );
-                  foreach( $apartment_choices as $row ){
-                    $choices[(int)$row['choice']][] = $row['number'];
-                  }
-                  for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
-                    echo '<li><input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" /></li>';
-                  }
-                  echo '<li style="list-style-type:none"><input type="submit" value="Save Changes!" id="choose_rooms" /></li>';
-                ?>
-              </ol>
-            </div>
-            
-            <div class="content" style="float:right;width:65%;">
-              <h3>How it works</h3>
-              <ul>
-                <li>Decide on the apartments you want</li>
-                <li>Fill in the fields with all the rooms that belong to the apartment( 1, 2 or 3 rooms depending on the apartment type ), <b style="color:red">separated with a comma</b></li>
-                <li>Make sure to fill as many options as possible, because if you do not get assigned any room, you will get one at random</li>
-                <li>You can use the floor-plan bellow to choose your rooms more easily</li>
-                <li>Just click on the apartment you want and then select it as what choice you want it to be</li>
-                <li>Also, you can change the rooms at any time while the round is open</li>
-                <li>Don't forget to hit the <b>Save Changes!</b> button!</li>
-              </ul>
-            </div>
-            
-            <div class="clearBoth"></div>
-            
-            <br />
-            <h3>Floor Plan</h3>
-            <?php
+            <?php if( count($roommates) == MAX_ROOMMATES ){ ?>
+              <div class="content" style="float:left;width:35%;">
+                <ol class="room-choices">
+                  <?php
+                    $q_choices = "SELECT * FROM ".TABLE_APARTMENT_CHOICES." 
+                                    WHERE group_id='${group['group_id']}'";
+                    $choices            = array_fill( 0, MAX_ROOM_CHOICES, array() );
+                    $apartment_choices  = sqlToArray( mysql_query( $q_choices ) );
+                    foreach( $apartment_choices as $row ){
+                      $choices[(int)$row['choice']][] = $row['number'];
+                    }
+                    for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
+                      echo '<li><input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" /></li>';
+                    }
+                    echo '<li style="list-style-type:none"><input type="submit" value="Save Changes!" id="choose_rooms" /></li>';
+                  ?>
+                </ol>
+              </div>
               
-              $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
-              $d = mysql_fetch_assoc( mysql_query( $q ) );
-              if( $d['college'] ){
-                $classes = array();
+              <div class="content" style="float:right;width:65%;">
+                <h3>How it works</h3>
+                <ul>
+                  <li>Decide on the apartments you want</li>
+                  <li>Fill in the fields with all the rooms that belong to the apartment( 1, 2 or 3 rooms depending on the apartment type ), <b style="color:red">separated with a comma</b></li>
+                  <li>Make sure to fill as many options as possible, because if you do not get assigned any room, you will get one at random</li>
+                  <li>You can use the floor-plan bellow to choose your rooms more easily</li>
+                  <li>Just click on the apartment you want and then select it as what choice you want it to be</li>
+                  <li>Also, you can change the rooms at any time while the round is open</li>
+                  <li>Don't forget to hit the <b>Save Changes!</b> button!</li>
+                </ul>
+              </div>
+              
+              <div class="clearBoth"></div>
+              
+              <br />
+              <h3>Floor Plan</h3>
+              <?php
                 
-                $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." WHERE college='${d['college']}'";
-                $taken = sqlToArray( mysql_query( $q ) );
+                $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
+                $d = mysql_fetch_assoc( mysql_query( $q ) );
+                if( $d['college'] ){
+                  $classes = array();
+                  
+                  $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." WHERE college='${d['college']}'";
+                  $taken = sqlToArray( mysql_query( $q ) );
 
-                add_class( 'taken', extract_column( 'room', $taken ), $classes );
-                add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
-                
-                $classes = array_map(function($v){return implode(' ',$v);}, $classes);
-                
-                switch( $d['college'] ){
-                  case 'Krupp':       echo renderMap( $Krupp, $classes ); break;
-                  case 'Mercator':    echo renderMap( $Mercator, $classes ); break;
-                  case 'College-III': echo renderMap( $College3, $classes ); break;
-                  case 'Nordmetall':  echo renderMap( $Nordmetall, $classes ); break;
-                  default:            echo "Unknown college: <b>${d['college']}<br />";
+                  add_class( 'taken', extract_column( 'room', $taken ), $classes );
+                  add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
+                  
+                  $classes = array_map(function($v){return implode(' ',$v);}, $classes);
+                  
+                  switch( $d['college'] ){
+                    case 'Krupp':       echo renderMap( $Krupp, $classes ); break;
+                    case 'Mercator':    echo renderMap( $Mercator, $classes ); break;
+                    case 'College-III': echo renderMap( $College3, $classes ); break;
+                    case 'Nordmetall':  echo renderMap( $Nordmetall, $classes ); break;
+                    default:            echo "Unknown college: <b>${d['college']}<br />";
+                  }
+                } else {
+                  echo 'You are not assigned to any college';
                 }
+                
+              ?>
+            <?php 
               } else {
-                echo 'You are not assigned to any college';
+                echo '<div style="color:red">You need to have "'.MAX_ROOMMATES.'" 
+                        roommate(s) for this phase in order to be eligible to apply for a room';
               }
-              
             ?>
           </div>
         </div>
@@ -230,7 +237,8 @@
         ?>
       </div>
       <div id="footer" class="message info">
-        Designed and developed by Stefan Mirea
+        Designed and developed by 
+        <a title="contact me if anything..." href="mailto:s.mirea@jacobs-university.de">Stefan Mirea</a>
       </div>
     </div>
   </body>
