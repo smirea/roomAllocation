@@ -183,7 +183,7 @@
       }
       
       if( count($invalid_rooms) > 0 ){
-        $output['error']. = '<div>You are not allowed to apply for these apartments:
+        $output['error'] .= '<div>You are not allowed to apply for these apartments:
                               <b>'.implode(', ', $invalid_rooms).'</b>.</div>';
       }
       
@@ -202,7 +202,7 @@
       mysql_query( "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='$group_id'" );
       $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,college,group_id,choice) VALUES $values";
       $output['result'] = mysql_query($q);
-      $output['error']. = mysql_error();
+      $output['error'] .= mysql_error();
       $output['info']   = 'Rooms updated successfully!';
       break;
     default: 
