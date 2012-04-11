@@ -4,3 +4,5 @@
  - fix bug with add-roommate where you are alone, send request, roommate accepts,
       you choose rooms but group_id was not updated
  - implement apartment checking on the backend
+ - grep for TODO and HACK in the folder and fix em ^.^
+ - fix the hack which allows the app to work only for groups > 1 :)
