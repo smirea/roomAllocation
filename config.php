@@ -2,13 +2,19 @@
   
   define( 'DEBUG', true );
   
+  /** Admin config */
+  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal' );
+  $admin = explode(',', ADMIN_ACCOUNTS);
+  
   /** General config */
   define( 'MAX_ROOMMATES', 1 );
   define( 'MAX_ROOM_CHOICES', 9 );
   
-  /** Admin config */
-  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal' );
-  $admin = explode(',', ADMIN_ACCOUNTS);
+  /** Bulk config */
+  define( 'STATUS_UNDERGRAD', 'undergrad' );
+  define( 'STATUS_MASTER', 'master' );
+  define( 'STATUS_PHD', 'phd' );
+  define( 'STATUS_FOUNDATION', 'foundation-year' );
   
   /** Database config */
   define( 'DB_USER', 'jPerson' );

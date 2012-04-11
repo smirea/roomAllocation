@@ -27,6 +27,7 @@ CREATE TABLE `Allocations` (
   `eid` varchar(16) NOT NULL,
   `college` varchar(16) DEFAULT NULL,
   `room` varchar(16) DEFAULT NULL,
+  `round` int(2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `eid` (`eid`),
   UNIQUE KEY `room` (`room`)

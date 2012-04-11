@@ -124,6 +124,9 @@
         
         $output['roommates']  = array_map(function($v){ return getFaceHTML($v); }, $new_roommates);
         $output['points']     = print_score( array_merge( array($_SESSION['info']), $new_roommates ) );
+        $output['info']       = 'You and <b>'.$info_to['fname'].'</b> are now roommates!
+                                  You need to reload the page in order to apply for rooms.';
+        $output['rpc']        = 'RPC.reload();';
         
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
         
@@ -152,15 +155,41 @@
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
       
-      $rooms = array();
+      $rooms          = array();
+      $invalid_rooms  = array();
       foreach( $_GET['choices'] as $k => $v ){
         if( $v && $v != '' ){
           $tmp = explode(',', $v);
           $tmp = array_map( 'trim', $tmp );
-          $rooms[] = $tmp;
+          if( count($tmp) != MAX_ROOMMATES+1 ){
+            $invalid_rooms[] = "($v)";
+          } else {
+            $rooms[] = $tmp;
+          }
         }
       }
       
+      $q_taken = "SELECT room 
+                  FROM ".TABLE_ALLOCATIONS."
+                  WHERE college='$college' 
+                  AND room IN ('".$implode("','",$rooms)."')";
+      $taken = extract_column('eid', sqlToArray( mysql_query( $q_taken ) ) );
+      
+      if( count($taken) > 0 ){
+        $intersect = array_intersect( $rooms, $taken );
+        $output['error'] .= '<div>The following rooms are already taken by someone else:
+                              '.implode(', ',$intersect).'.
+                            </div>';
+      }
+      
+      if( count($invalid_rooms) > 0 ){
+        $output['error']. = '<div>You are not allowed to apply for these apartments:
+                              <b>'.implode(', ', $invalid_rooms).'</b>.</div>';
+      }
+      
+      e_assert( $output['error'] == '', $output['error'] );
+      
+      $rooms    = array_unique( $rooms );
       $group_id = $_SESSION['info']['group_id'];
       $values   = array();
       foreach( $rooms as $k => $v ){
@@ -173,7 +202,7 @@
       mysql_query( "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='$group_id'" );
       $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,college,group_id,choice) VALUES $values";
       $output['result'] = mysql_query($q);
-      $output['error']  = mysql_error();
+      $output['error']. = mysql_error();
       $output['info']   = 'Rooms updated successfully!';
       break;
     default: 

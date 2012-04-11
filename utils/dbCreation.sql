@@ -30,6 +30,7 @@ CREATE TABLE Allocations(
   `eid` VARCHAR(16) NOT NULL,
   `college` VARCHAR(16),
   `room` VARCHAR(16),
+  `round` INT(2),
   UNIQUE KEY(eid),
   UNIQUE KEY(room)
 ) ENGINE = MYISAM ;
