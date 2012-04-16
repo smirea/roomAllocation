@@ -9,6 +9,8 @@
 ?>
 <html>
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
     <link rel="stylesheet" type="text/css" href="css/html5cssReset.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/messages.css" />
@@ -43,6 +45,7 @@
             $eid    = $_SESSION['info']['eid'];
             $group      = group_info( $eid );
             $roommates  = get_roommates( $eid, $group['group_id'] );
+            $points     = get_points( array_merge( array($info), $roommates ) );
             
         ?>
         <div style="float:left;width:50%;" class="content">
@@ -78,7 +81,7 @@
                     }
                   }
                   */
-                  echo print_score( array_merge( array($info), $roommates ) );
+                  echo print_score( array_merge( array($info), $roommates ), $points );
               ?>
             </div>
           </div>
@@ -153,7 +156,14 @@
         <div class="content" id="floorPlan">
           <div class="wrapper">
             <h3>Apartment Choices</h3>
-            <?php if( count($roommates) == MAX_ROOMMATES ){ ?>
+            <?php 
+              if( $points['total'] < MIN_POINTS || $points['total'] > MAX_POINTS ){
+                echo '<div style="color:red">
+                        You need to have between '.MIN_POINTS.' and '.MAX_POINTS.'
+                        total points in order to be eligible for this round
+                      </div>';
+              } else if( count($roommates) == MAX_ROOMMATES ){ 
+            ?>
               <div class="content" style="float:left;width:35%;">
                 <ol class="room-choices">
                   <?php

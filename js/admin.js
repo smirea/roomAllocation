@@ -39,3 +39,10 @@ $(function(){
   });
   
 }); 
+
+function setView( link, $element ){
+  $('.view').hide();
+  $element.show();
+  $(link).siblings().removeClass('selected');
+  $(link).addClass('selected');
+}

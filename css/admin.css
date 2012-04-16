@@ -8,6 +8,11 @@ h3{
   text-indent   : 5px;
 }
 
+#menu .selected{
+  font-weight : bold;
+  color       : #000;
+}
+
 .group{
   border      : 1px solid #ccc;
   background  : #fff;
@@ -33,7 +38,7 @@ h3{
 
 .allocation-table{
   border      : 1px solid #ccc;
-  background  : #fff;
+  bayckground  : #fff;
   margin      : 5px auto;
   padding     : 2px;
 }

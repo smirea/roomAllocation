@@ -12,6 +12,8 @@
 ?>
 <html>
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  
     <link rel="stylesheet" type="text/css" href="css/html5cssReset.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/messages.css" />
@@ -37,7 +39,15 @@
         if( !IS_ADMIN ) 
           exit( "<b style=\"color:red\">You do not have permissions to access this page</b>" );
 
-        echo ' [ <a href="javascript:void(0)" onclick="$(\'.allocation-table\').toggle();$(\'.college-floorPlan\').toggle();">Toggle View</a> ]';
+        ?>
+        
+        <div id="menu">
+          [ <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> ]
+          [ <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> ]
+          [ <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> ]
+        </div>
+        
+        <?php
           
         echo '<h3>Mercator College</h3>';
         print_floorPlan( 'Mercator', $Mercator );

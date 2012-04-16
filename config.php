@@ -9,6 +9,8 @@
   /** General config */
   define( 'MAX_ROOMMATES', 1 );
   define( 'MAX_ROOM_CHOICES', 9 );
+  define( 'MIN_POINTS', 1 );
+  define( 'MAX_POINTS', 7 );
   
   /** Bulk config */
   define( 'STATUS_UNDERGRAD', 'undergrad' );
