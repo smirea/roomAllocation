@@ -42,9 +42,10 @@
           if( LOGGED_IN ){
             
             /** Set some info */
-            $eid    = $_SESSION['info']['eid'];
+            $eid        = $_SESSION['info']['eid'];
             $group      = group_info( $eid );
             $roommates  = get_roommates( $eid, $group['group_id'] );
+            $info       = $_SESSION['info'];
             $points     = get_points( array_merge( array($info), $roommates ) );
             
         ?>
@@ -52,8 +53,6 @@
           <div class="wrapper">
             <h3>Profile</h3>
             <?php
-                $q = "SELECT * FROM ".TABLE_PEOPLE." WHERE eid='$eid'";
-                $info = mysql_fetch_assoc( mysql_query( $q ) );
                 echo getFaceHTML( $info );
             ?>
             
