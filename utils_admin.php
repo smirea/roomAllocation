@@ -206,7 +206,7 @@
     foreach( $random as $group_number ){
       $size = count( $groups[$group_number] );
       $counter = 0;
-      $fn_apartment = $college != 'Nordmetall' ? get_apartment : get_apartment_NM;
+      $fn_apartment = $college != 'Nordmetall' ? 'get_apartment' : 'get_apartment_NM';
       while( ($apartment = $fn_apartment(array_rand($rooms))) && count($apartment) != $size ){
         if( ++$counter > $break_limit ) {
           echo '<div style="color:red">Loop limit exceeded in '.__FILE__.':'.__LINE__.'</div>';
