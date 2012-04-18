@@ -1,5 +1,22 @@
 <?php
+/***************************************************************************\
+    This file is part of RoomAllocation.
 
+    RoomAllocation is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Foobar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+\***************************************************************************/
+?>
+<?
   $WorldRegions = array(
     'North America'       => array('Canada','United States', 'USA'),
     'Latin America'       => array('Argentina','Bahamas','Barbados','Belize','Bolivia','Brazil','Chile','Colombia','Costa Rica','Cuba','Dominican Republic','Ecuador','El Salvador','Grenada','Guatemala','Guyana','Haiti','Honduras','Jamaica','Mexico','Nicaragua','Panama','Paraguay','Peru','Saint Vincent & the Grenadines','St Kitts & Nevis','St Lucia','Suriname','Trinidad & Tobago','Trinidad and Tobago','Uruguay','Venezuela'),
