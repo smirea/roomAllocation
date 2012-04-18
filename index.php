@@ -248,11 +248,13 @@
           }
         ?>
       </div>
+      
       <div id="footer" class="message info">
         <span style="float:left">(C) 2012 code4fun.de</span>
         Designed and developed by 
         <a title="contact me if anything..." href="mailto:s.mirea@jacobs-university.de">Stefan Mirea</a>
       </div>
+      
     </div>
   </body>
 </html>

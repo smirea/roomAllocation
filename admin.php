@@ -32,7 +32,7 @@
   
   <body>
     
-    <div id="main-admin">
+    <div id="main-admin" class="content">
       <?php 
         require_once 'login.php'; 
         
@@ -69,69 +69,90 @@
         ?>
         
         <div class="view" id="admin-config">
+          <div class="wrapper">
           <h3>General configuration</h3>
-          <form action="admin.php" method="post">
-            <input type="hidden" name="postback" value="1" />
-            <input type="hidden" name="action" value="config" />
-            <?php
-              $fields = array(
-                'Is round open'           => 'round.active/bool',
-                'Max allowed roommates'   => 'roommates.max/int',
-                'Min required roommates'  => 'roommates.min/int',
-                'Max number of choices'   => 'apartment.choices/int',
-                'Minimum points required' => 'points.min/int',
-                'Maximum points required' => 'points.max/int'
-              );
-              $h = array();
-              foreach( $fields as $label => $properties ){
-                list( $key, $type ) = explode( '/', $properties );
-                $field  = '';
-                $name   = "config-$key";
-                $form_attr = 'name="'.$name.'" value="'.C($key).'"';
-                switch( $type ){
-                  case 'int':
-                    $field = '<input type="text" maxlength="2" size="1" '.$form_attr.' />';
-                    break;
-                  case 'bool':
-                    $s = 'selected="selected"';
-                    $field = '<select name='.$name.'>
-                        <option value="1" '.((int)$value?$s:'').'>true</option>
-                        <option value="0" '.((int)$value?'':$s).'>false</option>
-                      </select>';
-                    break;
-                  default:
-                  case 'string':
-                    $field = '<input type="text" '.$form_attr.' />';
-                    break;
+            <form action="admin.php" method="post" class="wrapper">
+              <input type="hidden" name="postback" value="1" />
+              <input type="hidden" name="action" value="config" />
+              <?php
+                $fields = array(
+                  'Is round open'           => 'round.active/bool',
+                  'Max allowed roommates'   => 'roommates.max/int',
+                  'Min required roommates'  => 'roommates.min/int',
+                  'Max number of choices'   => 'apartment.choices/int',
+                  'Minimum points required' => 'points.min/int',
+                  'Maximum points required' => 'points.max/int'
+                );
+                $h = array();
+                foreach( $fields as $label => $properties ){
+                  list( $key, $type ) = explode( '/', $properties );
+                  $field  = '';
+                  $name   = "config-$key";
+                  $form_attr = 'name="'.$name.'" value="'.C($key).'"';
+                  switch( $type ){
+                    case 'int':
+                      $field = '<input type="text" maxlength="2" size="1" '.$form_attr.' />';
+                      break;
+                    case 'bool':
+                      $s = 'selected="selected"';
+                      $field = '<select name='.$name.'>
+                          <option value="1" '.((int)$value?$s:'').'>true</option>
+                          <option value="0" '.((int)$value?'':$s).'>false</option>
+                        </select>';
+                      break;
+                    default:
+                    case 'string':
+                      $field = '<input type="text" '.$form_attr.' />';
+                      break;
+                  }
+                  $h[] = "<tr><td>$label</td><td style=\"text-align:right\">$field</td></tr>";
                 }
-                $h[] = "<tr><td>$label</td><td style=\"text-align:right\">$field</td></tr>";
-              }
-              echo '
-                <table>
-                  '.implode("\n",$h).'
-                  <tr>
-                    <td colspan="2" style="text-align:right">
-                      <input type="submit" value="Update" />
-                    </td>
-                  </tr>
-                </table>';
-            ?>
-          </form>
+                echo '
+                  <table>
+                    '.implode("\n",$h).'
+                    <tr>
+                      <td colspan="2" style="text-align:right">
+                        <input type="submit" value="Update" />
+                      </td>
+                    </tr>
+                  </table>';
+              ?>
+            </form>
+          </div>
         </div>
         
         <?php
-          echo '<h3>Mercator College</h3>';
-          print_floorPlan( 'Mercator', $Mercator );
+          echo '
+            <div class="wrapper">
+              <h3>Mercator College</h3>
+              '.print_floorPlan( 'Mercator', $Mercator ).'
+            </div>';
           
-          echo '<h3>Krupp College</h3>';
-          print_floorPlan( 'Krupp', $Krupp );
+          echo '
+            <div class="wrapper">
+              <h3>Krupp College</h3>
+              '.print_floorPlan( 'Krupp', $Krupp ).'
+            </div>';
           
-          echo '<h3>College-III</h3>';
-          print_floorPlan( 'College-III', $College3 );
+          echo '
+            <div class="wrapper">
+              <h3>College-III</h3>
+              '.print_floorPlan( 'College-III', $College3 ).'
+            </div>';
           
-          echo '<h3>Nordmetall</h3>';
-          echo '<div class="view college-floorPlan">No visual floor-plan available for Nordmetall, sorry</div>';
+          echo '
+            <div class="wrapper">
+              <h3>Nordmetall</h3>
+              <div class="view college-floorPlan">No visual floor-plan available for Nordmetall, sorry</div>
+            </div>';
         ?>
+      
+      <div id="footer" class="message info">
+        <span style="float:left">(C) 2012 code4fun.de</span>
+        Designed and developed by 
+        <a title="contact me if anything..." href="mailto:s.mirea@jacobs-university.de">Stefan Mirea</a>
+      </div>
+      
     </div>
     
   </body>
