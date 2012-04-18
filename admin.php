@@ -41,11 +41,11 @@
 
         ?>
         
-        <div id="menu">
-          [ <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a> ] | 
-          [ <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> ]
-          [ <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> ]
-          [ <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> ]
+        <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
+          <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a> |
+          <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
+          <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
+          <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a>
         </div>
         
         <?php
@@ -69,6 +69,7 @@
         ?>
         
         <div class="view" id="admin-config">
+          <h3>General configuration</h3>
           <form action="admin.php" method="post">
             <input type="hidden" name="postback" value="1" />
             <input type="hidden" name="action" value="config" />

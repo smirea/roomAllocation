@@ -161,13 +161,15 @@
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
       
+      $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
+      
       $rooms          = array();
       $invalid_rooms  = array();
       foreach( $_GET['choices'] as $k => $v ){
         if( $v && $v != '' ){
           $tmp = explode(',', $v);
           $tmp = array_map( 'trim', $tmp );
-          if( count($tmp) != MAX_ROOMMATES+1 ){
+          if( count($tmp) != MAX_ROOMMATES+1 || count($roommates)+1 != count($tmp) ){
             $invalid_rooms[] = "($v)";
           } else {
             $rooms[] = $tmp;

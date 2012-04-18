@@ -9,6 +9,9 @@
     return $college['college'];
   }
   
+  /**
+   * Get all roommates of a person from a group
+   */
   function get_roommates( $eid, $group_id ){
     $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i 
             WHERE i.group_id='$group_id' 

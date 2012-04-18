@@ -116,13 +116,13 @@ HTML;
   
   function trunk( $phone_start, $room_start ){
     $phones = array(
-      appartment_pattern( 4, $phone_start, 0, -1 ),
-      array_reverse( appartment_pattern( 4, $phone_start-8, 0, -1 ) )
+      apartment_pattern( 4, $phone_start, 0, -1 ),
+      array_reverse( apartment_pattern( 4, $phone_start-8, 0, -1 ) )
     );
     
     $numbers = array(
-      appartment_pattern( 4, $room_start, -2, -1 ),
-      array_reverse( appartment_pattern( 4, $room_start-16, -2, -1 ) ) 
+      apartment_pattern( 4, $room_start, -2, -1 ),
+      array_reverse( apartment_pattern( 4, $room_start-16, -2, -1 ) ) 
     );
     
     return array(
@@ -182,7 +182,7 @@ HTML;
   /**
    * @brief Generates an array with values for a floor
    */
-  function appartment_pattern( $apartments, $start, $skip = 0, $increment = 0 ){
+  function apartment_pattern( $apartments, $start, $skip = 0, $increment = 0 ){
     $res = array();
     for( $i=0; $i<$apartments*2; ++$i ){
       $res[] = $start + ($i*$increment) + $skip * floor($i/2);
@@ -206,6 +206,56 @@ HTML;
       $result[] = array( $arr_1[$i], $arr_2[$i] );
     }
     return $result;
+  }
+  
+  /** NORDMETALL FUNCTIONS **/
+  
+  function NM_apartments_to_rooms( array $apartments ){
+    $rooms = array();
+    foreach( $apartments as $ap ){
+      foreach( $ap as $room ){
+        $rooms[] = $room;
+      }
+    }
+    return $rooms;
+  }
+  
+  function NM_B_upper_floor( $number ){
+    $number *= 100;
+    $tmp = array(
+      apartment_pattern( 5, ($number+02), 2, 1 ),
+      apartment_pattern( 4, ($number+26), 2, 1 ),
+      apartment_pattern( 2, ($number+46), 2, 1 ),
+      apartment_pattern( 4, ($number+62), 2, 1 ),
+      apartment_pattern( 5, ($number+80), 2, 1 )
+    );
+    $apartments = array();
+    foreach( $tmp as $room ){
+      $chunked = array_chunk( $room, 2 );
+      foreach( $chunked as $ap ){
+        $apartments[] = array_map(function($v){return "B-$v";}, $ap);
+      }
+    }
+    return $apartments;
+  }
+  
+  function NM_B_ground_floor(){
+    $number = 100;
+    $tmp = array(
+      apartment_pattern( 5, ($number+02), 2, 1 ),
+      apartment_pattern( 4, ($number+26), 2, 1 ),
+      apartment_pattern( 2, ($number+46), 2, 1 ),
+      apartment_pattern( 4, ($number+62), 2, 1 ),
+      apartment_pattern( 5, ($number+80), 2, 1 )
+    );
+    $apartments = array();
+    foreach( $tmp as $room ){
+      $chunked = array_chunk( $room, 2 );
+      foreach( $chunked as $ap ){
+        $apartments[] = array_map(function($v){return "B-$v";}, $ap);
+      }
+    }
+    return $apartments;
   }
   
 ?>
