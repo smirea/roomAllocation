@@ -31,6 +31,9 @@
       if( ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
           || ($info['status'] == STATUS_FOUNDATION && $info['year'] == $min_year)
       ) {
+        $college  = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='${info['eid']}'";
+        $college  = mysql_fetch_assoc( mysql_query( $college ) );
+        $college  = $college['college'];
         $_SESSION['username'] = $info['account'];
         $_SESSION['eid']      = $info['eid'];
         $_SESSION['info']     = $info;

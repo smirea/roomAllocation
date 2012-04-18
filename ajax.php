@@ -165,6 +165,7 @@
       
       $rooms          = array();
       $invalid_rooms  = array();
+      $bitmask        = array();
       foreach( $_GET['choices'] as $k => $v ){
         if( $v && $v != '' ){
           $tmp = explode(',', $v);
@@ -172,7 +173,12 @@
           if( count($tmp) != MAX_ROOMMATES+1 || count($roommates)+1 != count($tmp) ){
             $invalid_rooms[] = "($v)";
           } else {
-            $rooms[] = $tmp;
+            sort($tmp);
+            $hash = implode(',',$tmp);
+            if( !isset($bitmask[$hash]) ){
+              $rooms[] = $tmp;
+              $bitmask[$hash] = true;
+            }
           }
         }
       }

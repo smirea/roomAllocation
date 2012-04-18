@@ -173,10 +173,35 @@
                     foreach( $apartment_choices as $row ){
                       $choices[(int)$row['choice']][] = $row['number'];
                     }
-                    for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
-                      echo '<li>';
-                      echo '<input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" />';
-                      echo '</li>';
+                    foreach( $choices as $number => $value ){
+                      sort( $choices[$number] );
+                    }
+                    if( $info['college'] == 'Nordmetall' ){
+                      $hash       = function($v){ sort($v); return implode(',', $v); };
+                      $nm         = $Nordmetall_apartments;
+                      $nm         = array_map($hash, $nm);
+                      $choice_map = array_flip( array_map($hash, $choices) );
+                      for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
+                        echo '<li>';
+                        echo '<select name="choice[]" id="input-room-choice-'.$i.'">';
+                        echo '<option></option>';
+                        foreach( $nm as $apartment ){
+                          $selected = '';
+                          if( isset($choice_map[$apartment]) && $choice_map[$apartment] == $i ){
+                            $selected = 'selected="selected"';
+                          }
+                          echo '<option '.$selected.'>'.$apartment.'</option>';
+                        }
+                        //    <input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" />
+                        echo '</select>';
+                        echo '</li>';
+                      }
+                    } else {
+                      for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
+                        echo '<li>';
+                        echo '<input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" />';
+                        echo '</li>';
+                      }
                     }
                     echo '<li style="list-style-type:none"><input type="submit" value="Save Changes!" id="choose_rooms" /></li>';
                   ?>
@@ -187,47 +212,63 @@
                 <h3>How it works</h3>
                 <ul>
                   <li>Decide on the apartments you want</li>
-                  <li>Fill in the fields with all the rooms that belong to the apartment( 1, 2 or 3 rooms depending on the apartment type ), <b style="color:red">separated with a comma</b></li>
-                  <li>Make sure to fill as many options as possible, because if you do not get assigned any room, you will get one at random</li>
+                  <?php if( $info['college'] != 'Nordmetall' ){ ?>
+                  <li>
+                    Fill in the fields with all the rooms that belong 
+                    to the apartment( 1, 2 or 3 rooms depending on the 
+                    apartment type ), <b style="color:red">separated with a comma</b>
+                  </li>
                   <li>You can use the floor-plan bellow to choose your rooms more easily</li>
-                  <li>Just click on the apartment you want and then select it as what choice you want it to be</li>
+                  <li>
+                    Just click on the apartment you want 
+                    and then select it as what choice you want it to be
+                  </li>
+                  <?php } ?>
+                  <li>
+                    Make sure to fill as many options as possible, 
+                    because if you do not get assigned any room, 
+                    you will get one at random
+                  </li>
                   <li>Also, you can change the rooms at any time while the round is open</li>
-                  <li>Don't forget to hit the <b>Save Changes!</b> button!</li>
+                  <li><b>Don't forget</b> to hit the <b>Save Changes!</b> button!</li>
                 </ul>
               </div>
               
               <div class="clearBoth"></div>
               
-              <br />
-              <h3>Floor Plan</h3>
-              <?php
-                
-                $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
-                $d = mysql_fetch_assoc( mysql_query( $q ) );
-                if( $d['college'] ){
-                  $classes = array();
+              <?php if($info['college'] != 'Nordmetall'){ ?>
+                <br />
+                <h3>Floor Plan</h3>
+                <?php
                   
-                  $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
-                              WHERE college='${d['college']}' AND room IS NOT NULL";
-                  $taken = sqlToArray( mysql_query( $q_taken ) );
+                  $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
+                  $d = mysql_fetch_assoc( mysql_query( $q ) );
+                  if( $d['college'] ){
+                    $classes = array();
+                    
+                    $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
+                                WHERE college='${d['college']}' AND room IS NOT NULL";
+                    $taken = sqlToArray( mysql_query( $q_taken ) );
 
-                  add_class( 'taken', extract_column( 'room', $taken ), $classes );
-                  add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
-                  
-                  $classes = array_map(function($v){return implode(' ',$v);}, $classes);
-                  
-                  switch( $d['college'] ){
-                    case 'Krupp':       echo renderMap( $Krupp, $classes ); break;
-                    case 'Mercator':    echo renderMap( $Mercator, $classes ); break;
-                    case 'College-III': echo renderMap( $College3, $classes ); break;
-                    case 'Nordmetall':  echo renderMap( $Nordmetall, $classes ); break;
-                    default:            echo "Unknown college: <b>${d['college']}<br />";
+                    add_class( 'taken', extract_column( 'room', $taken ), $classes );
+                    add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
+                    
+                    $classes = array_map(function($v){return implode(' ',$v);}, $classes);
+                    
+                    switch( $d['college'] ){
+                      case 'Krupp':       echo renderMap( $Krupp, $classes ); break;
+                      case 'Mercator':    echo renderMap( $Mercator, $classes ); break;
+                      case 'College-III': echo renderMap( $College3, $classes ); break;
+                      //case 'Nordmetall':  echo renderMap( $Nordmetall, $classes ); break;
+                      default:            echo "Unknown college: <b>${d['college']}<br />";
+                    }
+                  } else {
+                    echo 'You are not assigned to any college';
                   }
-                } else {
-                  echo 'You are not assigned to any college';
-                }
-                
-              ?>
+                  
+                ?>
+              <?php } ?>
+              
             <?php 
               } else {
                 echo '<div style="color:red">You need to have "'.MAX_ROOMMATES.'" 

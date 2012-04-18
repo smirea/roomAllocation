@@ -42,10 +42,10 @@
         ?>
         
         <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
-          <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a> |
           <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
           <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
-          <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a>
+          <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> |
+          <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a>
         </div>
         
         <?php
@@ -143,7 +143,7 @@
           echo '
             <div class="wrapper">
               <h3>Nordmetall</h3>
-              <div class="view college-floorPlan">No visual floor-plan available for Nordmetall, sorry</div>
+              '.print_floorPlan( 'Nordmetall', $Nordmetall ).'
             </div>';
         ?>
       

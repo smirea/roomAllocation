@@ -66,7 +66,7 @@
     
     /** compute final result */
     list( $allocations, $random ) = allocate_rooms( $rooms, $choice, $total );
-    $new_allocations = allocate_random_rooms( $allocations, $random, $groups, $Map );
+    $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
     $allocations = array_merge( $allocations, $new_allocations );
     
     /** determine ambiguous */
@@ -95,6 +95,9 @@
       );
     }
     
+    /** RETURN HTML **/
+    $h = '';
+    
     /** Print groups */
     foreach( $groups as $group_id => $eids ){
       $faces = array();
@@ -103,7 +106,7 @@
         $faces[]  = getFaceHTML( $people[$eid] );
         $emails[] = $people[$eid]['email'];
       }
-      echo '
+      $h .= '
         <div class="group" id="group-'.$group_id.'" style="display:none">
           <h4>
             Total: <b>'.$total[$group_id].'</b> 
@@ -124,21 +127,29 @@
     $table        = allocation_table( $rooms, $groups, $people, $points, $total );
     $final_table  = allocation_table( $allocations, $groups, $people, $points, $total );
 
-    echo '
+    $h .= '
       <table cellspacing="0" cellpadding="0" id="allocation-table-'.$college.'" class="allocation-table display-floorPlan view" style="display:none;">
         '.$table.'
       </table>
     ';
     
-    echo '
+    $h .= '
       <table cellspacing="0" cellpadding="0" id="final-allocation-table-'.$college.'" class="allocation-table display-final view" style="display:none;">
         '.$final_table.'
       </table>
     ';
     
-    echo '<div class="college-floorPlan view" id="floorPlan-'.$college.'">'.
-            renderMap( $Map, $classes, $arguments ).
-          '</div>';
+    $h .= '<div class="college-floorPlan view" id="floorPlan-'.$college.'">';
+    if( $college != 'Nordmetall' ){
+      $h .=  renderMap( $Map, $classes, $arguments );
+    } else {
+      $h .= '<div class="view college-floorPlan">
+              No visual floor-plan available for Nordmetall, sorry
+            </div>';
+    }
+    $h .= '</div>';
+    
+    return $h;
   }
   
   function allocation_table( $rooms, $groups, $people, $points, $total ){
@@ -177,13 +188,14 @@
   /**
    * @brief Assign the groups that did not get any of their choices to a random apartment
    * @warning This function is based on the fact that ALL groups in a round have the same size
+   * @param {string} $college
    * @param {array} $allocations
    * @param {array} $groups
    * @param {array} $random
    * @param {array} $Map
    * @returns {array} the new assigned rooms to the $random groups
    */
-  function allocate_random_rooms( array $allocations, array $random, $groups, array $Map ){
+  function allocate_random_rooms( $college, array $allocations, array $random, $groups, array $Map ){
     $rooms = map_to_list( $Map );
     // delete the taken rooms from the list
     foreach( $allocations as $room_number => $group_number ){
@@ -194,7 +206,8 @@
     foreach( $random as $group_number ){
       $size = count( $groups[$group_number] );
       $counter = 0;
-      while( ($apartment = get_apartment(array_rand($rooms))) && count($apartment) != $size ){
+      $fn_apartment = $college != 'Nordmetall' ? get_apartment : get_apartment_NM;
+      while( ($apartment = $fn_apartment(array_rand($rooms))) && count($apartment) != $size ){
         if( ++$counter > $break_limit ) {
           echo '<div style="color:red">Loop limit exceeded in '.__FILE__.':'.__LINE__.'</div>';
           break;
@@ -246,6 +259,25 @@
     }
   }
   
+  /**
+   * @brief Returns all room numbers in the apartment with the given room
+   * @param {string} $number  The given room number
+   * @returns {array}
+   */
+  function get_apartment_NM( $number ){
+    list( $block, $number ) = explode('-', $number);
+    $number = (int)$number;
+    if( $number % 2 == 0 ){
+      return array( "$block-$number", "$block-".($number+1) );
+    } else {
+      return array( "$block-$number", "$block-".($number-1) );
+    }
+  }
+  
+  /**
+   * @brief
+   *
+   */
   function allocate_rooms( array $rooms, array $choice, array $total ){
     $allocated    = array();   // maps: room_number -> group_id
     $unallocated  = array();

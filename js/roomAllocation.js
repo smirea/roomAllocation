@@ -221,7 +221,7 @@ var RPC = {
         });
       $('#choose_rooms')
         .bind('click.chooseRooms', function(){
-          var choices = $('.room-choices input[name="choice[]"]')
+          var choices = $('.room-choices [name="choice[]"]')
                           .map(function(i,v){ return $(this).val(); })
                           .get();
           $.get( ajax_file, {
