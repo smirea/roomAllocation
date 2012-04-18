@@ -1,38 +1,58 @@
 <?php
-  
   define( 'DEBUG', true );
   
   /** Admin config */
   define( 'ADMIN_ACCOUNTS', 'smirea,kgalal' );
   $admin = explode(',', ADMIN_ACCOUNTS);
   
-  /** General config */
-  define( 'MAX_ROOMMATES', 1 );
-  define( 'MAX_ROOM_CHOICES', 9 );
-  define( 'MIN_POINTS', 1 );
-  define( 'MAX_POINTS', 7 );
-  
   /** Bulk config */
-  define( 'STATUS_UNDERGRAD', 'undergrad' );
-  define( 'STATUS_MASTER', 'master' );
-  define( 'STATUS_PHD', 'phd' );
-  define( 'STATUS_FOUNDATION', 'foundation-year' );
+  define( 'DYNAMIC_CONFIG_FILE', '__config_d.php' );
+  
+  define( 'STATUS_UNDERGRAD',   'undergrad' );
+  define( 'STATUS_MASTER',      'master' );
+  define( 'STATUS_PHD',         'phd' );
+  define( 'STATUS_FOUNDATION',  'foundation-year' );
   
   /** Database config */
   define( 'DB_USER', 'jPerson' );
   define( 'DB_PASS', 'jacobsRulz' );
   define( 'DB_NAME', 'RoomAllocation' );
   
-  define( 'TABLE_ALLOCATIONS', 'Allocations' );
-  define( 'TABLE_APARTMENT_CHOICES', 'Apartment_Choices' );
-  define( 'TABLE_PEOPLE', 'People' );
-  define( 'TABLE_REQUESTS', 'Requests' );
-  define( 'TABLE_GROUPS', 'Groups' );
-  define( 'TABLE_IN_GROUP', 'InGroup' );
+  define( 'TABLE_ALLOCATIONS',        'Allocations' );
+  define( 'TABLE_APARTMENT_CHOICES',  'Apartment_Choices' );
+  define( 'TABLE_PEOPLE',             'People' );
+  define( 'TABLE_REQUESTS',           'Requests' );
+  define( 'TABLE_GROUPS',             'Groups' );
+  define( 'TABLE_IN_GROUP',           'InGroup' );
 
   dbConnect( DB_USER, DB_PASS, DB_NAME );
   
   session_start();
+  
+  /******************
+  ***** INCLUDES ****
+  ******************/
+  
+  if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
+    file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
+    C( 'round.active',      true );
+    C( 'roommates.min',     1 );
+    C( 'roommates.max',     1 );
+    C( 'apartment.choices', 9 );
+    C( 'points.min',        1 );
+    C( 'points.max',        7 );
+  }
+  require_once( DYNAMIC_CONFIG_FILE );
+  
+  /******************
+  ***** GENERAL *****
+  ******************/
+  
+  /** General config */
+  define( 'MAX_ROOMMATES',    C('roommates.max') );
+  define( 'MAX_ROOM_CHOICES', C('apartment.choices') );
+  define( 'MIN_POINTS',       C('points.min') );
+  define( 'MAX_POINTS',       C('points.max') );
   
   /******************
   ******* URLS ******
@@ -51,7 +71,56 @@
   /******************
   ****** HELPER  ****
   ******************/
+  
+  /**
+   *
+   * @todo make this multi-level (just like in vanilla forums)
+   */
+  function C( $key, $value = null ){
+    global $configuration;
+    if( !$key ){
+      return null;
+    } else if( $value !== null ){
+      $v = $value;
+      if( is_string( $v ) ){
+        $v = "'$v'";
+      } else if( is_bool( $v ) ){
+        $v = $v ? 'true' : 'false';
+      }
+      $configuration[$key] = $v;
+      file_put_contents( DYNAMIC_CONFIG_FILE, '<?php
+/**
+ * Dynamically generated config file
+ * Check config.php for more information
+ * last edited on '.date('d.m.Y').' at '.date('h:M:S').'
+ */
+ 
+'.serialize_array( $configuration, 'configuration' ).'
 
+/** ************************************ **/
+?>');
+    } else {
+      return isset($configuration[$key]) ? $configuration[ $key ] : null;
+    }
+  }
+  
+  /**
+   * Creates the string representation of the array so it can be included afterwards
+   * @param {array} $array
+   * @param {string} $name
+   * @todo make this recursive
+   * @return {string}
+   */
+  function serialize_array( array $array, $name ){
+    $h = array();
+    $h[] = "\$$name = array();";
+    foreach( $array as $key => $value ){
+      if( !is_numeric( $key ) ) $key = "'$key'";
+      $h[] = '$'.$name."[$key] = $value;";
+    }
+    return implode("\n", $h);
+  }
+  
   /**
    * @brief check if an array is associative or not
    * @param {array} $array

@@ -38,6 +38,8 @@ $(function(){
     }
   });
   
+  $('#menu a').eq(0).trigger('click');
+  
 }); 
 
 function setView( link, $element ){

@@ -51,6 +51,7 @@
       }
       break;
     case 'addRoommate':
+      e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to       = $_GET['eid'];
       $q_hasRoom    = "SELECT id from ".TABLE_ALLOCATIONS." WHERE (eid='$eid' OR eid='$eid_to') AND college IS NOT NULL AND room IS NOT NULL";
@@ -74,6 +75,7 @@
       $output['success']  = 'Roommate request sent successfully!';
       break;
     case 'requestSent':
+      e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
       $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
@@ -82,6 +84,7 @@
       $output['error']  = mysql_error();
       break;
     case 'requestReceived':
+      e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
       
@@ -153,6 +156,7 @@
       $output['result'] = getFaceHTML( $_GET );
       break;
     case 'chooseRooms':
+      e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'choices' );
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");

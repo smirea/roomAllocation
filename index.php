@@ -63,8 +63,8 @@
               <input type="text" id="search" placeholder="start typing your roommate's name..." />
               <input type="submit" id="addRoommate" value="Add" />
             </form>
-            
             <br />
+            
             <h3>Points</h3>
             <div id="total-points">
               <?php
@@ -174,7 +174,9 @@
                       $choices[(int)$row['choice']][] = $row['number'];
                     }
                     for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
-                      echo '<li><input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" /></li>';
+                      echo '<li>';
+                      echo '<input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" />';
+                      echo '</li>';
                     }
                     echo '<li style="list-style-type:none"><input type="submit" value="Save Changes!" id="choose_rooms" /></li>';
                   ?>
