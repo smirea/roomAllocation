@@ -27,7 +27,7 @@ var sendResponse;
  *  a.k.a. the interface available to the backend
  */
 var RPC = {
-  reload  : function(){ alert('wtf');window.location.reload(); },
+  reload  : function(){ window.location.reload(); },
   updatePoints  : function(){
     
   }
