@@ -17,6 +17,10 @@ body{
   margin  : 10px 0 0 0;
 }
 
+.view{
+  display : none;
+}
+
 .group{
   border      : 1px solid #ccc;
   background  : #fff;
