@@ -318,7 +318,8 @@
                     $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
                                 WHERE college='${d['college']}' AND room IS NOT NULL";
                     $taken = sqlToArray( mysql_query( $q_taken ) );
-
+                    
+                    add_class( 'available', $allowed_rooms[$d['college']], $classes );
                     add_class( 'taken', extract_column( 'room', $taken ), $classes );
                     add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
                     

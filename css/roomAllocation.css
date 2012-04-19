@@ -192,10 +192,10 @@ body{
   cursor  : pointer;
 }
 .room.selected{
-  background  : orange;
+  background  : orange!important;
 }
 .room.chosen{
-  background  : lightgreen;
+  background  : lightgreen!important;
   font-weight : bold;
 }
 .room.ambiguous{
@@ -204,6 +204,9 @@ body{
 }
 .room.taken{
   background  : #ddd;
+}
+.room.available{
+  background  : yellow;
 }
 .room .person{
   display : none;

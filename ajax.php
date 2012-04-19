@@ -21,7 +21,9 @@
   require_once 'config.php';
   require_once 'class.Search.php';
   require_once 'utils.php';
-  
+
+  recursive_escape( $_GET );
+
   $Search = new Search( array( 'fname', 'lname' ) );
   
   define('MIN_LIMIT', 2);
@@ -153,7 +155,10 @@
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
         
         $q = "DELETE FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";
-        $output['result']     = mysql_query( $q );
+        $output['result'] = mysql_query( $q );
+        
+        $q = "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='".$_SESSION['info']['group_id']."'";
+        @mysql_query( $q );
         
         /* NOTE:  must check if limit is reach and all that bull
         $q    = "SELECT eid FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";

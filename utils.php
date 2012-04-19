@@ -21,6 +21,17 @@
   require_once 'config.php';
   require_once 'WorldRegions.php';
   
+  function recursive_escape( array &$arr ){
+    foreach( $arr as $k => $v ){
+      if( is_array( $v ) ){
+        recursive_escape($arr[$k]);
+      } else {
+        $arr[$k] = addslashes( $v );
+      }
+    }
+    return $arr;
+  }
+  
   function get_college_by_eid( $eid ){
     $q        = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
     $college  = mysql_fetch_assoc( mysql_query( $q ) );
