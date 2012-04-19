@@ -43,7 +43,7 @@ College-III|Krupp|Mercator|Nordmetall
 "Agne","Baltrisiunaite"|"Natalia","Rabota"|"Mirjam","Eiswirth"|"Juliane","Kube"
 "Octavian","Enache"|"Anastasia","Resteu"|"Matthias","Schauer"|"Shiying","Lu"
 "Bogomil","Paralchev"|"Eva","Schmitz"|"Hannah","Wallin"|"Sybille","Haddad"
-"Ivo","Kirov"|"Luxue","Wang"|"Abhishek","Chaudhary"|,
+"Ivo","Kirov"|"Luxue","Wang"|"Abhishek","Chaudhary"|"Jessica Anne","Chaney",
 "Ahmed","Kebdani"|"Kundai","Sachikonye"|"Hannah","Kreissl"|,
 "Ming-Tse","Chen"|"Franziska","Ehlert"|"Lukas","Kupfernagel"|,
 "Maria","Bottermann"|"Iulia","Mitroi"|"Jana","Eckei"|,
@@ -137,8 +137,8 @@ College-III|Krupp|Mercator|Nordmetall
 "Anjani","Sumoondur"|"pratyay","Poddar"|"Matthias","Aengenheyster"|,
 "Irteza","Javed"|"Rashmi","Tandon"|"Andrei","Smid"|,
 "Pablo","Ochoa"|"Dharam","Kapila"|"Phillip","Hennessy"|,
-"Qasim","Jamili"||,"Carmela","Acevedo"|,
-"Husain","Ahmadi"||,"Jannes","Kölling"|,
+"Qasim","Jamili"|"Anna","Zorina"|,"Carmela","Acevedo"|,
+"Husain","Ahmadi"|"Rana Muhammad Waqar","Anwar"|,"Jannes","Kölling"|,
 "Ioana","Ivanciu"||,"Rabin","Patmanathan"|,
 "Anuraag","Shakya"||,"Alper","Yildirim"|,
 "Nyahsa","Majoni"||,"Sofonias","Feleke"|,
@@ -150,8 +150,8 @@ College-III|Krupp|Mercator|Nordmetall
 "Maria","Olarte"||,"Rana Muhammad Waqar","Anwar"|,
 "Jordis","Scheidegger"||,"Stefan","Mirea"|,
 ||,"Robin","Njenga"|,
-"Romina","Nikolova"||||,
-"Alexandra","Crai"||||,
+"Romina","Nikolova"||"Mudita","Haria"||,
+"Alexandra","Crai"|"Dominique","Degner"|||,
 "Natasha","Marcelo"||||,
 "Ashishsingh","Raja Rai"||||,
 "Muhammad Omer","Saeed"||||,
@@ -167,3 +167,5 @@ College-III|Krupp|Mercator|Nordmetall
 "Fitsumbirhan","Mehari"||||,
 "Melkamu","Taye"||||,
 "Rana Muhammad Waqar","Anwar"||||,
+"Tim Jesper","Suhrhoff"||||,
+"Seinab Malina","Bohsung"||||,
