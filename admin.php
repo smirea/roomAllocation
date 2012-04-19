@@ -56,114 +56,140 @@
         
         if( !IS_ADMIN ) 
           exit( "<b style=\"color:red\">You do not have permissions to access this page</b>" );
-
-        ?>
+          
+        $floorPlans = array(
+          'Mercator'    => create_floorPlan( 'Mercator', $Mercator ),
+          'Krupp'       => create_floorPlan( 'Krupp', $Krupp ),
+          'College3'    => create_floorPlan( 'College-III', $College3 ),
+          'Nordmetall'  => create_floorPlan( 'Nordmetall', $Nordmetall )
+        );
+      ?>
         
-        <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
-          <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
-          <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
-          <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> |
-          <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a>
-        </div>
-        
-        <?php
-          if( isset( $_REQUEST['postback'] ) && isset( $_REQUEST['action'] ) ){
-            switch( $_REQUEST['action'] ){
-              case 'config':
-                $prefix = 'config-';
-                foreach( $_REQUEST as $key => $value ){
-                  if( substr( $key, 0, strlen($prefix) ) == $prefix ){
-                    $name = substr( $key, strlen($prefix) );
-                    $name = str_replace( '_', '.', $name );
-                    if( is_numeric( $value ) ) $value = (int)$value;
-                    C( $name, $value );
-                  }
+      <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
+        <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
+        <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
+        <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> |
+        <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a>
+      </div>
+      
+      <?php
+        if( $_SERVER['REQUEST_METHOD'] == 'POST' && isset( $_POST['action'] ) ){
+          switch( $_POST['action'] ){
+            case 'config':
+              $prefix = 'config-';
+              foreach( $_POST as $key => $value ){
+                if( substr( $key, 0, strlen($prefix) ) == $prefix ){
+                  $name = substr( $key, strlen($prefix) );
+                  $name = str_replace( '_', '.', $name );
+                  if( is_numeric( $value ) ) $value = (int)$value;
+                  C( $name, $value );
                 }
-                break;
-              default:
-                echo '<div>No action took</div>';
-            }
+              }
+              break;
+            case 'set-final':
+              $q = "SELECT * FROM ".TABLE_APARTMENT_CHOICES."";
+              if( isset($_POST['college']) && $_POST['college'] == 'all' ){
+                $q .= " WHERE college='${_REQUEST['college']}' ";
+              }
+              //TODO: HERE HERE SET ROOMS :) after each has chosen 1 room from final apartment
+              //$rows = sqlToArray( mysql_query( $q ) );
+              break;
+            default:
+              echo '<div>No action took</div>';
           }
-        ?>
-        
-        <div class="view" id="admin-config">
-          <div class="wrapper">
-          <h3>General configuration</h3>
-            <form action="admin.php" method="post" class="wrapper">
-              <input type="hidden" name="postback" value="1" />
-              <input type="hidden" name="action" value="config" />
-              <?php
-                $fields = array(
-                  'Is round open'           => 'round.active/bool',
-                  'Max allowed roommates'   => 'roommates.max/int',
-                  'Min required roommates'  => 'roommates.min/int',
-                  'Max number of choices'   => 'apartment.choices/int',
-                  'Minimum points required' => 'points.min/int',
-                  'Maximum points required' => 'points.max/int'
-                );
-                $h = array();
-                foreach( $fields as $label => $properties ){
-                  list( $key, $type ) = explode( '/', $properties );
-                  $field  = '';
-                  $name   = "config-$key";
-                  $form_attr = 'name="'.$name.'" value="'.C($key).'"';
-                  switch( $type ){
-                    case 'int':
-                      $field = '<input type="text" maxlength="2" size="1" '.$form_attr.' />';
-                      break;
-                    case 'bool':
-                      $s = 'selected="selected"';
-                      $field = '<select name='.$name.'>
-                          <option value="1" '.((int)$value?$s:'').'>true</option>
-                          <option value="0" '.((int)$value?'':$s).'>false</option>
-                        </select>';
-                      break;
-                    default:
-                    case 'string':
-                      $field = '<input type="text" '.$form_attr.' />';
-                      break;
-                  }
-                  $h[] = "<tr><td>$label</td><td style=\"text-align:right\">$field</td></tr>";
+        }
+      ?>
+      
+      <div class="view" id="admin-config">
+        <div class="wrapper">
+        <h3>General configuration</h3>
+          <form action="admin.php" method="post" class="wrapper">
+            <input type="hidden" name="action" value="config" />
+            <?php
+              $fields = array(
+                'Is round open'           => 'round.active/bool',
+                'Max allowed roommates'   => 'roommates.max/int',
+                'Min required roommates'  => 'roommates.min/int',
+                'Max number of choices'   => 'apartment.choices/int',
+                'Minimum points required' => 'points.min/int',
+                'Maximum points required' => 'points.max/int'
+              );
+              $h = array();
+              foreach( $fields as $label => $properties ){
+                list( $key, $type ) = explode( '/', $properties );
+                $value      = C($key);
+                $field      = '';
+                $name       = "config-$key";
+                $form_attr  = 'name="'.$name.'" value="'.$value.'"';
+                switch( $type ){
+                  case 'int':
+                    $field = '<input type="text" maxlength="2" size="1" '.$form_attr.' />';
+                    break;
+                  case 'bool':
+                    $s = 'selected="selected"';
+                    $field = '<select name='.$name.'>
+                        <option value="1" '.((int)$value?$s:'').'>true</option>
+                        <option value="0" '.((int)$value?'':$s).'>false</option>
+                      </select>';
+                    break;
+                  default:
+                  case 'string':
+                    $field = '<input type="text" '.$form_attr.' />';
+                    break;
                 }
-                echo '
-                  <table>
-                    '.implode("\n",$h).'
-                    <tr>
-                      <td colspan="2" style="text-align:right">
-                        <input type="submit" value="Update" />
-                      </td>
-                    </tr>
-                  </table>';
-              ?>
-            </form>
-          </div>
+                $h[] = "<tr><td>$label</td><td style=\"text-align:right\">$field</td></tr>";
+              }
+              echo '
+                <table>
+                  '.implode("\n",$h).'
+                  <tr>
+                    <td colspan="2" style="text-align:right">
+                      <input type="submit" value="Update" />
+                    </td>
+                  </tr>
+                </table>';
+            ?>
+          </form>
         </div>
+      </div>
+      
+      <form class="view display-final wrapper" action="admin.php" method="post">
+        <input type="hidden" name="action" value="set-final" />
+        <div>Make allocations permanent for:</div>
+        <div class="wrapper">
+          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="All" /> | 
+          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="Mercator" />
+          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="Krupp" />
+          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="College-III" />
+          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="Nordmetall" />
+        </div>
+      </form>
+      
+      <?php
+        echo '
+          <div class="wrapper">
+            <h3>Mercator College</h3>
+            '.$floorPlans['Mercator']['html'].'
+          </div>';
         
-        <?php
-          echo '
-            <div class="wrapper">
-              <h3>Mercator College</h3>
-              '.print_floorPlan( 'Mercator', $Mercator ).'
-            </div>';
-          
-          echo '
-            <div class="wrapper">
-              <h3>Krupp College</h3>
-              '.print_floorPlan( 'Krupp', $Krupp ).'
-            </div>';
-          
-          echo '
-            <div class="wrapper">
-              <h3>College-III</h3>
-              '.print_floorPlan( 'College-III', $College3 ).'
-            </div>';
-          
-          echo '
-            <div class="wrapper">
-              <h3>Nordmetall</h3>
-              '.print_floorPlan( 'Nordmetall', $Nordmetall ).'
-            </div>';
-        ?>
+        echo '
+          <div class="wrapper">
+            <h3>Krupp College</h3>
+            '.$floorPlans['Krupp']['html'].'
+          </div>';
+        
+        echo '
+          <div class="wrapper">
+            <h3>College-III</h3>
+            '.$floorPlans['College3']['html'].'
+          </div>';
+        
+        echo '
+          <div class="wrapper">
+            <h3>Nordmetall</h3>
+            '.$floorPlans['Nordmetall']['html'].'
+          </div>';
+      ?>
       
       <div id="footer" class="message info">
         <span style="float:left">(C) 2012 code4fun.de</span>

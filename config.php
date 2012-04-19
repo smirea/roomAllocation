@@ -54,6 +54,7 @@
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
     C( 'round.active',      true );
+    C( 'round.number',      1 );
     C( 'roommates.min',     1 );
     C( 'roommates.max',     1 );
     C( 'apartment.choices', 9 );

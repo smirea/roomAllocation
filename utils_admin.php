@@ -17,7 +17,7 @@
 \***************************************************************************/
 ?>
 <?php
-  function print_floorPlan( $college, $Map ){
+  function create_floorPlan( $college, $Map ){
     $people   = array();  // maps: eid                      -> personal info
     $rooms    = array();  // maps: room_number              -> array( group_id )
     $groups   = array();  // maps: group_id                 -> array( eid )
@@ -167,7 +167,17 @@
     }
     $h .= '</div>';
     
-    return $h;
+    return array(
+      'html'        => $h,
+      'allocations' => $allocations,
+      'random'      => $new_allocations,
+      'people'      => $people,
+      'rooms'       => $rooms,
+      'groups'      => $groups,
+      'choice'      => $choice,
+      'points'      => $points,
+      'total'       => $total
+    );
   }
   
   function allocation_table( $rooms, $groups, $people, $points, $total ){

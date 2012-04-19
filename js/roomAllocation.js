@@ -27,7 +27,7 @@ var sendResponse;
  *  a.k.a. the interface available to the backend
  */
 var RPC = {
-  reload  : function(){ window.location.reload(); },
+  reload  : function(){ alert('wtf');window.location.reload(); },
   updatePoints  : function(){
     
   }
@@ -50,7 +50,7 @@ var RPC = {
     add_floorplan_events();
     register_global_ajax_handlers();
     // refresh after 20 minutes so you don't get a session timeout
-    setTimeout( function(){ window.location.reload() }, 20 * 60 * 1000 );
+    setTimeout( RPC.reload, 20 * 60 * 1000 );
   });
   
   var register_global_ajax_handlers = (function(){
