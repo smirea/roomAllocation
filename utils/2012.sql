@@ -28,9 +28,9 @@ CREATE TABLE `Allocations` (
   `college` varchar(16) DEFAULT NULL,
   `room` varchar(16) DEFAULT NULL,
   `round` int(2) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `room` (`college`, `room`)
-) ENGINE=MyISAM AUTO_INCREMENT=2214 DEFAULT CHARSET=latin1;
+  `apartment` VARCHAR(128) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,7 +57,7 @@ CREATE TABLE `Apartment_Choices` (
   `group_id` varchar(16) NOT NULL,
   `choice` int(2) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=252 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +80,7 @@ CREATE TABLE `Groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `score` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +106,7 @@ CREATE TABLE `InGroup` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `eid` (`eid`),
   UNIQUE KEY `group_id` (`group_id`,`eid`)
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

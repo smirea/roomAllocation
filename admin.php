@@ -60,7 +60,7 @@
         $floorPlans = array(
           'Mercator'    => create_floorPlan( 'Mercator', $Mercator ),
           'Krupp'       => create_floorPlan( 'Krupp', $Krupp ),
-          'College3'    => create_floorPlan( 'College-III', $College3 ),
+          'College-III' => create_floorPlan( 'College-III', $College3 ),
           'Nordmetall'  => create_floorPlan( 'Nordmetall', $Nordmetall )
         );
       ?>
@@ -87,12 +87,49 @@
               }
               break;
             case 'set-final':
-              $q = "SELECT * FROM ".TABLE_APARTMENT_CHOICES."";
-              if( isset($_POST['college']) && $_POST['college'] == 'all' ){
-                $q .= " WHERE college='${_REQUEST['college']}' ";
+              $alloc_rooms  = array();
+              foreach( $floorPlans as $college_name => $alloc_info ){
+                $count = array_combine( 
+                  array_keys($alloc_info['groups']),
+                  array_fill(0, count($alloc_info['groups']), 0)
+                );
+                $a = array();
+                $g = array();
+                foreach( $alloc_info['allocations'] as $room_no => $group_no ){
+                  $a[$room_no] = array(
+                    $group_no,
+                    $alloc_info['groups'][$group_no][$count[$group_no]]
+                  );
+                  ++$count[$group_no];
+                }
+                $alloc_rooms[$college_name]   = $a;
               }
-              //TODO: HERE HERE SET ROOMS :) after each has chosen 1 room from final apartment
-              //$rows = sqlToArray( mysql_query( $q ) );
+
+              $round = C('round.number');
+              foreach( $alloc_rooms as $college => $rooms ){
+                $c          = $floorPlans[$college];
+                
+                $apartments = array();
+                foreach( $c['allocations'] as $room_no => $group_no ){
+                  $apartments[$group_no][] = $room_no;
+                }
+                $apartments = array_map(function($v){return implode(',',$v);}, $apartments);
+                
+                foreach( $rooms as $room_no => $r_info ){
+                  list( $group_no, $eid ) = $r_info;
+                  $apartment  = $apartments[$group_no];
+                  $q = "UPDATE ".TABLE_ALLOCATIONS." 
+                        SET room='$room_no', 
+                            apartment='$apartment', 
+                            round='$round' 
+                        WHERE eid='$eid'";
+                  if( !mysql_query($q) ){
+                    echo "<div> (room=$room_no) (eid=$eid) :: ".mysql_error().'</div>';
+                  }
+                }
+              }
+              $q_delete = "DELETE FROM ".TABLE_APARTMENT_CHOICES."";
+              //mysql_query( $q_delete );
               break;
             default:
               echo '<div>No action took</div>';
@@ -108,6 +145,7 @@
             <?php
               $fields = array(
                 'Is round open'           => 'round.active/bool',
+                'Current round number'    => 'round.number/int',
                 'Max allowed roommates'   => 'roommates.max/int',
                 'Min required roommates'  => 'roommates.min/int',
                 'Max number of choices'   => 'apartment.choices/int',
@@ -155,14 +193,7 @@
       
       <form class="view display-final wrapper" action="admin.php" method="post">
         <input type="hidden" name="action" value="set-final" />
-        <div>Make allocations permanent for:</div>
-        <div class="wrapper">
-          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="All" /> | 
-          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="Mercator" />
-          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="Krupp" />
-          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="College-III" />
-          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" name="college" value="Nordmetall" />
-        </div>
+        <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" value="Make allocations permanent" /> | 
       </form>
       
       <?php
@@ -181,7 +212,7 @@
         echo '
           <div class="wrapper">
             <h3>College-III</h3>
-            '.$floorPlans['College3']['html'].'
+            '.$floorPlans['College-III']['html'].'
           </div>';
         
         echo '

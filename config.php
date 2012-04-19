@@ -62,6 +62,7 @@
     C( 'points.max',        7 );
   }
   require_once( DYNAMIC_CONFIG_FILE );
+  require_once( 'config_allowed.php' );
   
   /******************
   ***** GENERAL *****
@@ -69,6 +70,7 @@
   
   /** General config */
   define( 'MAX_ROOMMATES',    C('roommates.max') );
+  define( 'MIN_ROOMMATES',    C('roommates.min') );
   define( 'MAX_ROOM_CHOICES', C('apartment.choices') );
   define( 'MIN_POINTS',       C('points.min') );
   define( 'MAX_POINTS',       C('points.max') );

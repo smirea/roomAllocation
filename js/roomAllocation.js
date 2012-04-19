@@ -47,11 +47,27 @@ var RPC = {
     alter_jquery_ui();
     set_variables();
     init_roommate_search();
+    init_select_rooms();
     add_floorplan_events();
     register_global_ajax_handlers();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( RPC.reload, 20 * 60 * 1000 );
   });
+  
+  var init_select_rooms = function(){
+    
+    $('#select-rooms').bind('submit.selectRooms', function(e){
+      var variables = {
+        action  : 'selectRooms'
+      };
+      $(this).find('select').each(function(){
+        variables[$(this).attr('name')] = $(this).val();
+      });
+      $.get( ajax_file, variables);
+      return false;
+    });
+    
+  };
   
   var register_global_ajax_handlers = (function(){
     

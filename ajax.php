@@ -188,7 +188,10 @@
         if( $v && $v != '' ){
           $tmp = explode(',', $v);
           $tmp = array_map( 'trim', $tmp );
-          if( count($tmp) != MAX_ROOMMATES+1 || count($roommates)+1 != count($tmp) ){
+          if( 
+            count($tmp) > MAX_ROOMMATES+1 
+            || count($roommates)+1 != count($tmp) 
+            || array_search( $tmp[0], $allowed_rooms[$college] ) === false ){
             $invalid_rooms[] = "($v)";
           } else {
             sort($tmp);
@@ -204,7 +207,7 @@
       $q_taken = "SELECT room 
                   FROM ".TABLE_ALLOCATIONS."
                   WHERE college='$college' 
-                  AND room IN ('".implode("','",$rooms)."')";
+                  AND room IN ('".implode("','",array_reduce($rooms,'array_merge', array() ))."')";
       $taken = extract_column('eid', sqlToArray( mysql_query( $q_taken ) ) );
       
       if( count($taken) > 0 ){
@@ -235,6 +238,19 @@
       $output['result'] = mysql_query($q);
       $output['error'] .= mysql_error();
       $output['info']   = 'Rooms updated successfully!';
+      break;
+    case 'selectRooms':
+      //TODO: EROR:CHECKING
+      foreach( $_GET as $k => $v ){
+        if( substr( $k, 0, 5 ) == 'room-' ){
+          $room = substr( $k, 5 );
+          $q = "UPDATE ".TABLE_ALLOCATIONS." SET room='$room' WHERE eid='$v'";
+          echo $q."\n";
+          echo mysql_error();
+          mysql_query($q);
+        }
+      }
+      $output['info'] = 'Rooms update successfully!';
       break;
     default: 
       outputError( 'Unknown action' );

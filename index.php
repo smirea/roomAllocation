@@ -66,6 +66,9 @@
             $info       = $_SESSION['info'];
             $points     = get_points( array_merge( array($info), $roommates ) );
             
+            $q_allocation = "SELECT * FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
+            $allocation   = mysql_fetch_assoc( mysql_query( $q_allocation ) );
+            define( 'HAS_ROOM', $allocation['room'] != null );
         ?>
         <div style="float:left;width:50%;" class="content">
           <div class="wrapper">
@@ -170,6 +173,49 @@
         
         <div class="clearBoth"></div>
         
+        <?php
+          if( HAS_ROOM ){
+            $q = "SELECT p.fname,p.lname,a.* 
+                  FROM ".TABLE_ALLOCATIONS." a, ".TABLE_PEOPLE." p
+                  WHERE a.eid IN ($eid,".implode(',',extract_column('eid',$roommates)).")
+                    AND p.eid=a.eid";
+            $tmp_rooms = sqlToArray( mysql_query( $q ) );
+
+            $h = '';
+            foreach( $tmp_rooms as $info ){
+              $options = '';
+              foreach( $tmp_rooms as $v ){
+                $selected = ($v['eid'] == $info['eid']) ? 'selected="selected"' : '';
+                $options .= ' <option value="'.$v['eid'].'" '.$selected.'>'.
+                                $v['fname'].' '.$v['lname'].
+                              '</option>';
+              }
+              $tag = 'room-'.$info['room'];
+              $h .= '<label for="'.$tag.'">'.
+                      $info['room'].':
+                      <select name="'.$tag.'" id="'.$tag.'">
+                        '.$options.'
+                      </select>
+                    </label><br />';
+            }
+            
+            echo '
+              <div class="content">
+                <form class="wrapper" id="select-rooms" action="ajax.php" method="get">
+                  <h3>Final Step: Choose Rooms</h3>
+                  '.$h.'
+                  <input type="submit" value="Change Rooms" />
+                </form>
+              </div>
+            ';
+        ?>
+          
+          
+          
+        <?php
+          } else {
+        ?>
+        
         <div class="content" id="floorPlan">
           <div class="wrapper">
             <h3>Apartment Choices</h3>
@@ -179,7 +225,12 @@
                         You need to have between '.MIN_POINTS.' and '.MAX_POINTS.'
                         total points in order to be eligible for this round
                       </div>';
-              } else if( count($roommates) == MAX_ROOMMATES ){ 
+              } else if( count($roommates) < MIN_ROOMMATES ){
+                echo '<div style="color:red">
+                        You need to have between '.MIN_ROOMMATES.' and '.MAX_ROOMMATES.'
+                        roommates in order to be eligible for this round
+                      </div>';
+              } else if( count($roommates) <= MAX_ROOMMATES ){ 
             ?>
               <div class="content" style="float:left;width:35%;">
                 <ol class="room-choices">
@@ -296,6 +347,7 @@
           </div>
         </div>
         <?php
+            }
           } else {
         ?>
           <div class="content">
@@ -303,9 +355,11 @@
               Waiting for your credentials :)
             </div>
           </div>
+          
         <?php
           }
         ?>
+        
       </div>
       
       <div id="footer" class="message info">
