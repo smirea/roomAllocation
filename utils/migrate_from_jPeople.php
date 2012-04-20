@@ -23,18 +23,32 @@
   mysql_query( "DELETE FROM ".TABLE_PEOPLE );
   
   /** Add info to the database */
+  mysql_query( "DELETE FROM ".TABLE_PEOPLE );
   $columns .= ',query';
   $h = '<table>';
   $h .= '<tr><td>status</td><td>name</td><td>eid</td><td>mysql_error()</td></tr>';
   foreach( $info as $row ){
     $row['query'] = $row['fname'].' '.$row['lname'];
     $h .= addToDb( $row );
+    $h .= updateAllocations( $row );
   }
   $h .= '</table>';
-  
+/*  
   $q = "INSERT INTO Allocations(eid) SELECT p.eid FROM ".TABLE_PEOPLE." p";
   echo "<div>Copying data into Allocations table: ".(mysql_query($q) ? 'OK' : 'FAIL: '.mysql_error())." </div>";
+*/
   echo "<hr />$h";
+  
+  function updateAllocations( $info ){
+    $q = "INSERT IGNORE INTO ".TABLE_ALLOCATIONS."(eid) VALUES('${info['eid']}')";
+    $status = '<b style="color:green">OK</b>';
+    $error  = '';
+    if( !mysql_query( $q ) ){
+      $status = '<b style="color:red">FAIL</b>';
+      $error  = mysql_error();
+    }
+    return "<tr><td>$status</td><td>(Insert into ".TABLE_ALLOCATIONS.")</td><td></td><td>$error</td></tr>";
+  }
   
   /**
    * @brief Adds a person to the database and prints an apropriate message

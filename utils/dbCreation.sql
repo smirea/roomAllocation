@@ -31,7 +31,8 @@ CREATE TABLE Allocations(
   `college` VARCHAR(16),
   `room` VARCHAR(16),
   `apartment` VARCHAR(128),
-  `round` INT(2)
+  `round` INT(2),
+  UNIQUE KEY `eid` (`eid`)
 ) ENGINE = MYISAM ;
 
 DROP TABLE IF EXISTS Groups;
