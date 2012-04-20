@@ -200,10 +200,16 @@
         </div>
       </div>
       
-      <form class="view display-final wrapper" action="admin.php" method="post">
-        <input type="hidden" name="action" value="set-final" />
-        <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" value="Make allocations permanent" /> | 
-      </form>
+      <?php if( !C('round.active') ){ ?>
+        <form class="view display-final wrapper" action="admin.php" method="post">
+          <input type="hidden" name="action" value="set-final" />
+          <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" value="Make allocations permanent" />
+        </form>
+      <?php 
+      } else {
+        echo '<div class="view display-final wrapper"><b style="color:red">*Note:</b> You need to close the round in order to make the allocations permanent</div>';
+      }
+      ?>
       
       <?php
         echo '
