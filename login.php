@@ -52,6 +52,7 @@
         $college  = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='${info['eid']}'";
         $college  = mysql_fetch_assoc( mysql_query( $college ) );
         $college  = $college['college'];
+        $info['college']      = $college;
         $_SESSION['username'] = $info['account'];
         $_SESSION['eid']      = $info['eid'];
         $_SESSION['info']     = $info;
