@@ -56,13 +56,22 @@
         
         if( !IS_ADMIN ) 
           exit( "<b style=\"color:red\">You do not have permissions to access this page</b>" );
-          
-        $floorPlans = array(
-          'Mercator'    => create_floorPlan( 'Mercator', $Mercator ),
-          'Krupp'       => create_floorPlan( 'Krupp', $Krupp ),
-          'College-III' => create_floorPlan( 'College-III', $College3 ),
-          'Nordmetall'  => create_floorPlan( 'Nordmetall', $Nordmetall )
+        
+        $colleges = array(
+          'Mercator'    => $Mercator,
+          'Krupp'       => $Krupp,
+          'College-III' => $College3,
+          'Nordmetall'  => $Nordmetall
         );
+        
+        $floorPlans = array();
+        foreach( $colleges as $c_name => $c_map ){
+          $cls = array();
+          add_class( 'available', $allowed_rooms[$c_name], $cls );
+          $cls = array_map(function($v){return implode(' ',$v);}, $cls);
+          $floorPlans[$c_name] = create_floorPlan( $c_name, $c_map, $cls );
+        }
+        
       ?>
         
       <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">

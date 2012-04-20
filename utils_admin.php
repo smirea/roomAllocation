@@ -17,7 +17,7 @@
 \***************************************************************************/
 ?>
 <?php
-  function create_floorPlan( $college, $Map ){
+  function create_floorPlan( $college, $Map, $classes = array() ){
     $people   = array();  // maps: eid                      -> personal info
     $rooms    = array();  // maps: room_number              -> array( group_id )
     $groups   = array();  // maps: group_id                 -> array( eid )
@@ -88,7 +88,6 @@
     $allocations = array_merge( $allocations, $new_allocations );
     
     /** determine ambiguous */
-    $classes    = array();
     $arguments  = array();
     foreach( $rooms as $number => $gids ){
       $max = -1;
