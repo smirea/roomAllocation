@@ -28,6 +28,8 @@
 
 <div id="login">
   <?php
+    recursive_escape( $_GET );
+    recursive_escape( $_POST );
     if( isset($_GET['logout']) ){
       unset( $_SESSION['username'] );
       session_destroy();
