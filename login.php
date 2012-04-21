@@ -46,7 +46,8 @@
                 WHERE account='${_POST['username']}'";
       $info = mysql_fetch_assoc( mysql_query( $q ) );
       $min_year = (int)date('Y') % 100;
-      if( ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
+      if( in_array( $info['account'], $admin )
+          || ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
           || ($info['status'] == STATUS_FOUNDATION && $info['year'] == $min_year)
       ) {
         $college  = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='${info['eid']}'";
