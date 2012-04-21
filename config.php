@@ -20,7 +20,7 @@
   define( 'DEBUG', true );
   
   /** Admin config */
-  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal' );
+  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal,rnjenga,skang' );
   $admin = explode(',', ADMIN_ACCOUNTS);
   
   /** Bulk config */
