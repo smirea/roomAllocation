@@ -2,6 +2,21 @@
   
   require_once( 'floorPlan/utils.php' );
   
+  $tall_rooms = array(
+    'Mercator' => array_unique(
+      explode(',', 'A-108,A-208,A-308,B-108,B-208,B-308,C-108,C-208,C-308')
+    ),
+    'Krupp' => array_unique(
+      explode(',', 'A-108,A-208,A-308,B-108,B-208,B-308,C-108,C-208,C-308')
+    ),
+    'College-III' => array_unique(
+      explode(',', 'A-108,A-208,A-308,B-108,B-208,B-308,C-108,C-208,C-308,D-108,D-208,D-308')
+    ),
+    'Nordmetall'  => array(
+      //TODO:
+    )
+  );
+  
   $allowed_rooms = array(
     'Mercator' => array_unique(
       array_merge(
@@ -13,11 +28,11 @@
       array_merge(
         prepend('A-', 
           apartment_pattern( 4, 124, 2, 1 ),
-          apartment_pattern( 4, 224, 2, 1 ),
-          apartment_pattern( 4, 324, 2, 1 )
+          apartment_pattern( 5, 224, 2, 1 ),
+          apartment_pattern( 5, 324, 2, 1 )
         ),
         explode(',','A-208,A-209,A-308,A-309,B-108,B-109,B-208,B-209,B-308,B-309,C-108,C-109,C-208,C-209,C-308,C-309'),
-        explode(',','B-101,B-102,B-103,C-101,C-102,C-103')
+        explode(',','A-101,A-102,A-103,B-101,B-102,B-103')
       )
     ),
     'College-III' => array_unique(
