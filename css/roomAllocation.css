@@ -203,7 +203,7 @@ body{
   font-weight : bold;
 }
 .room.taken{
-  background  : #ddd;
+  background  : #ddd!important;
 }
 .room.available{
   background  : yellow;

@@ -250,7 +250,6 @@
         if( substr( $k, 0, 5 ) == 'room-' ){
           $room = substr( $k, 5 );
           $q = "UPDATE ".TABLE_ALLOCATIONS." SET room='$room' WHERE eid='$v'";
-          echo $q;
           if( !mysql_query($q) ){
             $output['error'] .= mysql_error().'<br />';
           }
