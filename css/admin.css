@@ -47,7 +47,7 @@ body{
 .allocation-table{
   border      : 1px solid #ccc;
   background  : #fff;
-  margin      : 5px auto;
+  margin      : 5px;
   padding     : 2px;
 }
 .allocation-table td{

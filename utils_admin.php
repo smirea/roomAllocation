@@ -84,8 +84,13 @@
     
     /** compute final result */
     list( $allocations, $random ) = allocate_rooms( $rooms, $choice, $total );
-    $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
-    $allocations = array_merge( $allocations, $new_allocations );
+    $new_allocations = array();
+    if( C('allocation.allocateRandom') ){
+      $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
+      $allocations = array_merge( $allocations, $new_allocations );
+    } else {
+      //$new_allocations = $random;
+    }
     
     /** determine ambiguous */
     $arguments  = array();
@@ -150,10 +155,24 @@
       </table>
     ';
     
+    $unallocated = "";
+    if( !C('allocation.allocateRandom') ){
+      $unallocated = allocation_table($random,$groups,$people,$points,$total);
+    }
+    
     $h .= '
-      <table cellspacing="0" cellpadding="0" id="final-allocation-table-'.$college.'" class="allocation-table display-final view" style="display:none;">
-        '.$final_table.'
-      </table>
+      <div class="display-final view" style="display:none;text-align:center;" id="final-allocation-table-'.$college.'">
+        <table cellspacing="0" cellpadding="0" class="allocation-table" style="float:left">
+          '.$final_table.'
+        </table>
+        <div>
+          <h3>Unallocated this round</h3>
+          <table class="allocation-table" style="margin:5px auto;">
+            '.$unallocated.'
+          </table>
+        </div>
+      </div>
+      <div class="clearBoth"></div>
     ';
     
     $h .= '<div class="college-floorPlan view" id="floorPlan-'.$college.'">';
@@ -167,15 +186,16 @@
     $h .= '</div>';
     
     return array(
-      'html'        => $h,
-      'allocations' => $allocations,
-      'random'      => $new_allocations,
-      'people'      => $people,
-      'rooms'       => $rooms,
-      'groups'      => $groups,
-      'choice'      => $choice,
-      'points'      => $points,
-      'total'       => $total
+      'html'            => $h,
+      'allocations'     => $allocations,
+      'random'          => $random,
+      'new_allocations' => $new_allocations,
+      'people'          => $people,
+      'rooms'           => $rooms,
+      'groups'          => $groups,
+      'choice'          => $choice,
+      'points'          => $points,
+      'total'           => $total
     );
   }
   
@@ -229,7 +249,7 @@
       unset( $rooms[$room_number] );
     }
     $new_allocations = array();
-    $break_limit = 100;
+    $break_limit = 10000;
     foreach( $random as $group_number ){
       $size = count( $groups[$group_number] );
       $counter = 0;
@@ -324,16 +344,22 @@
         foreach( $rooms[$room_number] as $gid_key => $new_gid ){
           // only compare 2 different groups
           if( $new_gid == $group_id ) continue;
+          // if the new group already has a room
+          if( array_search( $new_gid, $allocated ) !== false ) continue;
           // test whether you can keep the room
           if(
             // lose if the room is already taken
             isset( $allocated[$room_number] )
             // lose room if you have less points
             || ($curr_points < $total[$new_gid])
-            // lose if the choice number is higher
-            || ($curr_choice > $choice[$new_gid][$room_number])
-            // if the choice numbers are equal, 50% chances to lose the room
-            || ($curr_points == $total[$new_gid] && !rand(0,1))
+            // lose if you have the same number of points AND:
+            || ($curr_points == $total[$new_gid] && (
+                  // the choice number is higher
+                  $curr_choice > $choice[$new_gid][$room_number]
+                  // if the choice numbers are equal, 50% chances to lose the room
+                  || ($curr_choice == $choice[$new_gid][$room_number] && !rand(0,1))
+                  )
+                )
           ){
             $can_take = false;
             break;
@@ -355,6 +381,8 @@
       }
     }
     
+    ksort( $allocated );
+    ksort( $unallocated );
     return array( $allocated, $unallocated );
   }
   

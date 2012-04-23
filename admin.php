@@ -67,11 +67,14 @@
         $floorPlans = array();
         foreach( $colleges as $c_name => $c_map ){
           $cls = array();
+          $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
+                                WHERE college='$c_name' AND room IS NOT NULL";
+          $taken = sqlToArray( mysql_query( $q_taken ) );
           add_class( 'available', $allowed_rooms[$c_name], $cls );
+          add_class( 'taken', extract_column( 'room', $taken ), $cls );
           $cls = array_map(function($v){return implode(' ',$v);}, $cls);
           $floorPlans[$c_name] = create_floorPlan( $c_name, $c_map, $cls );
         }
-        
       ?>
         
       <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
@@ -97,14 +100,32 @@
               break;
             case 'set-final':
               $alloc_rooms  = array();
-              foreach( $floorPlans as $college_name => $alloc_info ){
+              
+              $keyword  = 'college-';
+              $arr      = array();
+              foreach( $_POST as $k => $v ){
+                if( substr( $k, 0, strlen($keyword) ) == $keyword ){
+                  $college = substr( $k, strlen($keyword) );
+                  $arr[$college] = explode(';', $v);
+                }
+              }
+
+              foreach( $arr as $college_name => $data ){
+                $alloc_info = $floorPlans[$college_name];
                 $count = array_combine( 
                   array_keys($alloc_info['groups']),
                   array_fill(0, count($alloc_info['groups']), 0)
                 );
                 $a = array();
                 $g = array();
-                foreach( $alloc_info['allocations'] as $room_no => $group_no ){
+                foreach( $data as $tmp ){
+                  if(!$tmp) continue;
+                  $tmp2 = explode(':',$tmp);
+                  if( count($tmp2) != 2 ){
+                    echo '<div style="color:red">Invalid: '.$tmp.'</div>';
+                    continue;
+                  }
+                  list( $room_no,$group_no ) = $tmp2;
                   $a[$room_no] = array(
                     $group_no,
                     $alloc_info['groups'][$group_no][$count[$group_no]]
@@ -123,7 +144,6 @@
                   $apartments[$group_no][] = $room_no;
                 }
                 $apartments = array_map(function($v){return implode(',',$v);}, $apartments);
-                
                 foreach( $rooms as $room_no => $r_info ){
                   list( $group_no, $eid ) = $r_info;
                   $apartment  = $apartments[$group_no];
@@ -138,7 +158,7 @@
                 }
               }
               $q_delete = "DELETE FROM ".TABLE_APARTMENT_CHOICES."";
-              //mysql_query( $q_delete );
+              mysql_query( $q_delete );
               break;
             default:
               echo '<div>No action took</div>';
@@ -203,6 +223,15 @@
       <?php if( !C('round.active') ){ ?>
         <form class="view display-final wrapper" action="admin.php" method="post">
           <input type="hidden" name="action" value="set-final" />
+          <?php
+            foreach( $floorPlans as $college => $data ){
+              $arr = array();
+              foreach( $data['allocations'] as $room_id => $group_id ){
+                $arr[] = "$room_id:$group_id";
+              }
+              echo '<input type="hidden" name="college-'.$college.'" value="'.implode(';',$arr).'" size="200"/>';
+            }
+          ?>
           <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" value="Make allocations permanent" />
         </form>
       <?php 

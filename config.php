@@ -53,13 +53,14 @@
   
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
-    C( 'round.active',      true );
-    C( 'round.number',      1 );
-    C( 'roommates.min',     1 );
-    C( 'roommates.max',     1 );
-    C( 'apartment.choices', 9 );
-    C( 'points.min',        1 );
-    C( 'points.max',        7 );
+    C( 'round.active',              1 );
+    C( 'round.number',              1 );
+    C( 'roommates.min',             1 );
+    C( 'roommates.max',             1 );
+    C( 'apartment.choices',         9 );
+    C( 'points.min',                1 );
+    C( 'points.max',                7 );
+    C( 'allocation.allocateRandom', 0 );
   }
   require_once( DYNAMIC_CONFIG_FILE );
   require_once( 'config_allowed.php' );
