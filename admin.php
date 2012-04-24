@@ -239,7 +239,14 @@
         echo '<div class="view display-final wrapper"><b style="color:red">*Note:</b> You need to close the round in order to make the allocations permanent</div>';
       }
       ?>
-      
+      <div class="wrapper">
+        Download final result as csv:
+        <?php
+          foreach( array_keys( $colleges ) as $college ){
+            echo '<a target="_blank" href="download_output.php?college='.$college.'">'.$college.'</a> ';
+          }
+        ?>
+      </div>
       <?php
         echo '
           <div class="wrapper">
