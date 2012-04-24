@@ -30,7 +30,7 @@
     /** select the room choices */
     $q = "SELECT * FROM ".TABLE_APARTMENT_CHOICES." 
             WHERE college='$college'
-            ORDER BY college,number,group_id,choice";
+            ORDER BY number,group_id,choice";
     $rooms_tmp  = sqlToArray( mysql_query($q) );
     foreach( $rooms_tmp as $room ){
       $rooms[$room['number']][] = $room['group_id'];
@@ -53,8 +53,8 @@
     }
     
     /** select and make the groups */
-    $q = "SELECT i.group_id, p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i
-                WHERE i.eid=p.eid ORDER BY i.group_id";
+    $q = "SELECT i.group_id, p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i, ".TABLE_ALLOCATIONS." a
+                WHERE a.college='$college' AND a.eid=i.eid AND i.eid=p.eid ORDER BY i.group_id";
     $people_tmp = sqlToArray( mysql_query($q) );
     foreach( $people_tmp as $v ){
       $people[$v['eid']] = $v;
@@ -83,7 +83,15 @@
     }
     
     /** compute final result */
-    list( $allocations, $random ) = allocate_rooms( $rooms, $choice, $total );
+    $r = $rooms;
+    foreach( $r as $room_number => $v ){
+      foreach( $v as $k => $group_id ){
+        $r[$room_number][$k] = "$group_id -> c:".$choice[$group_id][$room_number]." t:".$total[$group_id];
+        $r[$room_number][$k] .= "     (".implode(',',array_map(function($v)use($people){return $people[$v]['lname'];},$groups[$group_id])).")";
+      }
+    }
+
+    list( $allocations, $random, $allocation_log ) = allocate_rooms( $rooms, $choice, $total, $people );
     $new_allocations = array();
     if( C('allocation.allocateRandom') ){
       $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
@@ -160,8 +168,30 @@
       $unallocated = allocation_table($random,$groups,$people,$points,$total);
     }
     
+    $log_prepend = '<div class="legend">';
+    $g_sorted = $groups;
+    ksort( $g_sorted );
+    foreach( $g_sorted as $group_id => $eids ){
+      $people_in_group  = array_map(
+                            function($eid) use ($people){ 
+                              return '<span class="person">'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</span>';
+                            }, 
+                            $eids);
+      $people_in_group  = implode(',', $people_in_group);
+      $log_prepend .= 
+        '<div class="small-group">'.
+          '<span class="total" style="background:orange;">['.$group_id.']</span> '.
+          $people_in_group.
+          ' <span class="total">'.$total[$group_id].'</span>'.
+        '</div>';
+    }
+    $log_prepend .= '</div>';
     $h .= '
       <div class="display-final view" style="display:none;text-align:center;" id="final-allocation-table-'.$college.'">
+        <div class="log">
+          '.$log_prepend.'
+          '.$allocation_log.'
+        </div>
         <table cellspacing="0" cellpadding="0" class="allocation-table" style="float:left">
           '.$final_table.'
         </table>
@@ -195,7 +225,8 @@
       'groups'          => $groups,
       'choice'          => $choice,
       'points'          => $points,
-      'total'           => $total
+      'total'           => $total,
+      'log'             => $allocation_log
     );
   }
   
@@ -325,9 +356,12 @@
    * @brief
    *
    */
-  function allocate_rooms( array $rooms, array $choice, array $total ){
+  function allocate_rooms( array $rooms, array $choice, array $total, array $people ){
     $allocated    = array();   // maps: room_number -> group_id
     $unallocated  = array();
+    
+    // Catch all output
+    ob_start();
     
     $total_points_compare = function($a,$b) use ($total){
       return $total[$a] == $total[$b] ? 0 : ( $total[$a] < $total[$b] ? -1 : 1 );
@@ -337,21 +371,38 @@
     foreach( $rooms as $number => $eids ){
       uasort($rooms[$number], $total_points_compare);
     }
-    
+
     //sort the groups' choices by the total number of points
     uksort($choice, $total_points_compare);
+    $choice = array_reverse( $choice, true );
+    foreach( $choice as $group_id => $room_choices ){
+      asort( $choice[$group_id] );
+    }
+    //v_export( array_map(function($v) use($total){ return "$v:".$total[$v]; }, array_keys($choice)) );
     
     // pick one group at a time
     foreach( $choice as $group_id => $room_choices ){
       $curr_choice  = -1;
       $curr_points  = $total[$group_id];
       $got_room     = false;
+      ksort($room_choices);
+      echo "<div style=\"background:lightblue;\"><b>$group_id</b>'s turn. (".implode(',',array_keys($room_choices)).").</div>";
       // iterate through all their room choices in order
       foreach( $room_choices as $room_number => $choice_number ){
         // only take apartments, not rooms (skip rooms with same option)
         if( $curr_choice == $choice_number ) continue;
         $curr_choice = $choice_number;
         $can_take = true;
+        
+        echo "<div>- Applying for $room_number as their number $choice_number choice.</div>";
+        echo "<div>--- Opponents: ".implode(',', $rooms[$room_number])."</div>";
+        
+        // the room is already taken
+        if( isset( $allocated[$room_number] ) ){
+          $can_take = false;
+          echo "<div>==> Room already allocated to $allocated[$room_number]</div>";
+          continue;
+        }
         
         // take all groups applying for that room
         // try to see if the current group can take that room
@@ -360,51 +411,68 @@
           // only compare 2 different groups
           if( $new_gid == $group_id ) continue;
           
-          // if the new group already has a room
-          if( array_search( $new_gid, $allocated ) !== false ) continue;
+          echo "<div>--- Compare to <b>$new_gid</b></div>";
           
-          // continue if you have more points
-          if( $curr_points > $total[$new_gid] ) continue;
+          // skip test if the other group already has a room
+          if( ($key = array_search( $new_gid, $allocated )) !== false ) {
+            echo "<div>-----> <b>$new_gid</b> already have a room: <b>$key</b> </div>";
+            continue;
+          }
           
-          // test whether you can keep the room
-          if(
-            // lose if the room is already taken
-            isset( $allocated[$room_number] )
-            // lose room if you have less points
-            || ($curr_points < $total[$new_gid])
-            // lose if you have the same number of points AND:
-            || ($curr_points == $total[$new_gid] && (
-                  // the choice number is higher
-                  $curr_choice > $choice[$new_gid][$room_number]
-                  // if the choice numbers are equal, 50% chances to lose the room
-                  || (($curr_choice == $choice[$new_gid][$room_number]) && !rand(0,1))
-                  )
-                )
-          ){
+          if( $curr_points > $total[$new_gid] ) {
+            echo "<div>-----> More points than <b>$new_gid</b> </div>";
+            continue;
+          }
+          
+          // groups loses the room if any of the following occurs:
+          
+          // has less points
+          if($curr_points < $total[$new_gid]){
+            echo "<div>==> Less points than <b>$new_gid</b>(".$total[$new_gid].") </div>";
             $can_take = false;
             break;
+          }
+          
+          // has the same number of points but worse choice
+          if($curr_points == $total[$new_gid] && $curr_choice > $choice[$new_gid][$room_number]){
+            echo "<div>==> Worse choice than <b>$new_gid</b>(". $choice[$new_gid][$room_number].") </div>";
+            $can_take = false;
+            break;
+          }
+          
+          // has same number of points and same choice, but is unlucky (50%)
+          if($curr_points == $total[$new_gid] && $curr_choice == $choice[$new_gid][$room_number] && !rand(0,1)){
+            echo "<div>==> <b style=\"color:red\">Lost to random</b> <b>$new_gid</b>(".$total[$new_gid].":".$choice[$new_gid][$room_number].") </div>";
+            $can_take = false;
+            break;
+          } else {
+            echo "<div>==> <b style=\"color:green\">Won to random</b> <b>$new_gid</b>(".$total[$new_gid].":".$choice[$new_gid][$room_number].") </div>";
           }
         }
         if( $can_take ){
           $new_rooms = array_keys( $choice[$group_id], $curr_choice );
           foreach( $new_rooms as $new_number ){
             $allocated[$new_number] = $group_id;
-            //echo "<div>$group_id >> $new_number</div>";
           }
           $got_room = true;
+          echo "<div style=\"color:blue\">==> Assigned to ".implode(',',$new_rooms)."!</div>";
           break;
+        } else {
+          echo "<div style=\"color:red\">==> Unallocated! </div>";
         }
       }
       if( !$got_room ){
-        $unallocated[] = $group_id;
+        $unallocated[$group_id] = true;
         //echo '<div style="color:red;">Group <b>'.$group_id.'</b> could not get a room. Try refreshing to re-allocate!</div>';
       }
     }
-
+    
+    $unallocated = array_keys( $unallocated );
     ksort( $allocated );
-    //v_export( $allocated );
     ksort( $unallocated );
-    return array( $allocated, $unallocated );
+    $log = ob_get_contents();
+    ob_end_clean();
+    return array( $allocated, $unallocated, $log );
   }
   
 ?>

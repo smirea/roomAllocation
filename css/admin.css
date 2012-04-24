@@ -43,6 +43,17 @@ body{
   margin              : 0;
 }
 
+.log{
+  border      : 1px solid #ccc;
+  background  : #fafafa;
+  height      : 250px;
+  margin      : 5px;
+  padding     : 5px;
+  font-family : courier, monospace, arial;
+  font-size   : 9pt;
+  text-align  : left;
+  overflow    : auto;
+}
 
 .allocation-table{
   border      : 1px solid #ccc;
