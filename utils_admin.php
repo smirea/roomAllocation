@@ -328,6 +328,19 @@
   function allocate_rooms( array $rooms, array $choice, array $total ){
     $allocated    = array();   // maps: room_number -> group_id
     $unallocated  = array();
+    
+    $total_points_compare = function($a,$b) use ($total){
+      return $total[$a] == $total[$b] ? 0 : ( $total[$a] < $total[$b] ? -1 : 1 );
+    };
+    
+    //sort the group_ids in rooms by the total number of points
+    foreach( $rooms as $number => $eids ){
+      uasort($rooms[$number], $total_points_compare);
+    }
+    
+    //sort the groups' choices by the total number of points
+    uksort($choice, $total_points_compare);
+    
     // pick one group at a time
     foreach( $choice as $group_id => $room_choices ){
       $curr_choice  = -1;
@@ -342,10 +355,16 @@
         // take all groups applying for that room
         // try to see if the current group can take that room
         foreach( $rooms[$room_number] as $gid_key => $new_gid ){
+          
           // only compare 2 different groups
           if( $new_gid == $group_id ) continue;
+          
           // if the new group already has a room
           if( array_search( $new_gid, $allocated ) !== false ) continue;
+          
+          // as the groups are sorted by points, succeed if you have more points
+          if( $curr_points > $total[$new_gid] ) break;
+          
           // test whether you can keep the room
           if(
             // lose if the room is already taken
@@ -357,7 +376,7 @@
                   // the choice number is higher
                   $curr_choice > $choice[$new_gid][$room_number]
                   // if the choice numbers are equal, 50% chances to lose the room
-                  || ($curr_choice == $choice[$new_gid][$room_number] && !rand(0,1))
+                  || (($curr_choice == $choice[$new_gid][$room_number]) && !rand(0,1))
                   )
                 )
           ){
