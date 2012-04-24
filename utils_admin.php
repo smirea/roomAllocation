@@ -419,6 +419,12 @@
             continue;
           }
           
+          // skip test if the other group already attempted to get a room
+          if( ($key = array_search( $new_gid, $allocated )) !== false ) {
+            echo "<div>-----> <b>$new_gid</b> attempted to get a room and failed. Skipping! </div>";
+            continue;
+          }
+          
           if( $curr_points > $total[$new_gid] ) {
             echo "<div>-----> More points than <b>$new_gid</b> </div>";
             continue;
@@ -457,12 +463,11 @@
           $got_room = true;
           echo "<div style=\"color:blue\">==> Assigned to ".implode(',',$new_rooms)."!</div>";
           break;
-        } else {
-          echo "<div style=\"color:red\">==> Unallocated! </div>";
         }
       }
       if( !$got_room ){
         $unallocated[$group_id] = true;
+        echo "<div style=\"color:red\">==> Unallocated! </div>";
         //echo '<div style="color:red;">Group <b>'.$group_id.'</b> could not get a room. Try refreshing to re-allocate!</div>';
       }
     }
