@@ -17,8 +17,7 @@
 \***************************************************************************/
 ?>
 <?php
-  define( 'DEBUG', true );
-  
+
   /** Admin config */
   define( 'ADMIN_ACCOUNTS', 'smirea,kgalal,rnjenga,skang' );
   $admin = explode(',', ADMIN_ACCOUNTS);
@@ -53,6 +52,7 @@
   
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
+    C( 'DEBUG',                     0 );
     C( 'round.active',              1 );
     C( 'round.number',              1 );
     C( 'roommates.min',             1 );
@@ -68,6 +68,8 @@
   /******************
   ***** GENERAL *****
   ******************/
+  
+  define( 'DEBUG', C('DEBUG') );
   
   /** General config */
   define( 'MAX_ROOMMATES',    C('roommates.max') );
@@ -114,7 +116,7 @@
 /**
  * Dynamically generated config file
  * Check config.php for more information
- * last edited on '.date('d.m.Y').' at '.date('h:M:S').'
+ * last edited on '.date('d.m.Y').' at '.date('h:i:s').'
  */
  
 '.serialize_array( $configuration, 'configuration' ).'
