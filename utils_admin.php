@@ -420,8 +420,8 @@
           }
           
           // skip test if the other group already attempted to get a room
-          if( ($key = array_search( $new_gid, $allocated )) !== false ) {
-            echo "<div>-----> <b>$new_gid</b> attempted to get a room and failed. Skipping! </div>";
+          if( ($key = array_search( $new_gid, $unallocated )) !== false ) {
+            echo "<div>-----> <b>$new_gid</b> attempted to get a room before and failed. Skipping! </div>";
             continue;
           }
           
@@ -434,21 +434,21 @@
           
           // has less points
           if($curr_points < $total[$new_gid]){
-            echo "<div>==> Less points than <b>$new_gid</b>(".$total[$new_gid].") </div>";
+            echo "<div style=\"color:red\">==> Less points than <b>$new_gid</b>( $curr_points < ".$total[$new_gid]." ) </div>";
             $can_take = false;
             break;
           }
           
           // has the same number of points but worse choice
           if($curr_points == $total[$new_gid] && $curr_choice > $choice[$new_gid][$room_number]){
-            echo "<div>==> Worse choice than <b>$new_gid</b>(". $choice[$new_gid][$room_number].") </div>";
+            echo "<div style=\"color:red\">==> Worse choice than <b>$new_gid</b>( $curr_choice > ". $choice[$new_gid][$room_number]." ) </div>";
             $can_take = false;
             break;
           }
           
           // has same number of points and same choice, but is unlucky (50%)
           if($curr_points == $total[$new_gid] && $curr_choice == $choice[$new_gid][$room_number] && !rand(0,1)){
-            echo "<div>==> <b style=\"color:red\">Lost to random</b> <b>$new_gid</b>(".$total[$new_gid].":".$choice[$new_gid][$room_number].") </div>";
+            echo "<div style=\"color:red\">==> <b>Lost to random</b> <b>$new_gid</b>(".$total[$new_gid].":".$choice[$new_gid][$room_number].") </div>";
             $can_take = false;
             break;
           } else {
