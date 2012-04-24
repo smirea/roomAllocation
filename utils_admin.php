@@ -352,6 +352,7 @@
         if( $curr_choice == $choice_number ) continue;
         $curr_choice = $choice_number;
         $can_take = true;
+        
         // take all groups applying for that room
         // try to see if the current group can take that room
         foreach( $rooms[$room_number] as $gid_key => $new_gid ){
@@ -362,8 +363,8 @@
           // if the new group already has a room
           if( array_search( $new_gid, $allocated ) !== false ) continue;
           
-          // as the groups are sorted by points, succeed if you have more points
-          if( $curr_points > $total[$new_gid] ) break;
+          // continue if you have more points
+          if( $curr_points > $total[$new_gid] ) continue;
           
           // test whether you can keep the room
           if(
@@ -399,8 +400,9 @@
         //echo '<div style="color:red;">Group <b>'.$group_id.'</b> could not get a room. Try refreshing to re-allocate!</div>';
       }
     }
-    
+
     ksort( $allocated );
+    //v_export( $allocated );
     ksort( $unallocated );
     return array( $allocated, $unallocated );
   }
