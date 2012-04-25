@@ -385,7 +385,7 @@
       $curr_choice  = -1;
       $curr_points  = $total[$group_id];
       $got_room     = false;
-      ksort($room_choices);
+      asort($room_choices);
       echo "<div style=\"background:lightblue;\"><b>$group_id</b>'s turn. (".implode(',',array_keys($room_choices)).").</div>";
       // iterate through all their room choices in order
       foreach( $room_choices as $room_number => $choice_number ){
