@@ -52,15 +52,21 @@
   
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
-    C( 'DEBUG',                     0 );
-    C( 'round.active',              1 );
-    C( 'round.number',              1 );
+    C( 'DEBUG',                     0 );  // mainly disable passwords for all accounts
+    C( 'round.active',              0 );  // if students can perform any action in terms of allocation (not choosing)
+    C( 'round.number',              1 );  // the current round number. useful for logging
+    C( 'round.restrictions',        0 );  // whether to use restrictions or not (i.e. config_allowed.php)
     C( 'roommates.min',             1 );
     C( 'roommates.max',             1 );
     C( 'apartment.choices',         9 );
     C( 'points.min',                1 );
     C( 'points.max',                7 );
     C( 'allocation.allocateRandom', 0 );
+    C( 'disabled.Mercator'        , 'A-101,A-102,A-103,B-202,B-203,C-302,C-303');
+    C( 'disabled.Krupp'           , 'A-302,A-303,B-202,B-203,C-101,C-102,C-103');
+    C( 'disabled.College-III'     , 'C-101,C-102,C-103,C-202,C-203,C-240,C-241,C-302,C-303,'.
+                                    'D-101,D-102,D-103,D-202,D-203,D-302,D-303,D-340,D-341');
+    C( 'disabled.Nordmetall'      , '');
   }
   require_once( DYNAMIC_CONFIG_FILE );
   require_once( 'config_allowed.php' );
@@ -106,11 +112,6 @@
       return null;
     } else if( $value !== null ){
       $v = $value;
-      if( is_string( $v ) ){
-        $v = "'$v'";
-      } else if( is_bool( $v ) ){
-        $v = $v ? 'true' : 'false';
-      }
       $configuration[$key] = $v;
       file_put_contents( DYNAMIC_CONFIG_FILE, '<?php
 /**
@@ -140,6 +141,11 @@
     $h[] = "\$$name = array();";
     foreach( $array as $key => $value ){
       if( !is_numeric( $key ) ) $key = "'$key'";
+      if( is_string( $value ) ){
+        $value = "'$value'";
+      } else if( is_bool( $value ) ){
+        $value = $value ? 'true' : 'false';
+      }
       $h[] = '$'.$name."[$key] = $value;";
     }
     return implode("\n", $h);

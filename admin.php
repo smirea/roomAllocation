@@ -70,7 +70,8 @@
           $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
                                 WHERE college='$c_name' AND room IS NOT NULL";
           $taken = sqlToArray( mysql_query( $q_taken ) );
-          add_class( 'available', $allowed_rooms[$c_name], $cls );
+          if( C('round.restrictions') )
+            add_class( 'available', $allowed_rooms[$c_name], $cls );
           add_class( 'taken', extract_column( 'room', $taken ), $cls );
           $cls = array_map(function($v){return implode(' ',$v);}, $cls);
           $floorPlans[$c_name] = create_floorPlan( $c_name, $c_map, $cls );
@@ -137,7 +138,7 @@
 
               $round = C('round.number');
               foreach( $alloc_rooms as $college => $rooms ){
-                $c          = $floorPlans[$college];
+                $c = $floorPlans[$college];
                 
                 $apartments = array();
                 foreach( $c['allocations'] as $room_no => $group_no ){
@@ -203,6 +204,7 @@ HTML;
             <?php
               $fields = array(
                 'Is round open'           => 'round.active/bool',
+                'Restrict allocations'    => 'round.restrictions/bool',
                 'Current round number'    => 'round.number/int',
                 'Max allowed roommates'   => 'roommates.max/int',
                 'Min required roommates'  => 'roommates.min/int',

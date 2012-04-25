@@ -196,7 +196,7 @@
           if( 
             count($tmp) > MAX_ROOMMATES+1 
             || count($roommates)+1 != count($tmp) 
-            || array_search( $tmp[0], $allowed_rooms[$college] ) === false ){
+            || (C('round.restrictions') && array_search( $tmp[0], $allowed_rooms[$college] ) === false) ){
             $invalid_rooms[] = "($v)";
           } else {
             sort($tmp);
