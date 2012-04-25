@@ -1,0 +1,5 @@
+# consider all double-underlined files as private
+__*.php
+
+# exclude all files in the log
+log/*
