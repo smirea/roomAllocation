@@ -83,15 +83,7 @@
     }
     
     /** compute final result */
-    $r = $rooms;
-    foreach( $r as $room_number => $v ){
-      foreach( $v as $k => $group_id ){
-        $r[$room_number][$k] = "$group_id -> c:".$choice[$group_id][$room_number]." t:".$total[$group_id];
-        $r[$room_number][$k] .= "     (".implode(',',array_map(function($v)use($people){return $people[$v]['lname'];},$groups[$group_id])).")";
-      }
-    }
-
-    list( $allocations, $random, $allocation_log ) = allocate_rooms( $rooms, $choice, $total, $people );
+    list( $allocations, $random, $allocation_log ) = allocate_rooms( $rooms, $choice, $total, $people, $groups );
     $new_allocations = array();
     if( C('allocation.allocateRandom') ){
       $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
@@ -168,27 +160,19 @@
       $unallocated = allocation_table($random,$groups,$people,$points,$total);
     }
     
-    $log_prepend = '<div class="legend">';
     $g_sorted = $groups;
     ksort( $g_sorted );
-    foreach( $g_sorted as $group_id => $eids ){
-      $people_in_group  = array_map(
-                            function($eid) use ($people){ 
-                              return '<span class="person">'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</span>';
-                            }, 
-                            $eids);
-      $people_in_group  = implode(',', $people_in_group);
-      $log_prepend .= 
-        '<div class="small-group">'.
-          '<span class="total" style="background:orange;">['.$group_id.']</span> '.
-          $people_in_group.
-          ' <span class="total">'.$total[$group_id].'</span>'.
-        '</div>';
-    }
-    $log_prepend .= '</div>';
+    $log_prepend = array_map(function($v) use ($total,$people,$groups){ 
+      return '<div>'.generate_small_group( $groups[$v], $people, $total, $v, true ).'</div>';
+    }, array_keys($g_sorted));
+    $log_prepend  = '<div class="legend">'.implode("\n",$log_prepend).'</div>';
+    $log_id       = 'allocation-log-'.$college;
     $h .= '
       <div class="display-final view" style="display:none;text-align:center;" id="final-allocation-table-'.$college.'">
-        <div class="log">
+        <div style="text-align:right;border-bottom:1px solid #ccc;padding:2px 0;">
+          <a href="javascript:void(0)" style="font-weight:bold" onclick="$(\'#'.$log_id.'\').toggle()">Toggle '.$college.'\'s allocation log</a>
+        </div>
+        <div class="log" id="'.$log_id.'" style="display:none">
           '.$log_prepend.'
           '.$allocation_log.'
         </div>
@@ -241,19 +225,7 @@
       if( !is_array( $gr ) ) 
         $gr = array( $gr );
       foreach( $gr as $g_id ){
-        $h[] = '<span class="small-group">';
-        $h[] = '<span class="total">'.$total[$g_id].'</span>';
-        foreach( $groups[$g_id] as $p_id ){
-          $person = $people[$p_id];
-          $d              = 3-((2000+(int)$person['year'])-(int)date("Y"));
-          $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
-          $h[] = '<span class="person">
-                    <img height="18" class="county" src="'.flagURL( $person['country'] ).'" />
-                    <span class="year">'.$year_of_study.'</span>
-                    <span class="name">'.$person['fname'].', '.$person['lname'].'</span>
-                  </span>';
-        }
-        $h[] = '</span>';
+        $h[] = generate_small_group( $groups[$g_id], $people, $total, $g_id );
       }
       $h[] = '</td>';
       $h[] = '</tr>';
@@ -356,7 +328,7 @@
    * @brief
    *
    */
-  function allocate_rooms( array $rooms, array $choice, array $total, array $people ){
+  function allocate_rooms( array $rooms, array $choice, array $total, array $people, $groups ){
     $allocated    = array();   // maps: room_number -> group_id
     $unallocated  = array();
     
@@ -378,7 +350,10 @@
     foreach( $choice as $group_id => $room_choices ){
       asort( $choice[$group_id] );
     }
-    //v_export( array_map(function($v) use($total){ return "$v:".$total[$v]; }, array_keys($choice)) );
+    
+    $generate_group_id = function($group_id){
+      return '<span class="small-group"><span class="group_id">['.$group_id.']</span></span>';
+    };
     
     // pick one group at a time
     foreach( $choice as $group_id => $room_choices ){
@@ -386,7 +361,9 @@
       $curr_points  = $total[$group_id];
       $got_room     = false;
       asort($room_choices);
-      echo "<div style=\"background:lightblue;\"><b>$group_id</b>'s turn. (".implode(',',array_keys($room_choices)).").</div>";
+      echo "<div style=\"background:lightblue;\"><b>".
+              generate_small_group( $groups[$group_id], $people, $total, $group_id ).
+              "</b>'s turn. (".implode(',',array_keys($room_choices)).").</div>";
       // iterate through all their room choices in order
       foreach( $room_choices as $room_number => $choice_number ){
         // only take apartments, not rooms (skip rooms with same option)
@@ -394,8 +371,8 @@
         $curr_choice = $choice_number;
         $can_take = true;
         
-        echo "<div>- Applying for $room_number as their number $choice_number choice.</div>";
-        echo "<div>--- Opponents: ".implode(',', $rooms[$room_number])."</div>";
+        echo "<div>- Trying to get (".implode(',',get_apartment($room_number)).") as choice number $choice_number .</div>";
+        echo "<div>--- Opponents: ".implode(',', array_map($generate_group_id, $rooms[$room_number]))."</div>";
         
         // the room is already taken
         if( isset( $allocated[$room_number] ) ){
@@ -408,25 +385,27 @@
         // try to see if the current group can take that room
         foreach( $rooms[$room_number] as $gid_key => $new_gid ){
           
+          $html_new_gid = $generate_group_id($new_gid);
+          
           // only compare 2 different groups
           if( $new_gid == $group_id ) continue;
           
-          echo "<div>--- Compare to <b>$new_gid</b></div>";
+          echo "<div>--- Compare to $html_new_gid</div>";
           
           // skip test if the other group already has a room
           if( ($key = array_search( $new_gid, $allocated )) !== false ) {
-            echo "<div>-----> <b>$new_gid</b> already have a room: <b>$key</b> </div>";
+            echo "<div>-----> $html_new_gid already have a room: <b>$key</b> </div>";
             continue;
           }
           
           // skip test if the other group already attempted to get a room
           if( ($key = array_search( $new_gid, $unallocated )) !== false ) {
-            echo "<div>-----> <b>$new_gid</b> attempted to get a room before and failed. Skipping! </div>";
+            echo "<div>-----> $html_new_gid attempted to get a room before and failed. Skipping! </div>";
             continue;
           }
           
           if( $curr_points > $total[$new_gid] ) {
-            echo "<div>-----> More points than <b>$new_gid</b> </div>";
+            echo "<div>-----> More points than $html_new_gid </div>";
             continue;
           }
           
@@ -434,25 +413,25 @@
           
           // has less points
           if($curr_points < $total[$new_gid]){
-            echo "<div style=\"color:red\">==> Less points than <b>$new_gid</b>( $curr_points < ".$total[$new_gid]." ) </div>";
+            echo "<div style=\"color:red\">==> Less points than $html_new_gid( $curr_points < ".$total[$new_gid]." ) </div>";
             $can_take = false;
             break;
           }
           
           // has the same number of points but worse choice
           if($curr_points == $total[$new_gid] && $curr_choice > $choice[$new_gid][$room_number]){
-            echo "<div style=\"color:red\">==> Worse choice than <b>$new_gid</b>( $curr_choice > ". $choice[$new_gid][$room_number]." ) </div>";
+            echo "<div style=\"color:red\">==> Worse choice than $html_new_gid( $curr_choice > ". $choice[$new_gid][$room_number]." ) </div>";
             $can_take = false;
             break;
           }
           
           // has same number of points and same choice, but is unlucky (50%)
           if($curr_points == $total[$new_gid] && $curr_choice == $choice[$new_gid][$room_number] && !rand(0,1)){
-            echo "<div style=\"color:red\">==> <b>Lost to random</b> <b>$new_gid</b>(".$total[$new_gid].":".$choice[$new_gid][$room_number].") </div>";
+            echo "<div style=\"color:red\">==> <b>Lost to random</b></div>";
             $can_take = false;
             break;
           } else {
-            echo "<div>==> <b style=\"color:green\">Won to random</b> <b>$new_gid</b>(".$total[$new_gid].":".$choice[$new_gid][$room_number].") </div>";
+            echo "<div>==> <b style=\"color:green\">Won to random</b></div>";
           }
         }
         if( $can_take ){
@@ -478,6 +457,27 @@
     $log = ob_get_contents();
     ob_end_clean();
     return array( $allocated, $unallocated, $log );
+  }
+  
+  function generate_small_group( $group, $people, $total, $group_id = null, $print_group_id = false ){
+    $h    = array();
+    $h[]  = '<span class="small-group">';
+    if( $print_group_id )
+      $h[]  = '<span class="group_id">['.$group_id.']</span>';
+    if( $group_id !== null )
+      $h[]  = '<span class="total">'.$total[$group_id].'p</span>';
+    foreach( $group as $eid ){
+      $person         = $people[$eid];
+      $d              = 3-((2000+(int)$person['year'])-(int)date("Y"));
+      $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
+      $h[] = '<span class="person">
+                <img height="18" class="county" src="'.flagURL( $person['country'] ).'" />
+                <span class="year">'.$year_of_study.'</span>
+                <span class="name">'.$person['fname'].', '.$person['lname'].'</span>
+              </span>';
+    }
+    $h[] = '</span>';
+    return implode("\n",$h);
   }
   
 ?>
