@@ -159,6 +159,35 @@
               }
               $q_delete = "DELETE FROM ".TABLE_APARTMENT_CHOICES."";
               mysql_query( $q_delete );
+              try{
+                foreach( array_keys($arr) as $college ){
+                  $name = "$round-$college.html";
+                  $log  = $_POST["allocation-log-$college"];
+                  $log  = stripslashes(htmlspecialchars_decode( $log ));
+                  $log  = <<<HTML
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  
+    <link rel="stylesheet" type="text/css" href="../css/html5cssReset.css" />
+    <link rel="stylesheet" type="text/css" href="../css/floorPlan.css" />
+    <link rel="stylesheet" type="text/css" href="../css/roomAllocation.css" />
+    <link rel="stylesheet" type="text/css" href="../css/admin.css" />
+  </head>
+  
+  <body>
+    <div id="main" style="width:auto;margin:10px">
+      <h3>Allocation log for $college in round $round</h3>
+      $log
+    </div>
+  </body>
+</html>
+HTML;
+                  file_put_contents( "log/$name", $log );
+                }
+              } catch( Exception $e ){
+                echo "<div>Unable to write log for $college: ".$e->getMessage()."</div>";
+              }
               break;
             default:
               echo '<div>No action took</div>';
@@ -230,6 +259,8 @@
                 $arr[] = "$room_id:$group_id";
               }
               echo '<input type="hidden" name="college-'.$college.'" value="'.implode(';',$arr).'" size="200"/>';
+              $log = htmlspecialchars($data['log']);
+              echo '<textarea style="display:none" name="allocation-log-'.$college.'">'.$log.'</textarea>';
             }
           ?>
           <input onclick="return confirm('Warning: this cannot be undone!');" type="submit" value="Make allocations permanent" />

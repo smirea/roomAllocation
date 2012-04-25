@@ -165,7 +165,8 @@
     $log_prepend = array_map(function($v) use ($total,$people,$groups){ 
       return '<div>'.generate_small_group( $groups[$v], $people, $total, $v, true ).'</div>';
     }, array_keys($g_sorted));
-    $log_prepend  = '<div class="legend">'.implode("\n",$log_prepend).'</div>';
+    $log_prepend    = '<div class="legend">'.implode("\n",$log_prepend).'</div>';
+    $allocation_log = $log_prepend . $allocation_log;
     $log_id       = 'allocation-log-'.$college;
     $h .= '
       <div class="display-final view" style="display:none;text-align:center;" id="final-allocation-table-'.$college.'">
@@ -173,7 +174,6 @@
           <a href="javascript:void(0)" style="font-weight:bold" onclick="$(\'#'.$log_id.'\').toggle()">Toggle '.$college.'\'s allocation log</a>
         </div>
         <div class="log" id="'.$log_id.'" style="display:none">
-          '.$log_prepend.'
           '.$allocation_log.'
         </div>
         <table cellspacing="0" cellpadding="0" class="allocation-table" style="float:left">
