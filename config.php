@@ -19,7 +19,7 @@
 <?php
 
   /** Admin config */
-  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal,rnjenga,skang' );
+  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal,rnjenga,skang,mdiasdasil' );
   $admin = explode(',', ADMIN_ACCOUNTS);
   
   /** Bulk config */
