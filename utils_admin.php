@@ -467,9 +467,12 @@
     if( $group_id !== null )
       $h[]  = '<span class="total">'.$total[$group_id].'p</span>';
     foreach( $group as $eid ){
-      $person         = $people[$eid];
-      $d              = 3-((2000+(int)$person['year'])-(int)date("Y"));
-      $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
+      $person = $people[$eid];
+      $d      = 3-((2000+(int)$person['year'])-(int)date("Y"));
+      if( $people['status'] == 'foundation-year' )
+        $year_of_study  = 'fy'
+      else
+        $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
       $h[] = '<span class="person">
                 <img height="18" class="county" src="'.flagURL( $person['country'] ).'" />
                 <span class="year">'.$year_of_study.'</span>
