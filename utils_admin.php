@@ -469,7 +469,7 @@
     foreach( $group as $eid ){
       $person = $people[$eid];
       $d      = 3-((2000+(int)$person['year'])-(int)date("Y"));
-      if( $people['status'] == 'foundation-year' )
+      if( $person['status'] == 'foundation-year' )
         $year_of_study  = 'fy';
       else
         $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
