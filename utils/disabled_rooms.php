@@ -19,6 +19,7 @@
     }
   }
   
-  echo implode(', ', $result);
-  
+  echo "<pre>";
+  echo "INSERT INTO Allocations(college,room,round) VALUES \n".implode(",\n", $result).';';
+  echo "</pre>";
 ?>
