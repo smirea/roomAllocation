@@ -158,8 +158,21 @@
                   }
                 }
               }
+              
               $q_delete = "DELETE FROM ".TABLE_APARTMENT_CHOICES."";
               mysql_query( $q_delete );
+              
+              $q_reset_groups = "SELECT i.group_id FROM ".TABLE_ALLOCATIONS." a, ".TABLE_IN_GROUP." i 
+                                  WHERE a.eid=i.eid AND a.room IS NULL;";
+              $gids = sqlToArray( mysql_query( $q_reset_groups ) );
+              $gids = implode(',', extract_column( 'group_id', $gids) );
+              
+              $q_delete_1 = "DELETE FROM ".TABLE_IN_GROUP." WHERE group_id IN (".$gids.")";
+              mysql_query( $q_delete_1 );
+
+              $q_delete_2 = "DELETE FROM ".TABLE_GROUPS." WHERE id IN (".$gids.")";
+              mysql_query( $q_delete_2 );
+              
               try{
                 foreach( array_keys($arr) as $college ){
                   $name = "$round-$college.html";
