@@ -191,20 +191,28 @@
                               '</option>';
               }
               $tag = 'room-'.$info['room'];
-              $h .= '<label for="'.$tag.'">'.
-                      $info['room'].':
-                      <select name="'.$tag.'" id="'.$tag.'">
-                        '.$options.'
-                      </select>
-                    </label><br />';
+              $h .= '<tr>
+                      <td style="vertical-align:middle;"><label for="'.$tag.'">'.$info['room'].':</label> </td>
+                      <td>
+                        <select name="'.$tag.'" id="'.$tag.'">
+                          '.$options.'
+                        </select>
+                      </td>
+                    </tr>';
             }
             
             echo '
               <div class="content">
                 <form class="wrapper" id="select-rooms" action="ajax.php" method="get">
                   <h3>Final Step: Choose Rooms</h3>
-                  '.$h.'
-                  <input type="submit" value="Change Rooms" />
+                  <table>
+                    '.$h.'
+                    <tr>
+                      <td colspan="2" style="text-align:right">
+                        <input type="submit" value="Change Rooms" />
+                      </td>
+                    </tr>
+                  </table>
                 </form>
               </div>
             ';
