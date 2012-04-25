@@ -21,6 +21,11 @@
   require_once 'config.php';
   require_once 'WorldRegions.php';
   
+  /**
+   * @brief Applies input sanitizing functions for every value in the array, recursively
+   * @param {array} &$arr
+   * @returns {array}
+   */
   function recursive_escape( array &$arr ){
     foreach( $arr as $k => $v ){
       if( is_array( $v ) ){
@@ -32,6 +37,10 @@
     return $arr;
   }
   
+  /**
+   * @brief
+   * @param {string} $eid
+   */
   function get_college_by_eid( $eid ){
     $q        = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
     $college  = mysql_fetch_assoc( mysql_query( $q ) );
@@ -40,6 +49,8 @@
   
   /**
    * Get all roommates of a person from a group
+   * @param {string} $eid
+   * @param {string} $group_id
    */
   function get_roommates( $eid, $group_id ){
     $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i 
@@ -85,8 +96,21 @@
       mysql_query( $q_create );
       $group_id = mysql_insert_id();
     }
+    // insert into group
     $q = "INSERT INTO ".TABLE_IN_GROUP."(eid,group_id) VALUES ('$eid', '$group_id')";
     mysql_query( $q );
+    
+    // select everyone in group
+    $q_people = "SELECT p.* FROM ".TABLE_IN_GROUP." i, ".TABLE_PEOPLE." p 
+                  WHERE group_id='$group_id' AND i.eid=p.eid";
+    $people = sqlToArray( mysql_query( $q_people ) );
+    
+    $points = get_points( $people );
+
+    // update the group's score
+    $q_update = "UPDATE ".TABLE_GROUPS." SET score='".$points['total']."' WHERE id='$group_id'";
+    mysql_query( $q_update );
+    
     return $group_id;
   }
   

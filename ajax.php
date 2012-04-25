@@ -209,6 +209,8 @@
         }
       }
       
+      e_assert( count($rooms) > 0, "You have not submitted any room choice!");
+      
       $q_taken = "SELECT room 
                   FROM ".TABLE_ALLOCATIONS."
                   WHERE college='$college' 
@@ -245,14 +247,21 @@
       $output['info']   = 'Rooms updated successfully!';
       break;
     case 'selectRooms':
-      //TODO: EROR:CHECKING
+      $roommates  = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
+      $r_eids     = array_flip( extract_column( 'eid', $roommates ) );
+      $bitmask    = array();
       foreach( $_GET as $k => $v ){
         if( substr( $k, 0, 5 ) == 'room-' ){
           $room = substr( $k, 5 );
-          $q = "UPDATE ".TABLE_ALLOCATIONS." SET room='$room' WHERE eid='$v'";
-          if( !mysql_query($q) ){
-            $output['error'] .= mysql_error().'<br />';
-          }
+          e_assert( isset( $r_eids[$v] ), "Some people in that list are not your roommates" );
+          e_assert( !isset( $bitmask[$v] ), "Don't be greedy man, one room per person..." );
+          $bitmask[$v] = $room;
+        }
+      }
+      foreach( $bitmask as $eid => $room ){
+        $q = "UPDATE ".TABLE_ALLOCATIONS." SET room='$room' WHERE eid='$eid'";
+        if( !mysql_query($q) ){
+          $output['error'] .= mysql_error().'<br />';
         }
       }
       $output['info'] = 'Rooms update successfully!';
