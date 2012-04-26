@@ -248,7 +248,8 @@
       break;
     case 'selectRooms':
       $roommates  = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
-      $r_eids     = array_flip( extract_column( 'eid', $roommates ) );
+      $r_eids     = array_merge( array($eid), extract_column( 'eid', $roommates ) );
+      $r_eids     = array_combine( $r_eids, array_fill(0,count($r_eids),false) );
       $bitmask    = array();
       foreach( $_GET as $k => $v ){
         if( substr( $k, 0, 5 ) == 'room-' ){
