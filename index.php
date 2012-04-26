@@ -49,10 +49,22 @@
       <?php require_once 'login.php'; ?>
       
       <div class="message-holder">
-        <div id="message-info" class="info message"><div class="content"></div></div>
-        <div id="message-error" class="error message"><div class="content"></div></div>
-        <div id="message-warning" class="warning message"><div class="content"></div></div>
-        <div id="message-success" class="success message"><div class="content"></div></div>
+        <div id="message-info" class="info message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+        <div id="message-error" class="error message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+        <div id="message-warning" class="warning message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+        <div id="message-success" class="success message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
       </div>
       
       <div id="wrapper">

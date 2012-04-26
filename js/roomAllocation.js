@@ -50,9 +50,17 @@ var RPC = {
     init_select_rooms();
     add_floorplan_events();
     register_global_ajax_handlers();
+    bulk_events();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( RPC.reload, 20 * 60 * 1000 );
   });
+  
+  var bulk_events = function(){
+    $('.message .close').live('click.close', function(){
+      var $msg = $(this).parent();
+      $msg.fadeOut( 600, function(){ $msg.remove(); } );
+    });
+  }
   
   var init_select_rooms = function(){
     
@@ -370,29 +378,10 @@ var RPC = {
         .hide()
         .fadeIn( 800 )
         .find('.content')
-        .html( message )
-        .data( 'timeout', setTimeout(clear_message(clone), 10 * 1000) )
-        .bind('click.clear', function(){
-          clearTimeout( clone.data('timeout') );
-          clear_message( clone )();
-        });
+        .html( message );
       container[0].scrollTop = container[0].scrollHeight;
-      /*
-      if( container.height() > 200 ){
-        var toHide = container.find('.message:visible').first();
-        clearTimeout( toHide.data('timeout') );
-        toHide.hide();
-      }
-      */
     } else {
       console.warn( 'Unknown message type', arguments );
-    }
-    
-    function clear_message( clone, speed ){ 
-      speed = speed || 800;
-      return function(){
-        clone.fadeOut(speed, function(){ clone.remove(); });
-      }
     }
   }
   

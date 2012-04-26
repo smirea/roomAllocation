@@ -44,6 +44,35 @@
   -moz-animation    : animate-bg 5s linear infinite;
 }
 
+.message{
+  position : relative;
+  overflow  : hidden;
+}
+.message .content{
+  margin-right  : 35px;
+}
+.message .close{
+  position        : absolute;
+  right           : 5px;
+  top             : 9px;
+  border          : 1px solid rgba( 255, 255, 255, 0.6 );
+  border-radius         : 4px;
+  -moz-border-radius    : 4px;
+  -webkit-border-radius : 4px;
+  background      : rgba( 255, 255, 255, 0.2 );
+  padding         : 2px 10px;
+  font-weight     : bold;
+  text-align      : center;
+  text-decoration : none;
+  color           : #fff;
+}
+.message .close:hover, .message .close:focus{
+  border-color    : rgba( 255, 255, 255, 0.8 );
+  background      : rgba( 255, 255, 255, 0.4 );
+  text-decoration : none;
+  color           : #fff;
+}
+
 .message a, .message a:hover, .message a:focus{
   color : yellow;
 }
@@ -72,11 +101,11 @@
 }
 
 .message h3{
-  margin: 0 0 5px 0;                          
+  margin: 0 0 5px 0;
 }
 
 .message p{
-  margin: 0;                          
+  margin: 0;
 }
 
 @-webkit-keyframes animate-bg{
