@@ -145,9 +145,14 @@
         </div>
       ';
     }
-
-    $table        = allocation_table( $rooms, $groups, $people, $points, $total );
-    $final_table  = allocation_table( $allocations, $groups, $people, $points, $total );
+    
+    foreach( $rooms as $number => $gids ){
+      uasort( $rooms[$number], function( $a, $b )use($number, $total, $choice){
+        return $total[$a] == $total[$b] ? ($choice[$a][$number] - $choice[$b][$number]) : ( $total[$a] - $total[$b] );
+      });
+    }
+    $table        = allocation_table( $rooms, $groups, $people, $points, $total, $choice );
+    $final_table  = allocation_table( $allocations, $groups, $people, $points, $total, $choice );
 
     $h .= '
       <table cellspacing="0" cellpadding="0" id="allocation-table-'.$college.'" class="allocation-table display-floorPlan view" style="display:none;">
@@ -162,8 +167,8 @@
     
     $g_sorted = $groups;
     ksort( $g_sorted );
-    $log_prepend = array_map(function($v) use ($total,$people,$groups){ 
-      return '<div>'.generate_small_group( $groups[$v], $people, $total, $v, true ).'</div>';
+    $log_prepend = array_map(function($v) use ($total,$people,$groups){
+      return '<div>'.generate_small_group( $groups[$v], $people, $v, $total[$v] ).'</div>';
     }, array_keys($g_sorted));
     $log_prepend    = '<div class="legend">'.implode("\n",$log_prepend).'</div>';
     $allocation_log = $log_prepend . $allocation_log;
@@ -214,7 +219,7 @@
     );
   }
   
-  function allocation_table( $rooms, $groups, $people, $points, $total ){
+  function allocation_table( $rooms, $groups, $people, $points, $total, $choices = null ){
     $table = array();
     $i = 0;
     foreach( $rooms as $number => $gr ){
@@ -225,7 +230,10 @@
       if( !is_array( $gr ) ) 
         $gr = array( $gr );
       foreach( $gr as $g_id ){
-        $h[] = generate_small_group( $groups[$g_id], $people, $total, $g_id );
+        if( $choices && isset($choices[$g_id][$number]) )
+          $h[] = '<div>'.generate_small_group( $groups[$g_id], $people, $g_id, $total[$g_id], $choices[$g_id][$number] ).'</div>';
+        else
+          $h[] = '<div>'.generate_small_group( $groups[$g_id], $people, $g_id, $total[$g_id] ).'</div>';
       }
       $h[] = '</td>';
       $h[] = '</tr>';
@@ -362,7 +370,7 @@
       $got_room     = false;
       asort($room_choices);
       echo "<div style=\"background:lightblue;\"><b>".
-              generate_small_group( $groups[$group_id], $people, $total, $group_id ).
+              generate_small_group( $groups[$group_id], $people, $group_id, $total[$group_id] ).
               "</b>'s turn. (".implode(',',array_keys($room_choices)).").</div>";
       // iterate through all their room choices in order
       foreach( $room_choices as $room_number => $choice_number ){
@@ -459,13 +467,20 @@
     return array( $allocated, $unallocated, $log );
   }
   
-  function generate_small_group( $group, $people, $total, $group_id = null, $print_group_id = false ){
+  /**
+   *
+   */
+  function generate_small_group( $group, $people, $group_id = null, $total = null, $choice = null ){
     $h    = array();
     $h[]  = '<span class="small-group">';
-    if( $print_group_id )
-      $h[]  = '<span class="group_id">['.$group_id.']</span>';
+    
     if( $group_id !== null )
-      $h[]  = '<span class="total">'.$total[$group_id].'p</span>';
+      $h[] = '<span class="group_id">['.$group_id.']</span>';
+    if( $total !== null )
+      $h[] = '<span class="total">'.$total.'p</span>';
+    if( $choice !== null )
+      $h[] = '<span class="choice">'.$choice.'</span>';
+    
     foreach( $group as $eid ){
       $person = $people[$eid];
       $d      = 3-((2000+(int)$person['year'])-(int)date("Y"));

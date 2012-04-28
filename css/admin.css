@@ -71,6 +71,9 @@ body{
 .allocation-table .even{
   background  : #E3F2FF;
 }
+.allocation-table .small-group{
+  display : block;
+}
 .small-group{
   padding     : 1px 0;
 }
@@ -83,6 +86,13 @@ body{
 .small-group .group_id{
   display     : inline-block;
   background  : orange;
+  padding     : 0 4px;
+  font-weight : bold;
+  color       : #fff;
+}
+.small-group .choice{
+  display     : inline-block;
+  background  : crimson;
   padding     : 0 4px;
   font-weight : bold;
   color       : #fff;
