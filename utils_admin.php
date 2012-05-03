@@ -83,7 +83,7 @@
     }
     
     /** compute final result */
-    list( $allocations, $random, $allocation_log ) = allocate_rooms( $rooms, $choice, $total, $people, $groups );
+    list( $allocations, $random, $allocation_log ) = allocate_rooms( $rooms, $choice, $total, $people, $groups, $college );
     $new_allocations = array();
     if( C('allocation.allocateRandom') ){
       $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
@@ -333,15 +333,30 @@
   }
   
   /**
-   * @brief
-   *
+   * @brief Allocates all the rooms to all the groups and returns a thorough result
+   * @param {array} $rooms
+   * @param {array} $choice
+   * @param {array} $total
+   * @param {array} $people
+   * @param {array} $groups
+   * @param {string} $college
+   * @returns {array mixed}
    */
-  function allocate_rooms( array $rooms, array $choice, array $total, array $people, $groups ){
-    $allocated    = array();   // maps: room_number -> group_id
-    $unallocated  = array();
+  function allocate_rooms( array $rooms, array $choice, array $total, array $people, array $groups, $college ){
+    $allocated    = array();    // maps: room_number          -> group_id
+    $unallocated  = array();    // maps: group_id             -> bool
+    $already_lost = $choice;    // maps: group_id,room_number -> bool
     
     // Catch all output
     ob_start();
+    
+    foreach( $already_lost as $group_id => $v ){
+      foreach( $v as $room_number => $v2 ){
+        $already_lost[$group_id][$room_number] = false;
+      }
+    }
+    
+    $fn_get_apartment = $college !== 'Nordmetall' ? 'get_apartment' : 'get_apartment_NM';
     
     $total_points_compare = function($a,$b) use ($total){
       return $total[$a] == $total[$b] ? 0 : ( $total[$a] < $total[$b] ? -1 : 1 );
@@ -379,13 +394,21 @@
         $curr_choice = $choice_number;
         $can_take = true;
         
-        echo "<div>- Trying to get (".implode(',',get_apartment($room_number)).") as choice number $choice_number .</div>";
+        echo "<div style=\"font-weight:bold\">- Trying to get (".implode(',',$fn_get_apartment($room_number)).") as choice number $choice_number .</div>";
         echo "<div>--- Opponents: ".implode(',', array_map($generate_group_id, $rooms[$room_number]))."</div>";
         
         // the room is already taken
         if( isset( $allocated[$room_number] ) ){
           $can_take = false;
-          echo "<div>==> Room already allocated to $allocated[$room_number]</div>";
+          echo "<div>==> Room already allocated to ".$allocated[$room_number]."</div>";
+          continue;
+        }
+        
+        // the room is already taken
+        if( $already_lost[$group_id][$room_number] ){
+          $can_take = false;
+          echo "<div style=\"color:red;font-weight:bold;\">==> You already lost this room 
+                  to random against ".$generate_group_id($already_lost[$group_id][$room_number])."</div>";
           continue;
         }
         
@@ -402,13 +425,13 @@
           
           // skip test if the other group already has a room
           if( ($key = array_search( $new_gid, $allocated )) !== false ) {
-            echo "<div>-----> $html_new_gid already have a room: <b>$key</b> </div>";
+            echo "<div>-----> $html_new_gid already have a room: <b>".implode(', ', $fn_get_apartment($key) )."</b> </div>";
             continue;
           }
           
           // skip test if the other group already attempted to get a room
-          if( ($key = array_search( $new_gid, $unallocated )) !== false ) {
-            echo "<div>-----> $html_new_gid attempted to get a room before and failed. Skipping! </div>";
+          if( isset($unallocated[$new_gid]) ) {
+            echo "<div>-----> $html_new_gid attempted to get a room before. Skipping! </div>";
             continue;
           }
           
@@ -435,11 +458,12 @@
           
           // has same number of points and same choice, but is unlucky (50%)
           if($curr_points == $total[$new_gid] && $curr_choice == $choice[$new_gid][$room_number] && !rand(0,1)){
-            echo "<div style=\"color:red\">==> <b>Lost to random</b></div>";
+            echo "<div style=\"color:red;font-weight:bold;\">==> Lost to random</div>";
             $can_take = false;
             break;
           } else {
-            echo "<div>==> <b style=\"color:green\">Won to random</b></div>";
+            echo "<div style=\"color:green;font-weight:bold;\">==>Won to random</div>";
+            $already_lost[$new_gid][$room_number] = $group_id;
           }
         }
         if( $can_take ){
