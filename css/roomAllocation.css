@@ -208,6 +208,10 @@ body{
 .room.available{
   background  : yellow;
 }
+.room.locked{
+  background  : crimson!important;
+  color       : #fff;
+}
 .room .person{
   display : none;
 }
