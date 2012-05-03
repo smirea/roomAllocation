@@ -73,7 +73,7 @@
           if( C('round.restrictions') )
             add_class( 'available', $allowed_rooms[$c_name], $cls );
           add_class( 'taken', extract_column( 'room', $taken ), $cls );
-          add_class( 'taken', array_map( 'trim', explode(',', C("disabled.$c_name")) ), $cls );
+          add_class( 'locked', array_map( 'trim', explode(',', C("disabled.$c_name")) ), $cls );
           $cls = array_map(function($v){return implode(' ',$v);}, $cls);
           $floorPlans[$c_name] = create_floorPlan( $c_name, $c_map, $cls );
         }
