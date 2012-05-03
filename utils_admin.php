@@ -447,24 +447,29 @@
             echo "<div style=\"color:red\">==> Less points than $html_new_gid( $curr_points < ".$total[$new_gid]." ) </div>";
             $can_take = false;
             break;
-          }
-          
-          // has the same number of points but worse choice
-          if($curr_points == $total[$new_gid] && $curr_choice > $choice[$new_gid][$room_number]){
-            echo "<div style=\"color:red\">==> Worse choice than $html_new_gid( $curr_choice > ". $choice[$new_gid][$room_number]." ) </div>";
-            $can_take = false;
-            break;
-          }
-          
-          // has same number of points and same choice, but is unlucky (50%)
-          if($curr_points == $total[$new_gid] && $curr_choice == $choice[$new_gid][$room_number] && !rand(0,1)){
-            echo "<div style=\"color:red;font-weight:bold;\">==> Lost to random</div>";
-            $can_take = false;
-            break;
+          } else if( $curr_points == $total[$new_gid] ){ // has the same number of points
+            // and has worst choice
+            if($curr_choice > $choice[$new_gid][$room_number]){
+              echo "<div style=\"color:red\">==> Worse choice than $html_new_gid( $curr_choice > ". $choice[$new_gid][$room_number]." ) </div>";
+              $can_take = false;
+              break;
+            } else if($curr_choice == $choice[$new_gid][$room_number]){
+              // and has same choice, but is unlucky (50%)
+              if( rand(0,1) === 1 ){
+                echo "<div style=\"color:red;font-weight:bold;\">==> Lost to random</div>";
+                $can_take = false;
+                break;
+              } else {
+                echo "<div style=\"color:green;font-weight:bold;\">==>Won to random</div>";
+                $already_lost[$new_gid][$room_number] = $group_id;
+              }
+            } else {
+              echo "<div>-----> Better choice than $html_new_gid ( $curr_choice < ". $choice[$new_gid][$room_number]." ) </div>";
+            }
           } else {
-            echo "<div style=\"color:green;font-weight:bold;\">==>Won to random</div>";
-            $already_lost[$new_gid][$room_number] = $group_id;
+            echo "<div>-----> More points than than $html_new_gid</div>";
           }
+          
         }
         if( $can_take ){
           $new_rooms = array_keys( $choice[$group_id], $curr_choice );
@@ -472,13 +477,13 @@
             $allocated[$new_number] = $group_id;
           }
           $got_room = true;
-          echo "<div style=\"color:blue\">==> Assigned to ".implode(',',$new_rooms)."!</div>";
+          echo "<div style=\"color:blue; font-weight:bold\">==> Assigned to ".implode(',',$new_rooms)."!</div>";
           break;
         }
       }
       if( !$got_room ){
         $unallocated[$group_id] = true;
-        echo "<div style=\"color:red\">==> Unallocated! </div>";
+        echo "<div style=\"color:red; font-weight:bold;\">==> Unallocated! </div>";
         //echo '<div style="color:red;">Group <b>'.$group_id.'</b> could not get a room. Try refreshing to re-allocate!</div>';
       }
     }
