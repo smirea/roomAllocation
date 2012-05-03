@@ -42,6 +42,8 @@
   $_SESSION['info']['group_id'] = $tmp_group_id['group_id'];
   $college  = get_college_by_eid( $eid );
   
+  $colleges = array( 'Mercator', 'Krupp', 'College-III', 'Nordmetall' );
+  
   $output = array(
     'result'  => false,
     'rpc'     => null,
@@ -186,6 +188,8 @@
       
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       
+      $disabled = array_map( 'trim', explode( ',', C("disabled.$college") ) );
+      
       $rooms          = array();
       $invalid_rooms  = array();
       $bitmask        = array();
@@ -196,7 +200,9 @@
           if( 
             count($tmp) > MAX_ROOMMATES+1 
             || count($roommates)+1 != count($tmp) 
-            || (C('round.restrictions') && array_search( $tmp[0], $allowed_rooms[$college] ) === false) ){
+            || in_array( $tmp[0], $disabled )
+            || (C('round.restrictions') && !in_array( $tmp[0], $allowed_rooms[$college] ) )
+          ){
             $invalid_rooms[] = "($v)";
           } else {
             sort($tmp);

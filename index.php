@@ -342,6 +342,7 @@
                     if( C('round.restrictions') )
                       add_class( 'available', $allowed_rooms[$d['college']], $classes );
                     add_class( 'taken', extract_column( 'room', $taken ), $classes );
+                    add_class( 'taken', array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) ), $classes );
                     add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
                     
                     $classes = array_map(function($v){return implode(' ',$v);}, $classes);

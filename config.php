@@ -62,11 +62,10 @@
     C( 'points.min',                1 );
     C( 'points.max',                7 );
     C( 'allocation.allocateRandom', 0 );
-    C( 'disabled.Mercator'        , 'A-101,A-102,A-103,B-202,B-203,C-302,C-303');
-    C( 'disabled.Krupp'           , 'A-302,A-303,B-202,B-203,C-101,C-102,C-103');
-    C( 'disabled.College-III'     , 'C-101,C-102,C-103,C-202,C-203,C-240,C-241,C-302,C-303,'.
-                                    'D-101,D-102,D-103,D-202,D-203,D-302,D-303,D-340,D-341');
-    C( 'disabled.Nordmetall'      , '');
+    C( 'disabled.Mercator'        , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C( 'disabled.Krupp'           , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C( 'disabled.College-III'     , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C( 'disabled.Nordmetall'      , '');  // custom disabled rooms (like reserver for CMs , etc)
   }
   require_once( DYNAMIC_CONFIG_FILE );
   require_once( 'config_allowed.php' );

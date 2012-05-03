@@ -73,6 +73,7 @@
           if( C('round.restrictions') )
             add_class( 'available', $allowed_rooms[$c_name], $cls );
           add_class( 'taken', extract_column( 'room', $taken ), $cls );
+          add_class( 'taken', array_map( 'trim', explode(',', C("disabled.$c_name")) ), $cls );
           $cls = array_map(function($v){return implode(' ',$v);}, $cls);
           $floorPlans[$c_name] = create_floorPlan( $c_name, $c_map, $cls );
         }
@@ -216,14 +217,18 @@ HTML;
             <input type="hidden" name="action" value="config" />
             <?php
               $fields = array(
-                'Is round open'           => 'round.active/bool',
-                'Restrict allocations'    => 'round.restrictions/bool',
-                'Current round number'    => 'round.number/int',
-                'Max allowed roommates'   => 'roommates.max/int',
-                'Min required roommates'  => 'roommates.min/int',
-                'Max number of choices'   => 'apartment.choices/int',
-                'Minimum points required' => 'points.min/int',
-                'Maximum points required' => 'points.max/int'
+                'Is round open'                 => 'round.active/bool',
+                'Restrict allocations'          => 'round.restrictions/bool',
+                'Current round number'          => 'round.number/int',
+                'Max allowed roommates'         => 'roommates.max/int',
+                'Min required roommates'        => 'roommates.min/int',
+                'Max number of choices'         => 'apartment.choices/int',
+                'Minimum points required'       => 'points.min/int',
+                'Maximum points required'       => 'points.max/int',
+                'Disabled rooms in Mercator'    => 'disabled.Mercator/string',
+                'Disabled rooms in Krupp'       => 'disabled.Krupp/string',
+                'Disabled rooms in College-III' => 'disabled.College-III/string',
+                'Disabled rooms in Nordmetall'  => 'disabled.Nordmetall/string'
               );
               $h = array();
               foreach( $fields as $label => $properties ){
@@ -254,7 +259,7 @@ HTML;
                 <table>
                   '.implode("\n",$h).'
                   <tr>
-                    <td colspan="2" style="text-align:right">
+                    <td colspan="2" style="text-align:left">
                       <input type="submit" value="Update" />
                     </td>
                   </tr>
