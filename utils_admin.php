@@ -424,9 +424,13 @@
                             with a chance of <b>'.round(100/count($contestants),2).'%</b>', 1 );
       }
       if( count($unallocated) == 0 ){
-        $log .= _log_info('Finished allocating everyone!');
         break;
       }
+    }
+    if( count($unallocated) == 0 ){
+      $log .= _log_info('Allocation finished: <b style="color:green">everyone got a room!</b>');
+    } else {
+      $log .= _log_info('Allocation finished: <b style="color:red">unable to allocate: </b>'.implode(', ',array_map('generate_group_id',array_keys($unallocated))) );
     }
     
     // deflate allocated
