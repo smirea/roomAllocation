@@ -55,6 +55,27 @@ $(function(){
     }
   });
   
+  $('.small-group-id')
+    .each(function(){
+      var $clone  = $('#small-group-'+$(this).attr('group_id')).clone();
+      $clone
+        .appendTo($(this))
+        .hide()
+        .find('.group_id,.choice')
+        .remove();
+      $(this).data('expansion', $clone);
+      $(this).data('expanded', false);
+      $(this).css('cursor', 'pointer');
+    })
+    .bind('click.expand', function(){
+      if( $(this).data('expanded') ){
+        $(this).data('expansion').hide();
+      } else {
+        $(this).data('expansion').show();
+      }
+      $(this).data('expanded', !$(this).data('expanded'));
+    });
+  
   $('#menu a').eq(0).trigger('click');
   
 }); 
