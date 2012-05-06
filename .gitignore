@@ -1,5 +1,8 @@
 # consider all double-underlined files as private
 __*.php
 
+# ignore the customized config file
+/config.php
+
 # exclude all files in the log
 log/*
