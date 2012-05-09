@@ -3,3 +3,7 @@
  - add groups for everyone (even to forever-alone people)
  - grep for TODO and HACK in the folder and fix em ^.^
  - fix the hack which allows the app to work only for groups > 1 :)
+ - proper implement nationality cap with:
+    + get number of rooms on the floor
+    + subtract disabled rooms and RA apartments
+    + and implement C('allocation.nationalityCap') as being a percentage instead of a hardcoded number
