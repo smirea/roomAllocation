@@ -217,18 +217,19 @@ HTML;
             <input type="hidden" name="action" value="config" />
             <?php
               $fields = array(
-                'Is round open'                 => 'round.active/bool',
-                'Restrict allocations'          => 'round.restrictions/bool',
-                'Current round number'          => 'round.number/int',
-                'Max allowed roommates'         => 'roommates.max/int',
-                'Min required roommates'        => 'roommates.min/int',
-                'Max number of choices'         => 'apartment.choices/int',
-                'Minimum points required'       => 'points.min/int',
-                'Maximum points required'       => 'points.max/int',
-                'Disabled rooms in Mercator'    => 'disabled.Mercator/string',
-                'Disabled rooms in Krupp'       => 'disabled.Krupp/string',
-                'Disabled rooms in College-III' => 'disabled.College-III/string',
-                'Disabled rooms in Nordmetall'  => 'disabled.Nordmetall/string'
+                'Is round open'                   => 'round.active/bool',
+                'Restrict allocations'            => 'round.restrictions/bool',
+                'Current round number'            => 'round.number/int',
+                'Max allowed roommates'           => 'roommates.max/int',
+                'Min required roommates'          => 'roommates.min/int',
+                'Max number of choices'           => 'apartment.choices/int',
+                'Minimum points required'         => 'points.min/int',
+                'Maximum points required'         => 'points.max/int',
+                'Nationality cap (no of people)'  => 'allocation.nationalityCap/int',
+                'Disabled rooms in Mercator'      => 'disabled.Mercator/string',
+                'Disabled rooms in Krupp'         => 'disabled.Krupp/string',
+                'Disabled rooms in College-III'   => 'disabled.College-III/string',
+                'Disabled rooms in Nordmetall'    => 'disabled.Nordmetall/string'
               );
               $h = array();
               foreach( $fields as $label => $properties ){
