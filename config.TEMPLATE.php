@@ -61,6 +61,7 @@
     C( 'apartment.choices',         9 );
     C( 'points.min',                1 );
     C( 'points.max',                7 );
+    C( 'points.cap',                7 );  // points < points.cap ? points : points.cap
     C( 'allocation.allocateRandom', 0 );
     C( 'allocation.nationalityCap', 8 );  // max number of people of the same nationality on a floor (hardcoded to 40%)
     C( 'disabled.Mercator'        , '');  // custom disabled rooms (like reserver for CMs , etc)

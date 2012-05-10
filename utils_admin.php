@@ -66,6 +66,9 @@
     foreach( $groups as $group_id => $group ){
       $points[$group_id]  = get_points( $people_in_group[$group_id] );
       $total[$group_id]   = $points[$group_id]['total'];
+      if( C('points.cap') > 0 && $total[$group_id] > C('points.cap') ){
+        $total[$group_id] = C('points.cap');
+      }
     }
 
     /** sort rooms by total number of points and by choice */
@@ -148,11 +151,11 @@
     
     foreach( $rooms as $number => $gids ){
       uasort( $rooms[$number], function( $a, $b )use($number, $total, $choice){
-        return $total[$a] == $total[$b] ? ($choice[$a][$number] - $choice[$b][$number]) : ( $total[$a] - $total[$b] );
+        return $total[$a] == $total[$b] ? ($choice[$a][$number] - $choice[$b][$number]) : ( $total[$b] - $total[$a] );
       });
     }
-    $table        = allocation_table( $rooms, $groups, $people, $points, $total, $choice );
-    $final_table  = allocation_table( $allocations, $groups, $people, $points, $total, $choice );
+    $table        = allocation_table( $rooms, $groups, $people, $total, $choice );
+    $final_table  = allocation_table( $allocations, $groups, $people, $total, $choice );
 
     $h .= '
       <table cellspacing="0" cellpadding="0" id="allocation-table-'.$college.'" class="allocation-table display-floorPlan view" style="display:none;">
@@ -162,7 +165,7 @@
     
     $unallocated = "";
     if( !C('allocation.allocateRandom') ){
-      $unallocated = allocation_table($random,$groups,$people,$points,$total);
+      $unallocated = allocation_table($random,$groups,$people,$total);
     }
     
     $g_sorted = array_keys( $choice );
@@ -204,6 +207,7 @@
     }
     $h .= '</div>';
     
+    // display user-choices
     $h .= '<div class="user-choices view" id="user-choices-'.$college.'">';
     foreach( $choice as $group_id => $choices ){
       $apartments = array();
@@ -244,7 +248,7 @@
     );
   }
   
-  function allocation_table( $rooms, $groups, $people, $points, $total, $choices = null ){
+  function allocation_table( $rooms, $groups, $people, $total, $choices = null ){
     $data = array();
     $i    = 0;
     foreach( $rooms as $number => $gr ){
@@ -480,7 +484,6 @@
     $unallocated = array_keys( $unallocated );
     ksort( $allocated );
     sort( $unallocated );
-//    v_export( $allocated, $unallocated );
     
     return array( $allocated, $unallocated, $log );
   }
