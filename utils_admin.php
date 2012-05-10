@@ -204,6 +204,31 @@
     }
     $h .= '</div>';
     
+    $h .= '<div class="user-choices view" id="user-choices-'.$college.'">';
+    foreach( $choice as $group_id => $choices ){
+      $apartments = array();
+      foreach( $choices as $room_number => $number ){
+        $apartments[$number][] = $room_number;
+      }
+      foreach( $apartments as $number => $choices ){
+        sort( $choices );
+        $apartments[$number] = implode(', ', $choices);
+      }
+      $h .=
+        '<table cellspacing="0" cellpadding="0" class="allocation-table">'
+          .key_value_table(
+            $apartments, 
+            generate_small_group( 
+              $groups[$group_id], 
+              $people, 
+              $group_id, 
+              $total[$group_id]
+            )
+          )
+        .'</table>';
+    }
+    $h .= '</div>';
+    
     return array(
       'html'            => $h,
       'allocations'     => $allocations,
@@ -220,13 +245,10 @@
   }
   
   function allocation_table( $rooms, $groups, $people, $points, $total, $choices = null ){
-    $table = array();
-    $i = 0;
+    $data = array();
+    $i    = 0;
     foreach( $rooms as $number => $gr ){
       $h = array();
-      $h[] = '<tr class="'.($i%2==0? 'even' : 'odd').'">';
-      $h[] = '<td style="width:50px;text-align:center;font-weight:bold;">'.$number.'</td>';
-      $h[] = '<td>';
       if( !is_array( $gr ) ) 
         $gr = array( $gr );
       foreach( $gr as $g_id ){
@@ -235,9 +257,24 @@
         else
           $h[] = '<div>'.generate_small_group( $groups[$g_id], $people, $g_id, $total[$g_id] ).'</div>';
       }
-      $h[] = '</td>';
+      $data[$number] = implode("\n", $h);
+    }
+    return key_value_table( $data );
+  }
+  
+  function key_value_table( array $data, $title = null ){
+    $table = array();
+    $i = 0;
+    if( $title !== null ){
+      $table[] = '<tr class="title"><th colspan="2">'.$title.'</th></tr>';
+    }
+    foreach( $data as $key => $value ){
+      $h = array();
+      $h[] = '<tr class="'.($i%2==0? 'even' : 'odd').'">';
+      $h[] = '<td style="width:50px;text-align:center;font-weight:bold;">'.$key.'</td>';
+      $h[] = '<td>'.$value.'</td>';
       $h[] = '</tr>';
-      $table[$i] = implode("\n", $h);
+      $table[] = implode("\n", $h);
       ++$i;
     }
     return implode("\n", $table);

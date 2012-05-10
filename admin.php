@@ -82,6 +82,7 @@
       <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
         <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
         <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
+        <a href="javascript:void(0)" onclick="setView(this, $('.user-choices'))">User Choices</a> |
         <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> |
         <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a>
       </div>
@@ -188,6 +189,7 @@
     <link rel="stylesheet" type="text/css" href="../css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="../css/roomAllocation.css" />
     <link rel="stylesheet" type="text/css" href="../css/admin.css" />
+    <script src="../js/admin.js" type="text/javascript"></script>
   </head>
   
   <body>
@@ -210,9 +212,10 @@ HTML;
         }
       ?>
       
+      
       <div class="view" id="admin-config">
         <div class="wrapper">
-        <h3>General configuration</h3>
+          <h3>General configuration</h3>
           <form action="admin.php" method="post" class="wrapper">
             <input type="hidden" name="action" value="config" />
             <?php

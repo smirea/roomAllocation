@@ -61,6 +61,11 @@ body{
   margin      : 5px;
   padding     : 2px;
 }
+.allocation-table th{
+  border-bottom : 1px solid #ccc;
+  background    : #ffff99;
+  padding       : 2px 5px;
+}
 .allocation-table td{
   border-bottom : 1px solid #ccc;
   padding       : 1px 3px;
