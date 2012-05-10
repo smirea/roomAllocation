@@ -86,7 +86,7 @@
     }
     
     /** compute final result */
-    list( $allocations, $random, $allocation_log ) = new_allocate_rooms( $rooms, $choice, $total, $people, $groups, $college );
+    list( $allocations, $random, $allocation_log ) = last_allocate_rooms( $rooms, $choice, $total, $people, $groups, $college );
     $new_allocations = array();
     if( C('allocation.allocateRandom') ){
       $new_allocations = allocate_random_rooms( $college, $allocations, $random, $groups, $Map );
@@ -429,11 +429,11 @@
         }
         $log_status = 'Trying to allocate <b>'.$room_number.'</b>: ';
         if( isset( $allocated[ $room_number ] ) ){
-          //$log .= _log( $log_status . ' already allocated to <b>'.$allocated[$room_number].'</b>' );
+          $log .= _log( '<div class="alreadyAllocated spam">'.$log_status . ' already allocated to <b>'.$allocated[$room_number].'</b></div>' );
           continue;
         }
         if( count($rooms[$room_number]) == 0 ){
-          //$log .= _log( $log_status . ' no applicants remaining or all applicants have been previously allocated' );
+          $log .= _log( '<div class="noApplicants spam">'.$log_status . ' no applicants remaining or all applicants have been previously allocated</div>' );
           continue;
         }
         // pick all people with highest score
@@ -441,9 +441,11 @@
         if( count($contestants) == 0 ){
           if( $i == $no_choices-1 )
             $log .= _log( $log_status . 'Nobody got this room' );
-          else {
-            //$log .= _log( 'No valid applicants available for this room at this iteration' );
-          }
+          else
+            $log .= _log( '<div class="noValid spam">'.$log_status.' no valid applicants 
+                          available for this room at this iteration 
+                          (all: '.implode(', ', array_map('generate_group_id',$rooms[$room_number])).')</div>' 
+            );
           continue;
         }
         $log .= _log( $log_status . 'contestants:'.implode(', ', array_map('generate_group_id',$rooms[$room_number])) );
@@ -514,7 +516,107 @@
     return array($result, $max);
   }
     
-
+  /**
+   * @brief Allocates all the rooms to all the groups and returns a thorough result
+   * @param {array} $rooms      maps: room_number           => array( group_id )
+   * @param {array} $choice     maps: group_id, room_number => choice_number
+   * @param {array} $total      maps: group_id              => total_points
+   * @param {array} $people     maps: eid                   => array( personal_info )
+   * @param {array} $groups     maps: group_id              => array( eid )
+   * @param {string} $college   the college name
+   * @returns {array} Returns a triple of ( {array} allocated, {array}, unallocated, {string} log );
+   */
+  function last_allocate_rooms( array $rooms, array $choice, array $total, array $people, array $groups, $college ){
+    
+    // different get_apartment function depending on college
+    $fn_get_apartment = $college !== 'Nordmetall' ? 'get_apartment' : 'get_apartment_NM';
+    
+    // deflate apartments from 'choices' into one room representative 
+    //    (A-101, A-102, A-103) becomes A-101 - it is just for efficiency
+    $all_choices = $choice;
+    foreach( $all_choices as $group_id => $choices ){
+      foreach( $choices as $room_number => $g_ids ){
+        $apartment = $fn_get_apartment( $room_number );
+        for( $i=1; $i<count($apartment); ++$i ){
+          unset($choice[$group_id][$apartment[$i]]);
+        }
+      }
+    }
+    
+    $hash = array();  // maps: hash_points,room_number => array( group_id )
+    // compute hash points
+    foreach( $choice as $group_id => $choices ){
+      foreach( $choices as $room_number => $choice_number ){
+        $new_points = $total[$group_id] * 100 + C('apartment.choices') - $choice_number;
+        if( !isset( $hash[$new_points] ) )
+          $hash[$new_points] = array();
+        $hash[$new_points][$room_number][] = $group_id;
+      }
+    }
+    
+    // sort hash map
+    krsort( $hash );
+    
+    $allocated        = array();
+    $allocated_groups = array();
+    $unallocated      = array_combine( array_keys( $choice ), array_fill(0,count($choice),true) );
+    $log              = '';
+    
+    ob_start();
+    
+    // allocate rooms
+    foreach( $hash as $new_points => $data ){
+      foreach( $data as $room_number => $gids ){
+        $log_begin = "Trying to allocate <b>".implode(',',$fn_get_apartment($room_number))."</b>:";
+        
+        // check if room has not been already allocated
+        if( isset($allocated[ $room_number ]) ){
+          //echo _log( $log_begin . ' <b style="color:red">allready allocated</b> to '.generate_group_id($allocated[$room_number]) );
+          continue;
+        }
+        
+        // remove all groups that have been allocated from the contestants
+        $old_gids = $gids;
+        $gids = array_values( array_diff( $gids, $allocated_groups ) );
+        
+        // assign room
+        if( count($gids) > 0 ){
+          echo _log( $log_begin . ' -> applicants: '.implode(', ', array_map('generate_group_id',$old_gids)) );
+          echo _log( "Taking all contestants with 
+                        max points (<span class=\"small-group\"><span class=\"total\">".$total[$gids[0]]."p</span></span>)
+                        and smalles choice number (<span class=\"small-group\"><span class=\"choice\">".
+                          $choice[$gids[0]][$room_number]."</span></span>)
+                        : (".implode(', ', array_map('generate_group_id',$gids)).")", 1 );
+          
+          // randomly select the winner
+          $winner = $gids[ rand(0, count($gids)-1) ];
+          echo _log( "Allocated to ".generate_group_id($winner)." with a chance of <b>".(round(100/count($gids),2))."%</b>", 1 );
+          
+          // unmark group as unallocated
+          unset( $unallocated[ $winner ] );
+          
+          // mark all the rooms in the apartments as allocated to the group
+          $apartment = $fn_get_apartment( $room_number );
+          foreach( $apartment as $room_in_apartment ){
+            $allocated[$room_in_apartment]  = $winner;
+          }
+          
+          // register current group and room as allocated
+          $allocated_groups[] = $winner;
+        } else {
+          
+        }
+        
+      }
+    }
+    
+    $unallocated = array_keys( $unallocated );
+    $log = ob_get_contents();
+    ob_end_clean();
+    
+    return array( $allocated, $unallocated, $log );
+  }
+  
   
   /**
    * @brief Allocates all the rooms to all the groups and returns a thorough result
@@ -543,7 +645,7 @@
     $fn_get_apartment = $college !== 'Nordmetall' ? 'get_apartment' : 'get_apartment_NM';
     
     $total_points_compare = function($a,$b) use ($total){
-      return $total[$a] == $total[$b] ? 0 : ( $total[$a] < $total[$b] ? -1 : 1 );
+      return $total[$a] - $total[$b];
     };
     
     //sort the group_ids in rooms by the total number of points
