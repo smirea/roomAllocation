@@ -517,7 +517,7 @@
   }
     
   /**
-   * @brief Allocates all the rooms to all the groups and returns a thorough result
+   * @brief Allocates groups to rooms and returns the result
    * @param {array} $rooms      maps: room_number           => array( group_id )
    * @param {array} $choice     maps: group_id, room_number => choice_number
    * @param {array} $total      maps: group_id              => total_points
@@ -543,8 +543,8 @@
       }
     }
     
+    // compute hash points for easier sorting
     $hash = array();  // maps: hash_points,room_number => array( group_id )
-    // compute hash points
     foreach( $choice as $group_id => $choices ){
       foreach( $choices as $room_number => $choice_number ){
         $new_points = $total[$group_id] * 100 + C('apartment.choices') - $choice_number;
@@ -603,8 +603,6 @@
           
           // register current group and room as allocated
           $allocated_groups[] = $winner;
-        } else {
-          
         }
         
       }
