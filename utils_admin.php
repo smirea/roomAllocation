@@ -528,6 +528,10 @@
    */
   function last_allocate_rooms( array $rooms, array $choice, array $total, array $people, array $groups, $college ){
     
+    $allocated   = array();
+    $unallocated = array();
+    $log         = '';
+    
     // different get_apartment function depending on college
     $fn_get_apartment = $college !== 'Nordmetall' ? 'get_apartment' : 'get_apartment_NM';
     
@@ -541,6 +545,10 @@
           unset($choice[$group_id][$apartment[$i]]);
         }
       }
+    }
+    
+    if( count($choice) == 0 ){
+      return array( $allocated, $unallocated, $log );
     }
     
     // compute hash points for easier sorting
@@ -557,10 +565,8 @@
     // sort hash map
     krsort( $hash );
     
-    $allocated        = array();
-    $allocated_groups = array();
     $unallocated      = array_combine( array_keys( $choice ), array_fill(0,count($choice),true) );
-    $log              = '';
+    $allocated_groups = array();
     
     ob_start();
     
