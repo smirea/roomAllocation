@@ -81,6 +81,14 @@
             $q_allocation = "SELECT * FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
             $allocation   = mysql_fetch_assoc( mysql_query( $q_allocation ) );
             define( 'HAS_ROOM', $allocation['room'] != null );
+            
+            if( !HAS_ROOM ){
+              $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
+                          WHERE college='${info['college']}' AND room IS NOT NULL";
+              $rooms_taken  = extract_column( 'room', sqlToArray( mysql_query( $q_taken ) ) );
+              $rooms_locked = array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) );
+            }
+            
         ?>
         <div style="float:left;width:50%;" class="content">
           <div class="wrapper">
@@ -266,8 +274,18 @@
                       sort( $choices[$number] );
                     }
                     if( $info['college'] == 'Nordmetall' ){
+                      $nm     = $Nordmetall_apartments;
+                      $taken  = array_merge( $rooms_locked, $rooms_taken );
+                      // remove all rooms that are already taken/disabled
+                      foreach( $Nordmetall_apartments as $key => $apartment ){
+                        foreach( $apartment as $room ){
+                          if( in_array( $room, $taken ) ){
+                            unset( $nm[$key] );
+                            break;
+                          }
+                        }
+                      }
                       $hash       = function($v){ sort($v); return implode(',', $v); };
-                      $nm         = $Nordmetall_apartments;
                       $nm         = array_map($hash, $nm);
                       $choice_map = array_flip( array_map($hash, $choices) );
                       for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
@@ -335,14 +353,10 @@
                   if( $d['college'] ){
                     $classes = array();
                     
-                    $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
-                                WHERE college='${d['college']}' AND room IS NOT NULL";
-                    $taken = sqlToArray( mysql_query( $q_taken ) );
-
                     if( C('round.restrictions') )
                       add_class( 'available', $allowed_rooms[$d['college']], $classes );
-                    add_class( 'taken', extract_column( 'room', $taken ), $classes );
-                    add_class( 'taken', array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) ), $classes );
+                    add_class( 'taken', $rooms_taken, $classes );
+                    add_class( 'taken', $rooms_locked, $classes );
                     add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
                     
                     $classes = array_map(function($v){return implode(' ',$v);}, $classes);
