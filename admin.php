@@ -225,6 +225,7 @@ HTML;
                 'Current round number'            => 'round.number/int',
                 'Max allowed roommates'           => 'roommates.max/int',
                 'Min required roommates'          => 'roommates.min/int',
+                'Allow a freshman roommate'       => 'roommates.freshman/bool',
                 'Max number of choices'           => 'apartment.choices/int',
                 'Minimum points required'         => 'points.min/int',
                 'Maximum points allowed'          => 'points.max/int',

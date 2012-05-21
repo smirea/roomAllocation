@@ -39,6 +39,7 @@ var RPC = {
   var $search;
   var $eid;
   var $addRoommate;
+  var $freshman;
   var $loading;
   var messages = $();
   var message_timeout;
@@ -47,6 +48,7 @@ var RPC = {
     alter_jquery_ui();
     set_variables();
     init_roommate_search();
+    init_freshman_toggle();
     init_select_rooms();
     add_floorplan_events();
     register_global_ajax_handlers();
@@ -149,6 +151,7 @@ var RPC = {
     $search       = $('#search');
     $eid          = $('#roommate-eid');
     $addRoommate  = $('#addRoommate');
+    $freshman     = $('#toggle_freshman');
     
     $loading      = $(document.createElement('img'));
     $loading
@@ -215,6 +218,17 @@ var RPC = {
       });
       return false;
     });
+  };
+  
+  var init_freshman_toggle = function(){
+    if( $freshman.length > 0 ){
+      $freshman.bind('click', function(){
+        if( $(this).attr('checked') == 'checked' )
+          $.get( ajax_file, {action:'addFreshman'} );
+        else
+          $.get( ajax_file, {action:'removeFreshman'} );
+      });
+    }
   };
   
   sendResponse = function( type, eid, msg ){

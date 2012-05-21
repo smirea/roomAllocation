@@ -46,7 +46,6 @@ CREATE TABLE InGroup(
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `group_id` INT NOT NULL,
   `eid` VARCHAR(16) NOT NULL,
-  UNIQUE KEY(eid),
   UNIQUE KEY(group_id, eid)
 ) ENGINE = MYISAM ;
 

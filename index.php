@@ -104,6 +104,20 @@
               <input type="text" id="search" placeholder="start typing your roommate's name..." />
               <input type="submit" id="addRoommate" value="Add" />
             </form>
+            <?php
+              if( C('roommates.freshman') ){
+                $checked = '';
+                if( count($roommates) == 1 && $roommates[0]['eid'] == FRESHMAN_EID )
+                  $checked =  'checked="checked"';
+                echo '
+                  <label for="toggle_freshman" style="display:block;margin:4px 0;">
+                    <input type="checkbox" name="toggle_freshman" id="toggle_freshman" '.$checked.' />
+                    Choose a freshman as a roommate
+                  </label>
+                ';
+              }
+            ?>
+              
             <br />
             
             <h3>Points</h3>

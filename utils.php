@@ -131,13 +131,17 @@
     $individual_points  = 0;
     $individual         = array();
     foreach( $people as $v ){
-      if( $v['status'] == 'undergrad' )
-        $p = min(2, max(1, 3-($v['year']-$year) ) );
-      else
-        $p = 1;
-      $countries[$v['country']] = true;
-      $individual[] = $p;
-      $individual_points += $p;
+      if( $v['eid'] != FRESHMAN_EID ){
+        if( $v['status'] == 'undergrad' )
+          $p = min(2, max(1, 3-($v['year']-$year) ) );
+        else
+          $p = 1;
+        $countries[$v['country']] = true;
+        $individual[] = $p;
+        $individual_points += $p;
+      } else {
+        $individual[] = 0;
+      }
     }
     $country_points = count($countries) > 1 ? count($countries) : 0;
     $world_regions  = array_map(function($v){global $WorldRegions_Inv; return $WorldRegions_Inv[$v];}, array_keys($countries));

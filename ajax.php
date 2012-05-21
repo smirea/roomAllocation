@@ -152,7 +152,7 @@
         $output['points']     = print_score( array_merge( array($_SESSION['info']), $new_roommates ) );
         $output['info']       = 'You and <b>'.$info_to['fname'].'</b> are now roommates!
                                   You need to reload the page in order to apply for rooms.';
-        $output['rpc']        = 'RPC.reload();';
+          $output['rpc']        = 'RPC.reload();';
         
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
         
@@ -175,6 +175,21 @@
       
       $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
       $output['error'] .= mysql_query( $q ) ? '' : '<div>'.mysql_error().'</div>';
+      break;
+    case 'addFreshman':
+      e_assert( C('roommates.freshman'), 'You cannot choose a freshman as a roommate this round' );
+      e_assert( $_SESSION['info']['group_id'] === null, 'You are already in a group with someone' );
+      $_SESSION['info']['group_id'] = add_to_group( FRESHMAN_EID, add_to_group( $_SESSION['info']['eid'] ) );
+      $output['info'] = 'Successfully added a freshman roommate';
+      $output['rpc']  = 'RPC.reload();';
+      break;
+    case 'removeFreshman':
+      $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
+      e_assert( $roommates[0]['eid'] == FRESHMAN_EID, 'You have not chosen a freshman as your roommate' );
+      $q_delete = "DELETE FROM ".TABLE_IN_GROUP." WHERE group_id='".$_SESSION['info']['group_id']."'";
+      $output['info']   = 'Freshman slaughtered successfully!';
+      $output['error']  = mysql_query($q_delete) ? false : 'Unable to slaughter freshman! ('.mysql_error().')';
+      $output['rpc']    = 'RPC.reload();';
       break;
     case 'getFaceHTML':
       e_assert_isset( $_GET, 'eid,fname,lname,country,year' );

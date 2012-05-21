@@ -30,6 +30,8 @@
   define( 'STATUS_PHD',         'phd' );
   define( 'STATUS_FOUNDATION',  'foundation-year' );
   
+  define( 'FRESHMAN_EID', 0 );
+  
   /** Database config */
   define( 'DB_USER', 'jPerson' );
   define( 'DB_PASS', 'jacobsRulz' );
@@ -58,6 +60,7 @@
     C( 'round.restrictions',        0 );  // whether to use restrictions or not (i.e. config_allowed.php)
     C( 'roommates.min',             1 );
     C( 'roommates.max',             1 );
+    C( 'roommates.freshman',        0 );  // whether to allow rooming with a freshman
     C( 'apartment.choices',         9 );
     C( 'points.min',                1 );
     C( 'points.max',                7 );
