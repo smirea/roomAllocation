@@ -23,7 +23,11 @@
      * @return {MySQL}
      */
     protected function select ($columns, $query = '') {
-      return $this->query("SELECT $columns FROM ".$this->get_table()." $query");
+      $sql = $this->query("SELECT $columns FROM ".$this->get_table()." $query");
+      if (!$sql) {
+        return Model::SQL_FAILED;
+      }
+      return $sql;
     }
 
     /**
@@ -105,7 +109,7 @@
      */
     protected function to_array ($sql, $key = null) {
       if (!$sql) {
-        return null;
+        return Model::SQL_FAILED;
       }
       $result = array();
       while ($row = mysql_fetch_assoc($sql)) {
