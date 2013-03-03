@@ -3,6 +3,18 @@
   require_once 'config.php';
   require_once 'models/Model.php'
 
+  /**
+   * Holds the information of a person including:
+   * - eid
+   * - account
+   * - fname
+   * - lname
+   * - country
+   * - college
+   * - email
+   * - year
+   * - status
+   */
   class Person extends Model {
 
     public function __construct ($table = TABLE_PEOPLE) {
@@ -10,7 +22,12 @@
     }
 
     public username_exists ($user) {
-      return (mysql_num_rows($this->select('id', "WHERE account='$user'")) > 0);
+      $user = $this->select('id', "WHERE account='$user'");
+      if($user) {
+        return (mysql_num_rows() > 0);
+      } else {
+        return Model::SQL_FAILED;
+      }
     }
 
     public get ($eid) {
