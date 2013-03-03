@@ -39,7 +39,7 @@
      */
     protected function insert ($query) {
       if (is_array($query)) {
-        $fields = implode(', ', $this->quotify($query));
+        $fields = implode(', ', Model::quotify($query));
         return $this->insert('('.implode(', ', array_keys($query)).') VALUES ('.$fields.')');
       }
       return $this->query("INSERT INTO ".$this->get_table()." $query");
@@ -136,7 +136,7 @@
      * @param {String} $quote
      * @return {Array}
      */
-    private function quotify (array $array, $quote = "'") {
+    public static function quotify (array $array, $quote = "'") {
       return array_map(function ($string) use ($quote) {
         return $quote . $string . $quote;
       }, $array);
