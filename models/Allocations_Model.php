@@ -25,6 +25,10 @@
       return $this->select('id', "WHERE eid='$eid' AND college IS NOT NULL AND room IS NOT NULL");
     }
 
+    public function get_rooms_from_college ($colleg) {
+      return Model::to_array($this->select("*", "WHERE college='$college' AND room IS NOT NULL"));
+    }
+
     public function update_allocation ($eid, $columns) {
       return $this->update($columns, "WHERE eid='$eid'");
     }
