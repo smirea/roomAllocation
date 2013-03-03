@@ -1,6 +1,9 @@
 <?php
 
   class Model {
+
+    const SQL_FAILED = null;
+
     protected $table;
     public $queries = array();
     public $errors = array();
