@@ -17,13 +17,12 @@
       return $this->select('room', "WHERE college='$college' AND room IN ('".implode("', '", $rooms)."')");
     }
 
-    public function get_multiple_rooms (array $eids) {
-      return $this->select("room", "WHERE eid IN ('".implode("', '", $eids)."')");
+    public function get_all_rooms_from_college ($colleg) {
+      return Model::to_array($this->select("*", "WHERE college='$college' AND room IS NOT NULL"));
     }
 
-
-    public function get_rooms_from_college ($colleg) {
-      return Model::to_array($this->select("*", "WHERE college='$college' AND room IS NOT NULL"));
+    public function get_multiple_rooms (array $eids) {
+      return $this->select("room", "WHERE eid IN ('".implode("', '", $eids)."')");
     }
 
     public function get_allocation ($eid) {

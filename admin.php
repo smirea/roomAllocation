@@ -71,7 +71,7 @@
         $floorPlans = array();
         foreach( $colleges as $c_name => $c_map ){
           $cls = array();
-          $taken = $Allocation_Model->get_rooms_from_college($c_name);
+          $taken = $Allocation_Model->get_all_rooms_from_college($c_name);
           if( C('round.restrictions') )
             add_class( 'available', $allowed_rooms[$c_name], $cls );
           add_class( 'taken', extract_column( 'room', $taken ), $cls );
