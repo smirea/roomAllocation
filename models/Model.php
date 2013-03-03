@@ -108,7 +108,7 @@
      *                        (useful when you select only one column in a query)
      * @return {Array} Return null if the sql is invalid
      */
-    protected function to_array ($sql, $key = null) {
+    public static function to_array ($sql, $key = null) {
       if (!$sql) {
         return Model::SQL_FAILED;
       }
