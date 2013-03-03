@@ -43,7 +43,8 @@
 
   $tmp_group_id = mysql_fetch_assoc( mysql_query( "SELECT group_id FROM ".TABLE_IN_GROUP." WHERE eid='$eid'") );
   $_SESSION['info']['group_id'] = $tmp_group_id['group_id'];
-  $college  = get_college_by_eid( $eid );
+  $allocation = $Allocation_Model->get_allocation($eid);
+  $college  = $allocation['college'];
 
   $colleges = array( 'Mercator', 'Krupp', 'College-III', 'Nordmetall' );
 
@@ -84,7 +85,8 @@
 
       $sql_exists         = mysql_query( $q_exists );
       $info_to            = mysql_fetch_assoc( $sql_exists );
-      $info_to['college'] = get_college_by_eid( $info_to['eid'] );
+      $allocation_to      = $Allocation_Model->get_allocation($info_to['eid']);
+      $info_to['college'] = $allocation_to['college'];
 
       e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
       e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );

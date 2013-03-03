@@ -79,9 +79,6 @@
             $points     = get_points( array_merge( array($info), $roommates ) );
 
             $allocation = $Allocation_Model->get_allocation($eid);
-            if (count($allocation) > 0) {
-              $allocation = $allocation[0];
-            }
             define( 'HAS_ROOM', $allocation['room'] != null );
 
             if( !HAS_ROOM ){
