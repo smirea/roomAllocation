@@ -27,7 +27,7 @@
     }
 
     public function get_allocation ($eid) {
-      return Model::to_array($this->select('id', "WHERE eid='$eid' AND college IS NOT NULL AND room IS NOT NULL"));
+      return Model::to_array($this->select('*', "WHERE eid='$eid'"));
     }
 
     public function update_allocation ($eid, $columns) {
