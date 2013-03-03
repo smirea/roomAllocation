@@ -90,8 +90,8 @@
       e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );
       e_assert( $info_to['college'] == $college, '<b>'.$info_to['fname'].'</b> is in another college ('.$info_to['college'].') !' );
 
-      e_assert( mysql_num_rows($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
-      e_assert( mysql_num_rows($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
+      e_assert( count($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
+      e_assert( count($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
 
       e_assert( mysql_num_rows( mysql_query( $q_sameReq ) ) == 0, "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
 

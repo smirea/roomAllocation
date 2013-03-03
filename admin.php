@@ -30,6 +30,7 @@
   require_once 'floorPlan/College3.php';
   require_once 'floorPlan/Nordmetall.php';
 
+  $Allocation_Model = new Allocation_Model();
 ?>
 <html>
   <head>
