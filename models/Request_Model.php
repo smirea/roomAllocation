@@ -6,7 +6,7 @@
   /**
    * Describes the roommate request between two user consisting out of the eid of the two user and a request id.
    */
-	class Request extends Model {
+	class Request_Model extends Model {
 
 		public function __construct ($table = TABLE_REQUESTS) {
 			parent::__construct($table);

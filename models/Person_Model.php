@@ -15,7 +15,7 @@
    * - year
    * - status
    */
-  class Person extends Model {
+  class Person_Model extends Model {
 
     public function __construct ($table = TABLE_PEOPLE) {
       parent::__construct($table);

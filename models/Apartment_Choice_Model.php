@@ -6,7 +6,7 @@
   /**
    * Describing the apparment choices a group did.
    */
-  class Apartment_Choice extends Model {
+  class Apartment_Choice_Model extends Model {
 
     public function __construct ($table = TABLE_APARTMENT_CHOICES) {
       parent::__construct($table);
