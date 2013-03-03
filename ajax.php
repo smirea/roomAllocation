@@ -43,7 +43,8 @@
 
   $tmp_group_id = mysql_fetch_assoc( mysql_query( "SELECT group_id FROM ".TABLE_IN_GROUP." WHERE eid='$eid'") );
   $_SESSION['info']['group_id'] = $tmp_group_id['group_id'];
-  $college  = get_college_by_eid( $eid );
+  $allocation = $Allocation_Model->get_allocation($eid);
+  $college  = $allocation['college'];
 
   $colleges = array( 'Mercator', 'Krupp', 'College-III', 'Nordmetall' );
 
@@ -84,14 +85,15 @@
 
       $sql_exists         = mysql_query( $q_exists );
       $info_to            = mysql_fetch_assoc( $sql_exists );
-      $info_to['college'] = get_college_by_eid( $info_to['eid'] );
+      $allocation_to      = $Allocation_Model->get_allocation($info_to['eid']);
+      $info_to['college'] = $allocation_to['college'];
 
       e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
       e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );
       e_assert( $info_to['college'] == $college, '<b>'.$info_to['fname'].'</b> is in another college ('.$info_to['college'].') !' );
 
-      e_assert( mysql_num_rows($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
-      e_assert( mysql_num_rows($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
+      e_assert( count($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
+      e_assert( count($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
 
       e_assert( mysql_num_rows( mysql_query( $q_sameReq ) ) == 0, "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
 

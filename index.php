@@ -28,7 +28,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    
+
     <link rel="stylesheet" type="text/css" href="css/html5cssReset.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/messages.css" />
@@ -43,11 +43,11 @@
     <script src="js/lib.js"></script>
     <script src="js/roomAllocation.js"></script>
   </head>
-  
+
   <body>
     <div id="main">
       <?php require_once 'login.php'; ?>
-      
+
       <div class="message-holder">
         <div id="message-info" class="info message">
           <div class="content"></div>
@@ -66,29 +66,26 @@
           <a href="javascript:void(0)" class="close">X</a>
         </div>
       </div>
-      
+
       <div id="wrapper">
         <?php
           if( LOGGED_IN ){
-            
+
             /** Set some info */
             $eid        = $_SESSION['info']['eid'];
             $group      = group_info( $eid );
             $roommates  = get_roommates( $eid, $group['group_id'] );
             $info       = $_SESSION['info'];
             $points     = get_points( array_merge( array($info), $roommates ) );
-            
-            $q_allocation = "SELECT * FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
-            $allocation   = mysql_fetch_assoc( mysql_query( $q_allocation ) );
+
+            $allocation = $Allocation_Model->get_allocation($eid);
             define( 'HAS_ROOM', $allocation['room'] != null );
-            
+
             if( !HAS_ROOM ){
-              $q_taken = "SELECT * FROM ".TABLE_ALLOCATIONS." 
-                          WHERE college='${info['college']}' AND room IS NOT NULL";
-              $rooms_taken  = extract_column( 'room', sqlToArray( mysql_query( $q_taken ) ) );
+              $rooms_taken  = extract_column('room', $Allocation_Model->get_rooms_from_college($info['college']));
               $rooms_locked = array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) );
             }
-            
+
         ?>
         <div style="float:left;width:50%;" class="content">
           <div class="wrapper">
@@ -96,7 +93,7 @@
             <?php
                 echo getFaceHTML( $info );
             ?>
-            
+
             <br />
             <h3>Add a new roommate</h3>
             <form id="searchBox" method="post">
@@ -117,30 +114,18 @@
                 ';
               }
             ?>
-              
+
             <br />
-            
+
             <h3>Points</h3>
             <div id="total-points">
               <?php
-                  /**
-                  * @brief Check if all the countries in the database are assigned to a world region
-                  *
-                  $countries = "SELECT DISTINCT country FROM ".TABLE_PEOPLE;
-                  $countries = sqlToArray( mysql_query( $countries ) );
-                  $countries = array_map( function($v){ return $v['country']; }, $countries );
-                  foreach( $countries as $v ){
-                    if( !$WorldRegions_Inv[ $v ] ){
-                      echo "<div style=\"color:red\">$v</div>";
-                    }
-                  }
-                  */
                   echo print_score( array_merge( array($info), $roommates ), $points );
               ?>
             </div>
           </div>
         </div>
-        
+
         <div style="float:right;width:50%;" class="content">
           <div class="wrapper">
             <h3>Current Roommates</h3>
@@ -153,12 +138,12 @@
                 }
               ?>
             </div>
-            
+
             <br />
             <h3>Requests received</h3>
             <div id="requests-received">
               <?php
-                $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_REQUESTS." r 
+                $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_REQUESTS." r
                         WHERE r.eid_to='$eid' AND p.eid=r.eid_from";
                 $res    = sqlToArray( mysql_query( $q ) );
                 $hidden = '';
@@ -188,7 +173,7 @@
                 }
               ?>
             </div>
-            
+
             <br />
             <h3>Requests sent</h3>
             <div id="requests-sent">
@@ -204,12 +189,12 @@
             </div>
           </div>
         </div>
-        
+
         <div class="clearBoth"></div>
-        
+
         <?php
           if( HAS_ROOM ){
-            $q = "SELECT p.fname,p.lname,a.* 
+            $q = "SELECT p.fname,p.lname,a.*
                   FROM ".TABLE_ALLOCATIONS." a, ".TABLE_PEOPLE." p
                   WHERE a.eid IN ($eid,".implode(',',extract_column('eid',$roommates)).")
                     AND p.eid=a.eid ORDER BY a.room";
@@ -234,7 +219,7 @@
                       </td>
                     </tr>';
             }
-            
+
             echo '
               <div class="content">
                 <form class="wrapper" id="select-rooms" action="ajax.php" method="get">
@@ -251,17 +236,17 @@
               </div>
             ';
         ?>
-          
-          
-          
+
+
+
         <?php
           } else {
         ?>
-        
+
         <div class="content" id="floorPlan">
           <div class="wrapper">
             <h3>Apartment Choices</h3>
-            <?php 
+            <?php
               if( $points['total'] < MIN_POINTS || $points['total'] > MAX_POINTS ){
                 echo '<div style="color:red">
                         You need to have between '.MIN_POINTS.' and '.MAX_POINTS.'
@@ -272,12 +257,12 @@
                         You need to have between '.MIN_ROOMMATES.' and '.MAX_ROOMMATES.'
                         roommates in order to be eligible for this round
                       </div>';
-              } else if( count($roommates) <= MAX_ROOMMATES ){ 
+              } else if( count($roommates) <= MAX_ROOMMATES ){
             ?>
               <div class="content" style="float:left;width:35%;">
                 <ol class="room-choices">
                   <?php
-                    $q_choices = "SELECT * FROM ".TABLE_APARTMENT_CHOICES." 
+                    $q_choices = "SELECT * FROM ".TABLE_APARTMENT_CHOICES."
                                     WHERE group_id='${group['group_id']}'";
                     $choices            = array_fill( 0, MAX_ROOM_CHOICES, array() );
                     $apartment_choices  = sqlToArray( mysql_query( $q_choices ) );
@@ -328,54 +313,52 @@
                   ?>
                 </ol>
               </div>
-              
+
               <div class="content" style="float:right;width:65%;">
                 <h3>How it works</h3>
                 <ul>
                   <li>Decide on the apartments you want</li>
                   <?php if( $info['college'] != 'Nordmetall' ){ ?>
                   <li>
-                    Fill in the fields with all the rooms that belong 
-                    to the apartment( 1, 2 or 3 rooms depending on the 
+                    Fill in the fields with all the rooms that belong
+                    to the apartment( 1, 2 or 3 rooms depending on the
                     apartment type ), <b style="color:red">separated with a comma</b>
                   </li>
                   <li>You can use the floor-plan bellow to choose your rooms more easily</li>
                   <li>
-                    Just click on the apartment you want 
+                    Just click on the apartment you want
                     and then select it as what choice you want it to be
                   </li>
                   <?php } ?>
                   <li>
-                    Make sure to fill as many options as possible, 
-                    because if you do not get assigned any room, 
+                    Make sure to fill as many options as possible,
+                    because if you do not get assigned any room,
                     you will get one at random
                   </li>
                   <li>Also, you can change the rooms at any time while the round is open</li>
                   <li><b>Don't forget</b> to hit the <b>Save Changes!</b> button!</li>
                 </ul>
               </div>
-              
+
               <div class="clearBoth"></div>
-              
+
               <?php if($info['college'] != 'Nordmetall'){ ?>
                 <br />
                 <h3>Floor Plan</h3>
                 <?php
-                  
-                  $q = "SELECT eid,room,college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
-                  $d = mysql_fetch_assoc( mysql_query( $q ) );
-                  if( $d['college'] ){
+
+                  if ($allocation['college']) {
                     $classes = array();
-                    
+
                     if( C('round.restrictions') )
-                      add_class( 'available', $allowed_rooms[$d['college']], $classes );
+                      add_class( 'available', $allowed_rooms[$allocation['college']], $classes );
                     add_class( 'taken', $rooms_taken, $classes );
                     add_class( 'taken', $rooms_locked, $classes );
                     add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
-                    
+
                     $classes = array_map(function($v){return implode(' ',$v);}, $classes);
-                    
-                    switch( $d['college'] ){
+
+                    switch( $allocation['college'] ){
                       case 'Krupp':       echo renderMap( $Krupp, $classes ); break;
                       case 'Mercator':    echo renderMap( $Mercator, $classes ); break;
                       case 'College-III': echo renderMap( $College3, $classes ); break;
@@ -385,13 +368,13 @@
                   } else {
                     echo 'You are not assigned to any college';
                   }
-                  
+
                 ?>
               <?php } ?>
-              
-            <?php 
+
+            <?php
               } else {
-                echo '<div style="color:red">You need to have "'.MAX_ROOMMATES.'" 
+                echo '<div style="color:red">You need to have "'.MAX_ROOMMATES.'"
                         roommate(s) for this phase in order to be eligible to apply for a room';
               }
             ?>
@@ -406,19 +389,19 @@
               Waiting for your credentials :)
             </div>
           </div>
-          
+
         <?php
           }
         ?>
-        
+
       </div>
-      
+
       <div id="footer" class="message info">
         <span style="float:left">(C) 2012 code4fun.de</span>
-        Designed and developed by 
+        Designed and developed by
         <a title="contact me if anything..." href="mailto:s.mirea@jacobs-university.de">Stefan Mirea</a>
       </div>
-      
+
     </div>
   </body>
 </html>
