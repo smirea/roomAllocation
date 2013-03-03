@@ -17,10 +17,10 @@
 \***************************************************************************/
 ?>
 <?php
-  
+
   require_once 'config.php';
   require_once 'WorldRegions.php';
-  
+
   /**
    * @brief Applies input sanitizing functions for every value in the array, recursively
    * @param {array} &$arr
@@ -36,31 +36,21 @@
     }
     return $arr;
   }
-  
-  /**
-   * @brief
-   * @param {string} $eid
-   */
-  function get_college_by_eid( $eid ){
-    $q        = "SELECT college FROM ".TABLE_ALLOCATIONS." WHERE eid='$eid'";
-    $college  = mysql_fetch_assoc( mysql_query( $q ) );
-    return $college['college'];
-  }
-  
+
   /**
    * Get all roommates of a person from a group
    * @param {string} $eid
    * @param {string} $group_id
    */
   function get_roommates( $eid, $group_id ){
-    $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i 
-            WHERE i.group_id='$group_id' 
+    $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i
+            WHERE i.group_id='$group_id'
             AND p.eid=i.eid AND i.eid<>'$eid' ";
     return sqlToArray( mysql_query( $q ) );
   }
-  
+
   /**
-   * @brief Extracts only one field from a 2-d array. 
+   * @brief Extracts only one field from a 2-d array.
    *          Typically used when you want to get one column from sqlToArray
    * @param {string} $column
    * @param {array} $array
@@ -72,7 +62,7 @@
     }
     return $array;
   }
-  
+
   /**
    * @brief Appends a value to multiple keys in a 2-d array
    * @param {mixed} $class
@@ -88,8 +78,8 @@
     }
     return $target;
   }
-  
-  
+
+
   function add_to_group( $eid, $group_id = null ){
     if( $group_id === null ){
       $q_create = "INSERT INTO ".TABLE_GROUPS."(score) VALUES(0)";
@@ -99,26 +89,26 @@
     // insert into group
     $q = "INSERT INTO ".TABLE_IN_GROUP."(eid,group_id) VALUES ('$eid', '$group_id')";
     mysql_query( $q );
-    
+
     // select everyone in group
-    $q_people = "SELECT p.* FROM ".TABLE_IN_GROUP." i, ".TABLE_PEOPLE." p 
+    $q_people = "SELECT p.* FROM ".TABLE_IN_GROUP." i, ".TABLE_PEOPLE." p
                   WHERE group_id='$group_id' AND i.eid=p.eid";
     $people = sqlToArray( mysql_query( $q_people ) );
-    
+
     $points = get_points( $people );
 
     // update the group's score
     $q_update = "UPDATE ".TABLE_GROUPS." SET score='".$points['total']."' WHERE id='$group_id'";
     mysql_query( $q_update );
-    
+
     return $group_id;
   }
-  
+
   function group_info( $eid ){
-    $q = "SELECT 
-            i.group_id, 
-            (SELECT COUNT(id) FROM ".TABLE_IN_GROUP." j where j.group_id=i.group_id) AS members 
-          FROM ".TABLE_IN_GROUP." i 
+    $q = "SELECT
+            i.group_id,
+            (SELECT COUNT(id) FROM ".TABLE_IN_GROUP." j where j.group_id=i.group_id) AS members
+          FROM ".TABLE_IN_GROUP." i
           WHERE i.eid='$eid';";
     return mysql_fetch_assoc( mysql_query( $q ) );
   }
@@ -157,7 +147,7 @@
       'total'       => $total
     );
   }
-  
+
   function print_score( array $people, $points = null ){
     $points = $points ? $points : get_points( $people );
     $h = '<table class="points" cellspacing="0" cellpadding="0">';
@@ -175,7 +165,7 @@
     $h .= '</table>';
     return $h;
   }
-  
+
   function getFaceHTML( $info, $append = '' ){
     foreach( $info as $k => $v ){ $$k = $v; }
       $img            = imageUrl( $eid );
@@ -201,7 +191,7 @@
         </table>
 HTML;
   }
-  
+
   function getFaceHTML_received( $info, $append = '' ){
     $actions = '
       <tr class="actions">
@@ -216,7 +206,7 @@ HTML;
     ';
     return getFaceHTML( $info, $actions.$append );
   }
-  
+
   function getFaceHTML_sent( $info, $append = '' ){
     $actions = '
       <tr class="actions">
@@ -230,5 +220,5 @@ HTML;
     ';
     return getFaceHTML( $info, $append.$actions );
   }
-  
+
 ?>
