@@ -47,11 +47,12 @@
 
     /**
      * Perform an update query
+     * @param {String} $columns the update query string to run
      * @param {String} $query the update query string to run
      * @return {Bool}
      */
-    protected function update ($query) {
-      return $this->query("UPDATE ".$this->get_table()." $query");
+    protected function update ($columns, $query) {
+      return $this->query("UPDATE ".$this->get_table()." SET $columns $query");
     }
 
     /**
@@ -107,7 +108,7 @@
      *                        (useful when you select only one column in a query)
      * @return {Array} Return null if the sql is invalid
      */
-    protected function to_array ($sql, $key = null) {
+    public static function to_array ($sql, $key = null) {
       if (!$sql) {
         return Model::SQL_FAILED;
       }
