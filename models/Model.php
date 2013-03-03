@@ -22,7 +22,7 @@
      * @param {String} $query the select query string to run
      * @return {MySQL}
      */
-    protected function select ($columns, $query = '') {
+    public function select ($columns, $query = '') {
       $sql = $this->query("SELECT $columns FROM ".$this->get_table()." $query");
       if (!$sql) {
         return Model::SQL_FAILED;
@@ -37,7 +37,7 @@
      *                                Passing a normal array will cause an error
      * @return {Bool}
      */
-    protected function insert ($query) {
+    public function insert ($query) {
       if (is_array($query)) {
         $fields = implode(', ', Model::quotify($query));
         return $this->insert('('.implode(', ', array_keys($query)).') VALUES ('.$fields.')');
@@ -51,7 +51,7 @@
      * @param {String} $query the update query string to run
      * @return {Bool}
      */
-    protected function update ($columns, $query) {
+    public function update ($columns, $query) {
       return $this->query("UPDATE ".$this->get_table()." SET $columns $query");
     }
 
@@ -60,7 +60,7 @@
      * @param {String} $query the delete query string to run
      * @return {Bool}
      */
-    protected function delete ($query) {
+    public function delete ($query) {
       return $this->query("DELETE FROM ".$this->get_table()." $query");
     }
 
@@ -69,7 +69,7 @@
      * love Stefan ^.^
      * @return {Bool}
      */
-    protected function drop () {
+    public function drop () {
       return $this->query("DROP ".$this->get_table());
     }
 
@@ -93,7 +93,7 @@
      * Generic wrapper for the mysql_query
      * @param {String} $query any generic query
      */
-    protected function query ($query) {
+    public function query ($query) {
       $result = mysql_query($query);
       $this->queries[] = $query;
       $this->errors[] = mysql_error();
