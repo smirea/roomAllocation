@@ -82,7 +82,7 @@
             define( 'HAS_ROOM', $allocation['room'] != null );
 
             if( !HAS_ROOM ){
-              $rooms_taken  = extract_column('room', $Allocation_Model->get_rooms_from_college($info['college']));
+              $rooms_taken  = extract_column('room', $Allocation_Model->get_all_rooms_from_college($info['college']));
               $rooms_locked = array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) );
             }
 

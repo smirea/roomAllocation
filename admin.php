@@ -23,6 +23,7 @@
   require_once 'utils_admin.php';
 
   require_once 'models/Allocation_Model.php';
+  require_once 'models/Group_Model.php';
 
   require_once 'floorPlan/utils.php';
   require_once 'floorPlan/Mercator.php';
@@ -31,6 +32,7 @@
   require_once 'floorPlan/Nordmetall.php';
 
   $Allocation_Model = new Allocation_Model();
+  $Group_Model = new Group_Model();
 ?>
 <html>
   <head>
@@ -71,7 +73,7 @@
         $floorPlans = array();
         foreach( $colleges as $c_name => $c_map ){
           $cls = array();
-          $taken = $Allocation_Model->get_rooms_from_college($c_name);
+          $taken = $Allocation_Model->get_all_rooms_from_college($c_name);
           if( C('round.restrictions') )
             add_class( 'available', $allowed_rooms[$c_name], $cls );
           add_class( 'taken', extract_column( 'room', $taken ), $cls );
@@ -168,13 +170,8 @@
               $q_reset_groups = "SELECT i.group_id FROM ".TABLE_ALLOCATIONS." a, ".TABLE_IN_GROUP." i
                                   WHERE a.eid=i.eid AND a.room IS NULL;";
               $gids = sqlToArray( mysql_query( $q_reset_groups ) );
-              $gids = implode(',', extract_column( 'group_id', $gids) );
-
-              $q_delete_1 = "DELETE FROM ".TABLE_IN_GROUP." WHERE group_id IN (".$gids.")";
-              mysql_query( $q_delete_1 );
-
-              $q_delete_2 = "DELETE FROM ".TABLE_GROUPS." WHERE id IN (".$gids.")";
-              mysql_query( $q_delete_2 );
+              $gids = extract_column( 'group_id', $gids);
+              $Group_Model->delete_groups($gids, $gids);
 
               try{
                 foreach( array_keys($arr) as $college ){
