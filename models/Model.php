@@ -100,6 +100,20 @@
       return $result;
     }
 
+    public static function get_first_row ($sql) {
+      if (!$sql) {
+        return Model::SQL_FAILED;
+      }
+      $result = Model::to_array($sql);
+      if ($result === Model::SQL_FAILED) {
+        return Model::SQL_FAILED;
+      }
+      if (count($result) === 0) {
+        return null;
+      }
+      return $result[0];
+    }
+
     /**
      * Takes a mysql resource and returns a list of associative arrays
      *          with the results (one for each row)

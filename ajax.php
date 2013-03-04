@@ -23,11 +23,13 @@
   require_once 'utils.php';
 
   require_once 'models/Allocation_Model.php';
+  require_once 'models/Groups_Model.php';
 
   recursive_escape( $_GET );
 
   $Search = new Search( array( 'fname', 'lname' ) );
   $Allocation_Model = new Allocation_Model();
+  $Groups_Model = new Groups_Model();
 
   define('MIN_LIMIT', 2);
 
@@ -41,8 +43,7 @@
 
   $eid = $_SESSION['eid'];
 
-  $tmp_group_id = mysql_fetch_assoc( mysql_query( "SELECT group_id FROM ".TABLE_IN_GROUP." WHERE eid='$eid'") );
-  $_SESSION['info']['group_id'] = $tmp_group_id['group_id'];
+  $_SESSION['info']['group_id'] = $Groups_Model->get_group_id($eid);
   $allocation = $Allocation_Model->get_allocation($eid);
   $college  = $allocation['college'];
 
@@ -193,9 +194,8 @@
     case 'removeFreshman':
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       e_assert( $roommates[0]['eid'] == FRESHMAN_EID, 'You have not chosen a freshman as your roommate' );
-      $q_delete = "DELETE FROM ".TABLE_IN_GROUP." WHERE group_id='".$_SESSION['info']['group_id']."'";
       $output['info']   = 'Freshman slaughtered successfully!';
-      $output['error']  = mysql_query($q_delete) ? false : 'Unable to slaughter freshman! ('.mysql_error().')';
+      $output['error']  = $Groups_Model->remove_from_group(null, $_SESSION['info']['group_id']) ? false : 'Unable to slaughter freshman! ('.mysql_error().')';
       $output['rpc']    = 'RPC.reload();';
       break;
     case 'getFaceHTML':
