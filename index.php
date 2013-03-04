@@ -24,6 +24,12 @@
   require_once 'floorPlan/Krupp.php';
   require_once 'floorPlan/College3.php';
   require_once 'floorPlan/Nordmetall.php';
+  require_once 'models/Apartment_Choices_Model.php';
+  require_once 'models/Allocation_Model.php';
+
+
+  $Allocation_Model = new Allocation_Model();
+  $Apartment_Choices_Model = new Apartment_Choices_Model();
 ?>
 <html>
   <head>
@@ -262,10 +268,8 @@
               <div class="content" style="float:left;width:35%;">
                 <ol class="room-choices">
                   <?php
-                    $q_choices = "SELECT * FROM ".TABLE_APARTMENT_CHOICES."
-                                    WHERE group_id='${group['group_id']}'";
                     $choices            = array_fill( 0, MAX_ROOM_CHOICES, array() );
-                    $apartment_choices  = sqlToArray( mysql_query( $q_choices ) );
+                    $apartment_choices  = $Apartment_Choices->get_all_choices($group['group_id']);
                     foreach( $apartment_choices as $row ){
                       $choices[(int)$row['choice']][] = $row['number'];
                     }
