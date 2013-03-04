@@ -23,11 +23,17 @@
   require_once 'utils.php';
 
   require_once 'models/Allocation_Model.php';
+  require_once 'models/Request_Model.php';
+  require_once 'models/Person_Model.php';
+  require_once 'models/Apartment_Choice_Model.php';
 
   recursive_escape( $_GET );
 
   $Search = new Search( array( 'fname', 'lname' ) );
   $Allocation_Model = new Allocation_Model();
+  $Request_Model = new Request_Model();
+  $Person_Model = new Person_Model();
+  $Apartment_Choice_Model = new Apartment_Choice_Model();
 
   define('MIN_LIMIT', 2);
 
@@ -64,14 +70,8 @@
       $min_year = (int)date('Y') % 100;
       $columns  = "id,eid,fname,lname,country,college";
       if( $clause = $Search->getQuery( $_GET['str'] ) ){
-        $res      = mysql_query( "SELECT $columns FROM ".TABLE_PEOPLE."
-                                WHERE (
-                                  (status='undergrad' AND year>'$min_year')
-                                  OR (status='foundation-year' AND year='$min_year')
-                                )
-                                AND $clause"
-                    );
-        sqlToJsonOutput( $res );
+        $res      = $Person_Model->search($columns, $min_year, $clause);
+        jsonOutput( $res );
       } else {
         outputError( 'Invalid query' );
       }
@@ -80,11 +80,7 @@
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to       = $_GET['eid'];
-      $q_exists     = "SELECT * FROM ".TABLE_PEOPLE." WHERE eid='$eid_to'";
-      $q_sameReq    = "SELECT id FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
-
-      $sql_exists         = mysql_query( $q_exists );
-      $info_to            = mysql_fetch_assoc( $sql_exists );
+      $info_to            = mysql_fetch_assoc($Person_Model->get($eid_to));
       $allocation_to      = $Allocation_Model->get_allocation($info_to['eid']);
       $info_to['college'] = $allocation_to['college'];
 
@@ -95,10 +91,10 @@
       e_assert( count($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
       e_assert( count($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
 
-      e_assert( mysql_num_rows( mysql_query( $q_sameReq ) ) == 0, "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
+      e_assert( !$Request_Model->request_exists($eid, $eid_from), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
 
-      $q = "INSERT INTO ".TABLE_REQUESTS."(eid_from,eid_to) VALUES ('$eid', '$eid_to')";
-      @mysql_query( $q );
+      $Request_Model->send_request($eid, $eid_to);
+
       $output['result']   = getFaceHTML_sent( $info_to );
       $output['error']    = mysql_error();
       $output['success']  = 'Roommate request sent successfully!';
@@ -107,9 +103,7 @@
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
-      $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
-      mysql_query( $q );
-      $output['result'] = mysql_query( $q );
+      $output['result'] = $Request_Model->accept_request($eid, $eid_to);
       $output['error']  = mysql_error();
       break;
     case 'requestReceived':
@@ -117,12 +111,9 @@
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
 
-      $q_isRequest = "SELECT id FROM ".TABLE_REQUESTS." WHERE eid_from='$eid_to' AND eid_to='$eid'";
-      e_assert( mysql_num_rows( mysql_query($q_isRequest) ) > 0, 'The person has not sent you any requests' );
+      e_assert( $Request_Model->is_request($eid_to, $eid), 'The person has not sent you any requests' );
       if( $_GET['msg'] == 'yes' ){
-        $q_exists   = "SELECT * FROM ".TABLE_PEOPLE." WHERE eid='$eid_to'";
-        $sql_exists = mysql_query( $q_exists );
-        e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );
+        e_assert( mysql_num_rows( $Person_Model->get($eid_to) ) > 0, "Person does not exist?!?!" );
 
         $info_to  = mysql_fetch_assoc( $sql_exists );
         $g_from   = group_info( $_SESSION['info']['eid'] );
@@ -163,11 +154,9 @@
 
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
 
-        $q = "DELETE FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";
-        $output['result'] = mysql_query( $q );
+        $output['result'] = $Request_Model->remove_remaining($eid);
 
-        $q = "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='".$_SESSION['info']['group_id']."'";
-        @mysql_query( $q );
+        $Apartment_Choice_Model->remove_all_choices($_SESSION['info']['group_id']);
 
         /* NOTE:  must check if limit is reach and all that bull
         $q    = "SELECT eid FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";
@@ -180,8 +169,7 @@
         notifyPerson( $_GET['eid'], $_SESSION['info']['fname']." rejected your roommate request" );
       }
 
-      $q = "DELETE FROM ".TABLE_REQUESTS." WHERE (eid_from='$eid' AND eid_to='$eid_to') OR (eid_from='$eid_to' AND eid_to='$eid')";
-      $output['error'] .= mysql_query( $q ) ? '' : '<div>'.mysql_error().'</div>';
+      $output['error'] .= $Request_Model->accept_request($eid, $eid_to) ? '' : '<div>'.mysql_error().'</div>';
       break;
     case 'addFreshman':
       e_assert( C('roommates.freshman'), 'You cannot choose a freshman as a roommate this round' );
@@ -272,7 +260,7 @@
       }
       $values = implode(', ', $values);
 
-      mysql_query( "DELETE FROM ".TABLE_APARTMENT_CHOICES." WHERE group_id='$group_id'" );
+      $Apartment_Choice_Model->remove_all_choices($group_id);
       $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,college,group_id,choice) VALUES $values";
       $output['result'] = mysql_query($q);
       $output['error'] .= mysql_error();
