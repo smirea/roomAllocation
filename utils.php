@@ -20,6 +20,9 @@
 
   require_once 'config.php';
   require_once 'WorldRegions.php';
+  require_once 'models/Group_Model.php';
+
+  $Group_Model = new Group_Model();
 
   /**
    * @brief Applies input sanitizing functions for every value in the array, recursively
@@ -80,27 +83,13 @@
   }
 
 
-  function add_to_group( $eid, $group_id = null ){
-    if( $group_id === null ){
-      $q_create = "INSERT INTO ".TABLE_GROUPS."(score) VALUES(0)";
-      mysql_query( $q_create );
-      $group_id = mysql_insert_id();
-    }
-    // insert into group
-    $q = "INSERT INTO ".TABLE_IN_GROUP."(eid,group_id) VALUES ('$eid', '$group_id')";
-    mysql_query( $q );
-
-    // select everyone in group
+  function add_to_group ($eid, $group_id = null) {
+    $group_id = $Group_Model->add_to_group($eid, $group_id);
     $q_people = "SELECT p.* FROM ".TABLE_IN_GROUP." i, ".TABLE_PEOPLE." p
                   WHERE group_id='$group_id' AND i.eid=p.eid";
-    $people = sqlToArray( mysql_query( $q_people ) );
-
+    $people = Model::to_array( mysql_query( $q_people ) );
     $points = get_points( $people );
-
-    // update the group's score
-    $q_update = "UPDATE ".TABLE_GROUPS." SET score='".$points['total']."' WHERE id='$group_id'";
-    mysql_query( $q_update );
-
+    $Group_Model->set_group_score($group_id, $points['total']);
     return $group_id;
   }
 

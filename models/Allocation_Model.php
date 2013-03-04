@@ -26,14 +26,7 @@
     }
 
     public function get_allocation ($eid) {
-      $result = Model::to_array($this->select('*', "WHERE eid='$eid'"));
-      if ($result === Model::SQL_FAILED) {
-        return Model::SQL_FAILED;
-      }
-      if (count($result) === 0) {
-        return null;
-      }
-      return $result[0];
+      return Model::get_first_row($this->select('*', "WHERE eid='$eid'"));
     }
 
     public function update_allocation ($eid, $columns) {
