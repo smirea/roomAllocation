@@ -31,11 +31,11 @@
     }
 
     public get ($eid) {
-      return $this->to_array($this->select('*', "WHERE eid='$eid'"));
+      return $this->select('*', "WHERE eid='$eid'");
     }
 
     public search ($columns, $min_year, $clause) {
-      return $this->to_array($this->select($columns, "WPHERE (
+      return $this->to_array($this->select($columns, "WHERE (
                                         (status='undergrad' AND year>'$min_year')
                                         OR (status='foundation-year' AND year='$min_year')
                                       )
