@@ -24,12 +24,12 @@
   require_once 'floorPlan/Krupp.php';
   require_once 'floorPlan/College3.php';
   require_once 'floorPlan/Nordmetall.php';
-  require_once 'models/Apartment_Choices_Model.php';
+  require_once 'models/Apartment_Choice_Model.php';
   require_once 'models/Allocation_Model.php';
 
 
   $Allocation_Model = new Allocation_Model();
-  $Apartment_Choices_Model = new Apartment_Choices_Model();
+  $Apartment_Choice_Model = new Apartment_Choice_Model();
 ?>
 <html>
   <head>
@@ -269,7 +269,7 @@
                 <ol class="room-choices">
                   <?php
                     $choices            = array_fill( 0, MAX_ROOM_CHOICES, array() );
-                    $apartment_choices  = $Apartment_Choices->get_all_choices($group['group_id']);
+                    $apartment_choices  = $Apartment_Choice_Model->get_all_choices($group['group_id']);
                     foreach( $apartment_choices as $row ){
                       $choices[(int)$row['choice']][] = $row['number'];
                     }
