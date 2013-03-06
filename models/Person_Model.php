@@ -31,7 +31,7 @@
     }
 
     public function get ($eid) {
-      return $this->select('*', "WHERE eid='$eid'");
+      return Model::get_first_row($this->select('*', "WHERE eid='$eid'"));
     }
 
     public function search ($columns, $min_year, $clause) {
