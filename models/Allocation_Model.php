@@ -17,7 +17,7 @@
       return $this->select('room', "WHERE college='$college' AND room IN ('".implode("', '", $rooms)."')");
     }
 
-    public function get_all_rooms_from_college ($colleg) {
+    public function get_all_rooms_from_college ($college) {
       return Model::to_array($this->select("*", "WHERE college='$college' AND room IS NOT NULL"));
     }
 
