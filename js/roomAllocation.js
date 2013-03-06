@@ -70,12 +70,11 @@ var RPC = {
           // TODO: implement handle response
         });
     }
-    $( "#college_choices_sort" ).sortable({
-        placeholder: "ui-state-highlight",
-        update: evalCollegeChoice
-      }); 
-      $( "#college_choices_sort" ).disableSelection();
-    });
+    $("#college_choices_sort").sortable({
+      placeholder: "ui-state-highlight",
+      update: evalCollegeChoice
+    }); 
+    $("#college_choices_sort").disableSelection();
   }
 
   var bulk_events = function(){
