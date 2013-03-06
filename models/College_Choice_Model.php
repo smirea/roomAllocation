@@ -31,7 +31,7 @@
     }
 
     public function get_choices ($eid) {
-      return $this->to_array($this->select('*', "WHERE eid='$eid'"));
+      return Model::get_first_row($this->select('*', "WHERE eid='$eid'"));
     }
 
     public function get_all_choices () {

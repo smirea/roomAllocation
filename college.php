@@ -1,0 +1,165 @@
+<?php
+/***************************************************************************\
+    This file is part of RoomAllocation.
+
+    RoomAllocation is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    RoomAllocation is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RoomAllocation.  If not, see <http://www.gnu.org/licenses/>.
+\***************************************************************************/
+?>
+<?php
+  require_once 'config.php';
+  require_once 'utils.php';
+  require_once 'floorPlan/utils.php';
+  require_once 'floorPlan/Mercator.php';
+  require_once 'floorPlan/Krupp.php';
+  require_once 'floorPlan/College3.php';
+  require_once 'floorPlan/Nordmetall.php';
+  require_once 'models/Apartment_Choice_Model.php';
+  require_once 'models/Allocation_Model.php';
+  require_once 'models/Person_Model.php';
+  require_once 'models/College_Choice_Model.php';
+
+  $Allocation_Model = new Allocation_Model();
+  $Apartment_Choice_Model = new Apartment_Choice_Model();
+  $Person_Model = new Person_Model();
+  $College_Choice_Model = new College_Choice_Model();
+?>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="stylesheet" type="text/css" href="css/html5cssReset.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/messages.css" />
+    <link rel="stylesheet" type="text/css" href="css/gh-buttons.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.qtip.css" />
+    <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
+    <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/jquery.qtip.js"></script>
+    <script src="js/lib.js"></script>
+    <script src="js/roomAllocation.js"></script>
+  </head>
+
+  <body>
+    <div id="main">
+      <?php require_once 'login.php'; ?>
+
+      <div class="message-holder">
+        <div id="message-info" class="info message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+        <div id="message-error" class="error message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+        <div id="message-warning" class="warning message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+        <div id="message-success" class="success message">
+          <div class="content"></div>
+          <a href="javascript:void(0)" class="close">X</a>
+        </div>
+      </div>
+
+      <div id="wrapper">
+        <?php
+          if( LOGGED_IN ){
+
+            /** Set some info */
+            $eid        = $_SESSION['info']['eid'];
+            $group      = group_info( $eid );
+            $roommates  = get_roommates( $eid, $group['group_id'] );
+            $info       = $_SESSION['info'];
+            $points     = get_points( array_merge( array($info), $roommates ) );
+
+            $allocation = $Allocation_Model->get_allocation($eid);
+            define( 'HAS_ROOM', $allocation['room'] != null );
+
+            if( !HAS_ROOM ){
+              $rooms_taken  = extract_column('room', $Allocation_Model->get_all_rooms_from_college($info['college']));
+              $rooms_locked = array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) );
+            }
+
+        ?>
+        <div style="float:left;width:50%;" class="content">
+          <div class="wrapper">
+            <h3>Profile</h3>
+            <?php
+                echo getFaceHTML( $info );
+            ?>
+
+            <br />
+            <h3>College Choice</h3>
+            <ul id="college_choices_sort">
+            <?php   
+              function makeCollege($c) {
+                return "<li id='choice_$c' class='ui-state-default college-choice'>$c</li>";
+              }
+
+              $choice_colleges = $College_Choice_Model->get_choices($_SESSION['eid']);
+              if (count($choice_colleges) == 0 || !$choice_colleges) {
+                  $remaining_colleges = array("College-III", "Mercator", "Nordmetall", "Krupp");
+                  $info = $Person_Model->get($_SESSION['eid']);
+                  $college = $info['college'];
+                  $pos_college = array_search($college, $remaining_colleges);
+                  array_splice($remaining_colleges, $pos_college, 1);
+                  echo "<li id='choice_$college' class='ui-state-default college-choice'>$college</li>";
+                  foreach($remaining_colleges as $c) {
+                    echo makeCollege($c);
+                  }
+              } else {
+                echo makeCollege($choice_colleges['choice_0']);
+                echo makeCollege($choice_colleges['choice_1']);
+                echo makeCollege($choice_colleges['choice_2']);
+                echo makeCollege($choice_colleges['choice_3']);
+
+              } 
+
+            ?>
+            </ul>
+            
+          </div>
+        </div>
+
+        <div style="float:right;width:50%;" class="content">
+          <div class="wrapper">
+            <h3>Info</h3>
+            
+
+            <br />
+            
+
+            
+          </div>
+        </div>
+
+        <div class="clearBoth"></div>
+
+        <?php } ?>
+
+      </div>
+
+      <div id="footer" class="message info">
+        <span style="float:left">(C) 2012 code4fun.de</span>
+        Designed and developed by
+        <a title="contact me if anything..." href="mailto:s.mirea@jacobs-university.de">Stefan Mirea</a>
+      </div>
+
+    </div>
+  </body>
+</html>

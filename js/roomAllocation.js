@@ -60,11 +60,12 @@ var RPC = {
   
   var setup_college_chooser = function() {
     function evalCollegeChoice (e, ui) {
-        var choices = $(e.target).sortable("toArray");
+        var choices = $(e.target).parent().sortable("toArray");
         for(var i = 0; i < choices.length; i++) {
           choices[i] = choices[i].substr(7);
         }
-        $.get(ajaxFile, { 
+        $.get(ajax_file, { 
+          'action' : 'setCollegeChoices',
           'choices' : choices
         }, function(data){
           // TODO: implement handle response
