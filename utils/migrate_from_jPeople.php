@@ -1,8 +1,8 @@
 <?php
 
-  require_once '../config.php';
+  require_once 'config.php';
 
-  require_once '../models/Allocation_Model.php';
+  require_once 'models/Allocation_Model.php';
 
   $Allocation_Model = new Allocation_Model();
 
@@ -37,13 +37,10 @@
     $h .= updateAllocations( $row );
   }
   $h .= '</table>';
-/*
-  $q = "INSERT INTO Allocations(eid) SELECT p.eid FROM ".TABLE_PEOPLE." p";
-  echo "<div>Copying data into Allocations table: ".(mysql_query($q) ? 'OK' : 'FAIL: '.mysql_error())." </div>";
-*/
   echo "<hr />$h";
 
   function updateAllocations( $info ){
+    global $Allocation_Model;
     $insert_query = $Allocation_Model->insert(array('eid' => $info['eid']));
     $status = '<b style="color:green">OK</b>';
     $error  = '';
