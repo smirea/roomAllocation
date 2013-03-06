@@ -85,17 +85,18 @@
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to             = $_GET['eid'];
       $info_to            = $Person_Model->get($eid_to);
-      $allocation_to      = $Allocation_Model->get_allocation($info_to['eid']);
+      $allocation_from    = $Allocation_Model->get_allocation($eid);
+      $allocation_to      = $Allocation_Model->get_allocation($eid_to);
       $info_to['college'] = $allocation_to['college'];
 
       e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
       e_assert( $info_to, "Person does not exist?!?!" );
       e_assert( $info_to['college'] == $college, '<b>'.$info_to['fname'].'</b> is in another college ('.$info_to['college'].') !' );
 
-      e_assert( count($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
-      e_assert( count($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
+      e_assert( !$allocation_from['room'], "You already have a room" );
+      e_assert( !$allocation_to['room'], "Your roommate  already has a room" );
 
-      e_assert( !$Request_Model->request_exists($eid, $eid_from), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
+      e_assert( !$Request_Model->request_exists($eid, $eid), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
 
       $Request_Model->send_request($eid, $eid_to);
 
