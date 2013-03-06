@@ -45,7 +45,7 @@
       && (DEBUG || isset($_POST['password']))
       && !($message = check_login($_POST['username'], $_POST['password']))
     ){
-      if (strlen($_SESSION['username']) == 0) {
+      if (strlen($_POST['username']) == 0) {
         $message = '<div style="color:red">You might want to consider logging in using a username :)</div>';
       } else {
         $q    = " SELECT
