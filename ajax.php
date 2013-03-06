@@ -29,6 +29,9 @@
   require_once 'models/Apartment_Choice_Model.php';
   require_once 'models/College_Choice_Model.php';
 
+  // make sure user is logged in before accessing this file
+  e_assert_isset($_SESSION, 'eid,username,info');
+
   recursive_escape( $_GET );
 
   $Search = new Search( array( 'fname', 'lname' ) );
@@ -81,21 +84,23 @@
       }
       break;
     case 'addRoommate':
-      e_assert( C('round.active'), 'No round is currently active' );
+      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      e_assert(C('round.active'), 'No round is currently active');
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to             = $_GET['eid'];
       $info_to            = $Person_Model->get($eid_to);
-      $allocation_to      = $Allocation_Model->get_allocation($info_to['eid']);
+      $allocation_from    = $Allocation_Model->get_allocation($eid);
+      $allocation_to      = $Allocation_Model->get_allocation($eid_to);
       $info_to['college'] = $allocation_to['college'];
 
       e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
       e_assert( $info_to, "Person does not exist?!?!" );
       e_assert( $info_to['college'] == $college, '<b>'.$info_to['fname'].'</b> is in another college ('.$info_to['college'].') !' );
 
-      e_assert( count($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
-      e_assert( count($Allocation_Model->get_room($eid_to)) == 0, "Your roommate  already has a room" );
+      e_assert( !$allocation_from['room'], "You already have a room" );
+      e_assert( !$allocation_to['room'], "Your roommate  already has a room" );
 
-      e_assert( !$Request_Model->request_exists($eid, $eid_from), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
+      e_assert( !$Request_Model->request_exists($eid, $eid), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
 
       $Request_Model->send_request($eid, $eid_to);
 
@@ -104,6 +109,7 @@
       $output['success']  = 'Roommate request sent successfully!';
       break;
     case 'requestSent':
+      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
@@ -111,17 +117,18 @@
       $output['error']  = mysql_error();
       break;
     case 'requestReceived':
+      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
 
       e_assert( $Request_Model->is_request($eid_to, $eid), 'The person has not sent you any requests' );
       if( $_GET['msg'] == 'yes' ){
-        e_assert( mysql_num_rows( $Person_Model->get($eid_to) ) > 0, "Person does not exist?!?!" );
-
-        $info_to  = mysql_fetch_assoc( $sql_exists );
+        $info_to  = $Person_Model->get($eid_to);
         $g_from   = group_info( $_SESSION['info']['eid'] );
         $g_to     = group_info( $info_to['eid'] );
+
+        e_assert($info_to, "Person does not exist?!?!");
 
         $msg_tooMany  = "Too many roommates. The maximum allowed in this phase
                             is <b>'".MAX_ROOMMATES."'</b> roommate(s) !";
@@ -176,6 +183,7 @@
       $output['error'] .= $Request_Model->accept_request($eid, $eid_to) ? '' : '<div>'.mysql_error().'</div>';
       break;
     case 'addFreshman':
+      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert( C('roommates.freshman'), 'You cannot choose a freshman as a roommate this round' );
       e_assert( $_SESSION['info']['group_id'] === null, 'You are already in a group with someone' );
       $_SESSION['info']['group_id'] = add_to_group( FRESHMAN_EID, add_to_group( $_SESSION['info']['eid'] ) );
@@ -183,6 +191,7 @@
       $output['rpc']  = 'RPC.reload();';
       break;
     case 'removeFreshman':
+      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       e_assert( $roommates[0]['eid'] == FRESHMAN_EID, 'You have not chosen a freshman as your roommate' );
       $output['info']   = 'Freshman slaughtered successfully!';
@@ -194,6 +203,7 @@
       $output['result'] = getFaceHTML( $_GET );
       break;
     case 'chooseRooms':
+      e_assert(C('round.type') === 'apartment', 'You are not in the apartment round!');
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'choices' );
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
@@ -269,6 +279,7 @@
       $output['info']   = 'Rooms updated successfully!';
       break;
     case 'selectRooms':
+      e_assert(C('round.type') === 'apartment', 'You are not in the apartment round!');
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       $r_eids = array_merge( array($eid), extract_column( 'eid', $roommates ) );
       $r_rooms = extract_column('room', Model::to_array($Allocation_Model->get_multiple_rooms($r_eids)));
@@ -296,6 +307,7 @@
       $output['info'] = 'Rooms update successfully!';
       break;
     case 'setCollegeChoices':
+      e_assert(C('round.type') === 'college', 'You are not in the college round!');
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, 'choices' );
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );

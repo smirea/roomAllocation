@@ -84,6 +84,7 @@
 
 
   function add_to_group ($eid, $group_id = null) {
+    global $Group_Model;
     $group_id = $Group_Model->add_to_group($eid, $group_id);
     $q_people = "SELECT p.* FROM ".TABLE_IN_GROUP." i, ".TABLE_PEOPLE." p
                   WHERE group_id='$group_id' AND i.eid=p.eid";
