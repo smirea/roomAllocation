@@ -52,11 +52,32 @@ var RPC = {
     init_select_rooms();
     add_floorplan_events();
     register_global_ajax_handlers();
+    setup_college_chooser();
     bulk_events();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( RPC.reload, 20 * 60 * 1000 );
   });
   
+  var setup_college_chooser = function() {
+    function evalCollegeChoice (e, ui) {
+        var choices = $(e.target).sortable("toArray");
+        for(var i = 0; i < choices.length; i++) {
+          choices[i] = choices[i].substr(7);
+        }
+        $.get(ajaxFile, { 
+          'choices' : choices
+        }, function(data){
+          // TODO: implement handle response
+        });
+    }
+    $( "#college_choices_sort" ).sortable({
+        placeholder: "ui-state-highlight",
+        update: evalCollegeChoice
+      }); 
+      $( "#college_choices_sort" ).disableSelection();
+    });
+  }
+
   var bulk_events = function(){
     $('.message .close').live('click.close', function(){
       var $msg = $(this).parent();
