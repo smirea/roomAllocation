@@ -21,43 +21,45 @@
   /** Admin config */
   define( 'ADMIN_ACCOUNTS', 'smirea,kgalal,rnjenga,skang,mdiasdasil' );
   $admin = explode(',', ADMIN_ACCOUNTS);
-  
+
   /** Bulk config */
   define( 'DYNAMIC_CONFIG_FILE', '__config_d.php' );
-  
+
   define( 'STATUS_UNDERGRAD',   'undergrad' );
   define( 'STATUS_MASTER',      'master' );
   define( 'STATUS_PHD',         'phd' );
   define( 'STATUS_FOUNDATION',  'foundation-year' );
-  
+
   define( 'FRESHMAN_EID', 0 );
-  
+
   /** Database config */
   define( 'DB_USER', 'jPerson' );
   define( 'DB_PASS', 'jacobsRulz' );
   define( 'DB_NAME', 'RoomAllocation' );
-  
+
   define( 'TABLE_ALLOCATIONS',        'Allocations' );
   define( 'TABLE_APARTMENT_CHOICES',  'Apartment_Choices' );
+  define( 'TABLE_COLLEGE_CHOICES',    'College_Choices' );
   define( 'TABLE_PEOPLE',             'People' );
   define( 'TABLE_REQUESTS',           'Requests' );
   define( 'TABLE_GROUPS',             'Groups' );
   define( 'TABLE_IN_GROUP',           'InGroup' );
 
   dbConnect( DB_USER, DB_PASS, DB_NAME );
-  
+
   session_start();
-  
+
   /******************
   ***** INCLUDES ****
   ******************/
-  
+
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
-    C( 'DEBUG',                     0 );  // mainly disable passwords for all accounts
+    C( 'DEBUG',                     1 );  // mainly disable passwords for all accounts
     C( 'round.active',              0 );  // if students can perform any action in terms of allocation (not choosing)
     C( 'round.number',              1 );  // the current round number. useful for logging
     C( 'round.restrictions',        0 );  // whether to use restrictions or not (i.e. config_allowed.php)
+    C( 'round.type',                0 );
     C( 'roommates.min',             1 );
     C( 'roommates.max',             1 );
     C( 'roommates.freshman',        0 );  // whether to allow rooming with a freshman
@@ -74,24 +76,24 @@
   }
   require_once( DYNAMIC_CONFIG_FILE );
   require_once( 'config_allowed.php' );
-  
+
   /******************
   ***** GENERAL *****
   ******************/
-  
+
   define( 'DEBUG', C('DEBUG') );
-  
+
   /** General config */
   define( 'MAX_ROOMMATES',    C('roommates.max') );
   define( 'MIN_ROOMMATES',    C('roommates.min') );
   define( 'MAX_ROOM_CHOICES', C('apartment.choices') );
   define( 'MIN_POINTS',       C('points.min') );
   define( 'MAX_POINTS',       C('points.max') );
-  
+
   /******************
   ******* URLS ******
   ******************/
-  
+
   function imageURL( $eid ){
     return "http://swebtst01.public.jacobs-university.de/jPeople/image.php?id=$eid";
 //    return "http://localhost/jPeople/images/faces/$eid.png";
@@ -105,7 +107,7 @@
   /******************
   ****** HELPER  ****
   ******************/
-  
+
   /**
    *
    * @todo make this multi-level (just like in vanilla forums)
@@ -123,7 +125,7 @@
  * Check config.php for more information
  * last edited on '.date('d.m.Y').' at '.date('h:i:s').'
  */
- 
+
 '.serialize_array( $configuration, 'configuration' ).'
 
 /** ************************************ **/
@@ -132,7 +134,7 @@
       return isset($configuration[$key]) ? $configuration[ $key ] : null;
     }
   }
-  
+
   /**
    * Creates the string representation of the array so it can be included afterwards
    * @param {array} $array
@@ -154,11 +156,11 @@
     }
     return implode("\n", $h);
   }
-  
+
   /**
    * @brief check if an array is associative or not
    * @param {array} $array
-   * @return {bool} the result as a boolean 
+   * @return {bool} the result as a boolean
    */
   function is_assoc(array $array){
     if( !is_numeric( array_shift( array_keys( $array ) ) ) ){
@@ -166,7 +168,7 @@
     }
     return false;
   }
-  
+
   /**
    * @brief Outputs a JSON with the proper headers from the given array
    * @warning This function terminates the execution (runs exit())
@@ -181,7 +183,7 @@
     }
     exit( json_encode( $arr ) );
   }
-  
+
   /**
    * @brief Outputs an error JSON with the format {"error" => $message}
    * @warning This function terminates the execution (runs exit())
@@ -190,7 +192,7 @@
   function outputError( $message ){
     jsonOutput( array( 'error' => $message ) );
   }
-  
+
   /**
    * @brief Check if condition is false, in which case run outputError( of_the_message )
    * @warning This function the execution (runs exit())
@@ -202,7 +204,7 @@
       outputError( $message );
     }
   }
-  
+
   /**
    * @brief For each key in keys, apply e_assert( isset($arr[$key]) );
    * @param {array} $arr the array to check into
@@ -221,7 +223,7 @@
       e_assert( isset( $arr[$k] ), $v );
     }
   }
-  
+
   function sqlToJsonOutput( $q ){
     if( $q ){
       jsonOutput( sqlToArray( $q ) );
@@ -229,9 +231,9 @@
       outputError( mysql_error() );
     }
   }
-  
+
   /**
-   * @brief Takes a mysql resource and returns a list of associative arrays 
+   * @brief Takes a mysql resource and returns a list of associative arrays
    *          with the results (one for each row)
    * @param {MySQL} $sql the resource to use
    * @param {} $key
@@ -252,7 +254,7 @@
       return array();
     }
   }
-  
+
   /**
    * @brief Perform a database connection
    * @warning Dies if it is unable to make a connection
@@ -265,7 +267,7 @@
     $connexion = mysql_connect( $host, $user, $pass ) or die ("Could not connect to Data Base!");
     if( $name ) mysql_select_db( $name, $connexion ) or die ("Failed to select Data Base");
   }
-  
+
   /**
    * @brief Wraps var_export into a <pre></pre> tag for nice formatting
    * @param {mixed} [$arg_n]

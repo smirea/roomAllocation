@@ -23,19 +23,22 @@
   require_once 'utils.php';
 
   require_once 'models/Allocation_Model.php';
-  require_once 'models/Groups_Model.php';
+  require_once 'models/Group_Model.php';
   require_once 'models/Request_Model.php';
   require_once 'models/Person_Model.php';
   require_once 'models/Apartment_Choice_Model.php';
+  require_once 'models/College_Choice_Model.php';
 
   recursive_escape( $_GET );
 
   $Search = new Search( array( 'fname', 'lname' ) );
+
   $Allocation_Model = new Allocation_Model();
-  $Groups_Model = new Groups_Model();
+  $Groups_Model = new Group_Model();
   $Request_Model = new Request_Model();
   $Person_Model = new Person_Model();
   $Apartment_Choice_Model = new Apartment_Choice_Model();
+  $College_Choice_Model = new College_Choice_Model();
 
   define('MIN_LIMIT', 2);
 
@@ -80,13 +83,13 @@
     case 'addRoommate':
       e_assert( C('round.active'), 'No round is currently active' );
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
-      $eid_to       = $_GET['eid'];
-      $info_to            = mysql_fetch_assoc($Person_Model->get($eid_to));
+      $eid_to             = $_GET['eid'];
+      $info_to            = $Person_Model->get($eid_to);
       $allocation_to      = $Allocation_Model->get_allocation($info_to['eid']);
       $info_to['college'] = $allocation_to['college'];
 
       e_assert( $eid != $eid_to, "Don't be narcissistic, you can't add yourself as a roommate d'oh!" );
-      e_assert( mysql_num_rows( $sql_exists ) > 0, "Person does not exist?!?!" );
+      e_assert( $info_to, "Person does not exist?!?!" );
       e_assert( $info_to['college'] == $college, '<b>'.$info_to['fname'].'</b> is in another college ('.$info_to['college'].') !' );
 
       e_assert( count($Allocation_Model->get_room($eid)) == 0, "You already have a room" );
@@ -261,8 +264,7 @@
       $values = implode(', ', $values);
 
       $Apartment_Choice_Model->remove_all_choices($group_id);
-      $q = "INSERT INTO ".TABLE_APARTMENT_CHOICES."(number,college,group_id,choice) VALUES $values";
-      $output['result'] = mysql_query($q);
+      $output['result'] = $Apartment_Choice_Model->insert("(number,college,group_id,choice) VALUES $values");
       $output['error'] .= mysql_error();
       $output['info']   = 'Rooms updated successfully!';
       break;
@@ -292,6 +294,19 @@
         }
       }
       $output['info'] = 'Rooms update successfully!';
+      break;
+    case 'setCollegeChoices':
+      e_assert( C('round.active'), 'No round is currently active' );
+      e_assert_isset( $_GET, 'choices' );
+      e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
+      e_assert( C('round.type') == 'college', 'This is currently not a college round' );
+      $choices = array('eid' => $_SESSION['eid']);
+      for ($i=0; $i<count($_GET['choices']); ++$i) {
+        $choices['choice_' . $i] = $_GET['choices'][$i];
+      }
+      $output['result'] = $College_Choice_Model->set_choices($choices);
+      $output['error'] .= mysql_error();
+      $output['info'] = 'College prefences updated!';
       break;
     default:
       outputError( 'Unknown action' );
