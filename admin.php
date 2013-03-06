@@ -220,7 +220,7 @@ HTML;
               $fields = array(
                 'Is round open'                   => 'round.active/bool',
                 'Restrict allocations'            => 'round.restrictions/bool',
-                'Current round type'              => 'round.type/select/college,apartment,room',
+                'Current round type'              => 'round.type/select/college,roommate,apartment',
                 'Current round number'            => 'round.number/int',
                 'Max allowed roommates'           => 'roommates.max/int',
                 'Min required roommates'          => 'roommates.min/int',
