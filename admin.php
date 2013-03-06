@@ -220,6 +220,7 @@ HTML;
               $fields = array(
                 'Is round open'                   => 'round.active/bool',
                 'Restrict allocations'            => 'round.restrictions/bool',
+                'Current round type'              => 'round.type/select/college,apartment,room',
                 'Current round number'            => 'round.number/int',
                 'Max allowed roommates'           => 'roommates.max/int',
                 'Min required roommates'          => 'roommates.min/int',
@@ -236,7 +237,11 @@ HTML;
               );
               $h = array();
               foreach( $fields as $label => $properties ){
-                list( $key, $type ) = explode( '/', $properties );
+                @list( $key, $type, $extra ) = explode( '/', $properties );
+                if ($type == 'bool') {
+                  $type = 'select';
+                  $extra = '1:true,0:false';
+                }
                 $value      = C($key);
                 $field      = '';
                 $name       = "config-$key";
@@ -245,13 +250,17 @@ HTML;
                   case 'int':
                     $field = '<input type="text" maxlength="2" size="1" '.$form_attr.' />';
                     break;
-                  case 'bool':
+                  case 'select':
+                    $arr = explode(',', $extra);
+                    $field = '<select name="'.$name.'">';
                     $s = 'selected="selected"';
-                    $field = '<select name='.$name.'>
-                        <option value="1" '.((int)$value?$s:'').'>true</option>
-                        <option value="0" '.((int)$value?'':$s).'>false</option>
-                      </select>';
-                    break;
+                    foreach ($arr as $option_value) {
+                      @list($val, $text) = explode(':', $option_value);
+                      $text = isset($text) ? $text : $val;
+                      $field .= '<option value="'.$val.'" '.($val == $value ? $s : '').'>'.$text.'</option>';
+                    }
+                    $field .= '</select>';
+                  break;
                   default:
                   case 'string':
                     $field = '<input type="text" '.$form_attr.' />';

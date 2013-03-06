@@ -55,10 +55,11 @@
 
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
-    C( 'DEBUG',                     0 );  // mainly disable passwords for all accounts
+    C( 'DEBUG',                     1 );  // mainly disable passwords for all accounts
     C( 'round.active',              0 );  // if students can perform any action in terms of allocation (not choosing)
     C( 'round.number',              1 );  // the current round number. useful for logging
     C( 'round.restrictions',        0 );  // whether to use restrictions or not (i.e. config_allowed.php)
+    C( 'round.type',                0 );
     C( 'roommates.min',             1 );
     C( 'roommates.max',             1 );
     C( 'roommates.freshman',        0 );  // whether to allow rooming with a freshman
