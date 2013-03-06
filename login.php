@@ -45,27 +45,31 @@
       && (DEBUG || isset($_POST['password']))
       && !($message = check_login($_POST['username'], $_POST['password']))
     ){
-      $q    = " SELECT
-                  p.*,
-                  (SELECT i.group_id FROM ".TABLE_IN_GROUP." i WHERE i.eid=p.eid) AS group_id
-                FROM ".TABLE_PEOPLE." p
-                WHERE account='${_POST['username']}'";
-      $info = mysql_fetch_assoc( mysql_query( $q ) );
-      $min_year = (int)date('Y') % 100;
-      if( in_array( $info['account'], $admin )
-          || ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
-          || ($info['status'] == STATUS_FOUNDATION && $info['year'] == $min_year)
-      ) {
-        $college  = $Allocation_Model->get_allocation($info['eid']);
-        $college  = $college['college'];
-        $info['college']      = $college;
-        $_SESSION['username'] = $info['account'];
-        $_SESSION['eid']      = $info['eid'];
-        $_SESSION['info']     = $info;
-        header('Location:'.FILE_SELF);
+      if (strlen($_SESSION['username']) == 0) {
+        $message = '<div style="color:red">You might want to consider logging in using a username :)</div>';
       } else {
-        $message = '<div style="color:red">Records show that you are not going to be
-                        at Jacobs next year, therefore you do not need a room</div>';
+        $q    = " SELECT
+                    p.*,
+                    (SELECT i.group_id FROM ".TABLE_IN_GROUP." i WHERE i.eid=p.eid) AS group_id
+                  FROM ".TABLE_PEOPLE." p
+                  WHERE account='${_POST['username']}'";
+        $info = mysql_fetch_assoc( mysql_query( $q ) );
+        $min_year = (int)date('Y') % 100;
+        if( in_array( $info['account'], $admin )
+            || ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
+            || ($info['status'] == STATUS_FOUNDATION && $info['year'] == $min_year)
+        ) {
+          $college  = $Allocation_Model->get_allocation($info['eid']);
+          $college  = $college['college'];
+          $info['college']      = $college;
+          $_SESSION['username'] = $info['account'];
+          $_SESSION['eid']      = $info['eid'];
+          $_SESSION['info']     = $info;
+          header('Location:'.FILE_SELF);
+        } else {
+          $message = '<div style="color:red">Records show that you are not going to be
+                          at Jacobs next year, therefore you do not need a room</div>';
+        }
       }
     }
 
