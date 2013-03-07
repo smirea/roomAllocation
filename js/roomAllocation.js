@@ -414,6 +414,9 @@ var RPC = {
         .fadeIn( 800 )
         .find('.content')
         .html( message );
+      setTimeout(function(){
+        clone.fadeOut();
+      }, 5000 + msg.length * 10);
       container[0].scrollTop = container[0].scrollHeight;
     } else {
       console.warn( 'Unknown message type', arguments );
