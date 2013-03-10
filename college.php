@@ -107,8 +107,8 @@
             <h3>College Choice</h3>
             <ul id="college_choices_sort">
             <?php   
-              function makeCollege($c) {
-                return "<li id='choice_$c' class='ui-state-default college-choice'>$c</li>";
+              function makeCollege ($c, $position) {
+                return '<li id="choice_'.$c.'" class="ui-state-default college-choice"><span class="number">'.$position.'</span><span class="name">'.$c.'</span></li>';
               }
 
               $choice_colleges = $College_Choice_Model->get_choices($_SESSION['eid']);
@@ -123,10 +123,9 @@
                     echo makeCollege($c);
                   }
               } else {
-                echo makeCollege($choice_colleges['choice_0']);
-                echo makeCollege($choice_colleges['choice_1']);
-                echo makeCollege($choice_colleges['choice_2']);
-                echo makeCollege($choice_colleges['choice_3']);
+                for ($i=0; $i<4; ++$i) {
+                  echo makeCollege($choice_colleges['choice_' . $i], $i + 1);
+                }
 
               } 
 

@@ -60,9 +60,9 @@ var RPC = {
   
   var setup_college_chooser = function() {
     function evalCollegeChoice (e, ui) {
-        var choices = $(e.target).parent().sortable("toArray");
+        var choices = $(e.target).parent().find('.college-choice .name');
         for(var i = 0; i < choices.length; i++) {
-          choices[i] = choices[i].substr(7);
+          choices[i] = choices[i].innerHTML.substr(7);
         }
         $.get(ajax_file, { 
           'action' : 'setCollegeChoices',
@@ -73,7 +73,17 @@ var RPC = {
     }
     $("#college_choices_sort").sortable({
       placeholder: "ui-state-highlight",
-      update: evalCollegeChoice
+      update: evalCollegeChoice,
+      change: function college_sort (event, ui) {
+        ui.item.siblings('.college-choice').each(function () {
+          $(this).find('.number').html(
+            $(this).prevAll('li').not(ui.item).length + 1
+          );
+        });
+        ui.item.find('.number').html(
+          ui.placeholder.prevAll('.college-choice').not(ui.item).length + 1
+        );
+      }
     }); 
     $("#college_choices_sort").disableSelection();
   }
