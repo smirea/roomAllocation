@@ -53,17 +53,11 @@ var RPC = {
     add_floorplan_events();
     register_global_ajax_handlers();
     setup_college_chooser();
-    setup_tutorial();
     bulk_events();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( RPC.reload, 20 * 60 * 1000 );
   });
 
-  var setup_tutorial = function () {
-      tl.pg.init({
-       /* optional preferences go here */ 
-      });
-  }
   
   var setup_college_chooser = function() {
     function evalCollegeChoice (e, ui) {
