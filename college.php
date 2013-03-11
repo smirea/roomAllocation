@@ -118,9 +118,9 @@
                   $college = $info['college'];
                   $pos_college = array_search($college, $remaining_colleges);
                   array_splice($remaining_colleges, $pos_college, 1);
-                  echo "<li id='choice_$college' class='ui-state-default college-choice'>$college</li>";
-                  foreach($remaining_colleges as $c) {
-                    echo makeCollege($c);
+                  echo makeCollege($college, 1);
+                  for ($i=0; $i<count($remaining_colleges); ++$i) {
+                    echo makeCollege($remaining_colleges[$i], $i + 2);
                   }
               } else {
                 for ($i=0; $i<4; ++$i) {
@@ -138,7 +138,10 @@
         <div style="float:right;width:50%;" class="content">
           <div class="wrapper">
             <h3>Info</h3>
-            
+            <p>Welcome to the college-phase in the process of <b>Room Allocation 2013</b>. <br /><br />
+            We tried to make the approach as straightforward as possible. Simply drag and drop the different college names in the order in which you prefer them as your college next year. Hereby the college on position <b>1.</b> represents your <b>most</b> favorite college for next year and position <b>4.</b> the <b>least</b> favorite choice. <br /><br />
+            For a more detailed step by step explanation simply click here:</p>
+            <button disabled>Start Tour</button>
 
             <br />
             
