@@ -53,15 +53,73 @@ var RPC = {
     add_floorplan_events();
     register_global_ajax_handlers();
     setup_college_chooser();
+    setup_tutorial(window);
     bulk_events();
     // refresh after 20 minutes so you don't get a session timeout
     setTimeout( RPC.reload, 20 * 60 * 1000 );
   });
 
-  
+  var setup_tutorial = function(exports) {
+    
+    exports.tutorial_running = false;
+
+    var tourdata = [
+       {
+        html: "Choose any college you want to move.",
+        element: $('.college-choice:nth(1)'),
+        overlayOpacity: 0.8,
+        expose: true,
+        position: 'e'
+       },
+       {
+        html: "Drag the college into a different position.",
+        element: $('.college-choice:nth(2)'),
+        overlayOpacity: 0.8,
+        expose: true,
+        position: 'e',
+
+       },
+       {
+        html: "The first place shows your favorite college for next semester.",
+        element: $('.college-choice:nth(0)'),
+        overlayOpacity: 0.8,
+        expose: true,
+        position: 'e',
+       },
+       {
+        html: "The last place your least favorite college.",
+        element: $('.college-choice:nth(3)'),
+        overlayOpacity: 0.8,
+        expose: true,
+        position: 'e',
+       },
+       {
+        html: "After each swap a confirmation message for storing will be shown on top",
+       }
+    ];
+
+
+    var tour = jTour(tourdata ,{
+      axis:'y',  // use only one axis prevent flickring on iOS devices
+      speed: 1.8,
+      showControls: false
+    });
+
+    exports.tutorial = tour;
+
+    $('#beginTour').bind('click', function(){
+      window.tutorial.start();
+    });
+  }
+
   var setup_college_chooser = function() {
     function evalCollegeChoice (e, ui) {
+        if (window.tutorial_running) {
+          window.tutorial.next();
+          console.log(ui);
+        }
         var choices = $(e.target).parent().parent().sortable("toArray");
+        console.log(choices);
         for(var i = 0; i < choices.length; i++) {
           choices[i] = choices[i].substr(7);
         }

@@ -45,12 +45,14 @@
     <link rel="stylesheet" type="text/css" href="css/jquery.qtip.css" />
     <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
+    <link rel="stylesheet" id="themestyle" href="css/jquery-tour/theme5/style.css" />
 
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.qtip.js"></script>
     <script src="js/lib.js"></script>
     <script src="js/roomAllocation.js"></script>
+    <script src="js/jTour.min.js"></script>
   </head>
 
   <body>
@@ -140,7 +142,8 @@
             <h3>Info</h3>
             <p>Welcome to the college-phase in the process of <b>Room Allocation 2013</b>. <br /><br />
             We tried to make the approach as straightforward as possible. Simply drag and drop the different college names in the order in which you prefer them as your college next year. Hereby the college on position <b>1.</b> represents your <b>most</b> favorite college for next year and position <b>4.</b> the <b>least</b> favorite choice. <br /><br />
-
+            For a step by step guide please click here: </p>
+            <div id="beginTour" class="gh-button">Start Tour</div>
             <br />
             
 
