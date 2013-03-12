@@ -95,14 +95,21 @@ var RPC = {
        },
        {
         html: "After each swap a confirmation message for storing will be shown on top",
+        onBeforeShow: function(element) {
+          message("info", "College prefences updated!")
+        }
        }
     ];
 
 
     var tour = jTour(tourdata ,{
       axis:'y',  // use only one axis prevent flickring on iOS devices
-      speed: 1.8,
-      showControls: false
+      onStart: function (current) {
+        $("#college_choices_sort").sortable( "disable" );
+      },
+      onStop: function (current) {
+        $("#college_choices_sort").sortable( "enable" );
+      }
     });
 
     exports.tutorial = tour;

@@ -45,7 +45,7 @@
     <link rel="stylesheet" type="text/css" href="css/jquery.qtip.css" />
     <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
-    <link rel="stylesheet" id="themestyle" href="css/jquery-tour/theme5/style.css" />
+    <link rel="stylesheet" id="themestyle" href="css/jquery-tour/theme2/style.css" />
 
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
