@@ -312,12 +312,27 @@
       e_assert_isset( $_GET, 'choices' );
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( C('round.type') == 'college', 'This is currently not a college round' );
+      e_assert(count($_GET['choices']) == 4, "Not enough colleges. It needs to be 4.");
+
+      e_assert(intval($_GET['exchange'], 10) === 0 || intval($_GET['exchange'], 10) === 1, "No valid value for the Exchange parameter.");
+      e_assert(intval($_GET['quiet'], 10) === 0 || intval($_GET['quiet'], 10) === 1, "No valid value for the Quiet Floor parameter.");
+
+      $correct = array('Mercator', 'Krupp', 'College-III', 'Nordmetall');
+
+      for ($i=0; $i<count($_GET['choices']); ++$i) {
+        $pos_college = array_search($_GET['choices'][$i], $correct);
+        e_assert($pos_college !== false, "Invalid college names.");
+        array_splice($correct, $pos_college, 1);
+      }
+
+      e_assert(count($correct) == 0, "Invalid college names.");
+
       $choices = array('eid' => $_SESSION['eid']);
       for ($i=0; $i<count($_GET['choices']); ++$i) {
         $choices['choice_' . $i] = $_GET['choices'][$i];
       }
-      $choices['exchange'] = $_GET['exchange'];
-      $choices['quiet'] = $_GET['quiet'];
+      $choices['exchange'] = intval($_GET['exchange']);
+      $choices['quiet'] = intval($_GET['quiet']);
       $output['result'] = $College_Choice_Model->set_choices($choices);
       $output['error'] .= mysql_error();
       $output['info'] = 'College prefences updated!';
