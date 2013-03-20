@@ -6,3 +6,5 @@ __*.php
 
 # exclude all files in the log
 log/*
+
+.DS_Store
