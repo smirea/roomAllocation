@@ -106,7 +106,7 @@
             ?>
 
             <br />
-            <?php if (C('round.active')) { ?>
+            <?php if (C('round.active') && C('round.type') === 'college') { ?>
             <h3>College Choice</h3>
             <ul id="college_choices_sort">
             <?php   
@@ -121,12 +121,18 @@
                   $college = $info['college'];
                   $pos_college = array_search($college, $remaining_colleges);
                   array_splice($remaining_colleges, $pos_college, 1);
+                  $initial_choice = array('eid' => $_SESSION['eid']);
                   echo makeCollege($college, 1);
+                  $initial_choice['choice_0'] = $college;
                   for ($i=0; $i<count($remaining_colleges); ++$i) {
                     echo makeCollege($remaining_colleges[$i], $i + 2);
+                    $initial_choice['choice_'.($i+1)] = $remaining_colleges[$i];
                   }
+                  $initial_choice['exchange'] = 0;
+                  $initial_choice['quiet'] = 0;
+                  $College_Choice_Model->set_choices($initial_choice);
               } else {
-                for ($i=0; $i<4; ++$i) {
+                for ($i=0; $i < 4; ++$i) {
                   echo makeCollege($choice_colleges['choice_' . $i], $i + 1);
                 }
 
@@ -136,11 +142,19 @@
             </ul>    
             <div id="further_infos_college">    
               <div id="exchange" class="college-additional-options">    
-                <input id="exchange_checkbox" type="checkbox" name="exchange">
+                <?php if ($choice_colleges['exchange'] == 1) { ?>
+                  <input id="exchange_checkbox" type="checkbox" name="exchange" checked>
+                <?php } else { ?>
+                  <input id="exchange_checkbox" type="checkbox" name="exchange">
+                <?php } ?>
                 <label for="exchange_checkbox">I won't be on campus next semester.</label>
               </div>
               <div id="quiet_zone" class="college-additional-options">
-                <input id="quiet_zone_checkbox" type="checkbox" name="quiet-zone">
+                <?php if ($choice_colleges['quiet'] == 1) { ?>
+                  <input id="quiet_zone_checkbox" type="checkbox" name="quiet-zone" checked>
+                <?php } else { ?>
+                  <input id="quiet_zone_checkbox" type="checkbox" name="quiet-zone">
+                <?php } ?>
                 <label for="quiet_zone_checkbox">I would consider living on a quiet floor.</label>
               </div>
             </div>
@@ -150,7 +164,7 @@
           </div>
         </div>
 
-        <?php if (C('round.active')) { ?>
+        <?php if (C('round.active') && C('round.type') === 'college') { ?>
         <div style="float:right;width:50%;" class="content">
           <div class="wrapper">
             <h3>Info</h3>

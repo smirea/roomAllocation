@@ -129,11 +129,13 @@ var RPC = {
         for(var i = 0; i < choices.length; i++) {
           choices[i] = choices[i].substr(7);
         }
-        choices.push($("#exchange_checkbox").is(":checked"));
-        choices.push($("#quiet_zone_checkbox").is(":checked"));
+        var exchange = $("#exchange_checkbox").is(":checked") ? 1 : 0;
+        var quiet = $("#quiet_zone_checkbox").is(":checked") ? 1 : 0;
         $.get(ajax_file, { 
           'action' : 'setCollegeChoices',
-          'choices' : choices
+          'choices' : choices,
+          'exchange' : exchange,
+          'quiet' : quiet
         }, function(data){
           // TODO: implement handle response
         });
