@@ -110,7 +110,7 @@
       break;
     case 'requestSent':
       e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
-      e_assert( C('round.active'), 'No round is currently active' );
+      e_assert_round_is_active();
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
       $output['result'] = $Request_Model->accept_request($eid, $eid_to);
@@ -118,7 +118,7 @@
       break;
     case 'requestReceived':
       e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
-      e_assert( C('round.active'), 'No round is currently active' );
+      e_assert_round_is_active();
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
 
@@ -204,7 +204,7 @@
       break;
     case 'chooseRooms':
       e_assert(C('round.type') === 'apartment', 'You are not in the apartment round!');
-      e_assert( C('round.active'), 'No round is currently active' );
+      e_assert_round_is_active();
       e_assert_isset( $_GET, 'choices' );
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
@@ -308,7 +308,7 @@
       break;
     case 'setCollegeChoices':
       e_assert(C('round.type') === 'college', 'You are not in the college round!');
-      e_assert( C('round.active'), 'No round is currently active' );
+      e_assert_round_is_active();
       e_assert_isset( $_GET, 'choices' );
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( C('round.type') == 'college', 'This is currently not a college round' );
@@ -325,6 +325,10 @@
   }
 
   jsonOutput( $output );
+
+  function e_assert_round_is_active () {
+    e_assert( C('round.active'), 'No round is currently active' );
+  }
 
   function notifyPerson( $eid, $message ){
     //TODO: me
