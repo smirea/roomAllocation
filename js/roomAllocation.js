@@ -125,11 +125,12 @@ var RPC = {
           window.tutorial.next();
           console.log(ui);
         }
-        var choices = $(e.target).parent().parent().sortable("toArray");
-        console.log(choices);
+        var choices = $("#college_choices_sort").sortable("toArray");
         for(var i = 0; i < choices.length; i++) {
           choices[i] = choices[i].substr(7);
         }
+        choices.push($("#exchange_checkbox").is(":checked"));
+        choices.push($("#quiet_zone_checkbox").is(":checked"));
         $.get(ajax_file, { 
           'action' : 'setCollegeChoices',
           'choices' : choices
@@ -152,6 +153,8 @@ var RPC = {
       }
     }); 
     $("#college_choices_sort").disableSelection();
+    $("#exchange_checkbox").on("change", evalCollegeChoice);
+    $("#quiet_zone_checkbox").on("change", evalCollegeChoice);
   }
 
   var bulk_events = function(){

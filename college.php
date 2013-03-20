@@ -106,6 +106,7 @@
             ?>
 
             <br />
+            <?php if (C('round.active')) { ?>
             <h3>College Choice</h3>
             <ul id="college_choices_sort">
             <?php   
@@ -132,11 +133,24 @@
               } 
 
             ?>
-            </ul>
+            </ul>    
+            <div id="further_infos_college">    
+              <div id="exchange" class="college-additional-options">    
+                <input id="exchange_checkbox" type="checkbox" name="exchange">
+                <label for="exchange_checkbox">I won't be on campus next semester.</label>
+              </div>
+              <div id="quiet_zone" class="college-additional-options">
+                <input id="quiet_zone_checkbox" type="checkbox" name="quiet-zone">
+                <label for="quiet_zone_checkbox">I would consider living on a quiet floor.</label>
+              </div>
+            </div>
+
+            <?php } ?>
             
           </div>
         </div>
 
+        <?php if (C('round.active')) { ?>
         <div style="float:right;width:50%;" class="content">
           <div class="wrapper">
             <h3>Info</h3>
@@ -150,6 +164,18 @@
             
           </div>
         </div>
+
+        <?php } else { ?>
+
+          <div style="float:right;width:50%;" class="content">
+          <div class="wrapper">
+            <h3 style="color: red;">No Round!</h3>
+            <p style="color: red;">No round is currently active. Please wait until the next round.</p>
+            <br />
+            
+          </div>
+        </div>
+        <?php } ?>
 
         <div class="clearBoth"></div>
 
