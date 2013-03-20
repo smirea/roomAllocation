@@ -331,8 +331,8 @@
       for ($i=0; $i<count($_GET['choices']); ++$i) {
         $choices['choice_' . $i] = $_GET['choices'][$i];
       }
-      $choices['exchange'] = intval($_GET['exchange']);
-      $choices['quiet'] = intval($_GET['quiet']);
+      $choices['exchange'] = intval($_GET['exchange'], 10);
+      $choices['quiet'] = intval($_GET['quiet'], 10);
       $output['result'] = $College_Choice_Model->set_choices($choices);
       $output['error'] .= mysql_error();
       $output['info'] = 'College prefences updated!';
