@@ -34,6 +34,14 @@
       return Model::get_first_row($this->select('*', "WHERE eid='$eid'"));
     }
 
+    public function get_by_account ($account) {
+      return Model::get_first_row($this->select('*', "WHERE account='$account'"));
+    }
+
+    public function get_all ($fields = '*', $query = '') {
+      return $this->to_array($this->select($fields, $query));
+    }
+
     public function search ($columns, $min_year, $clause) {
       return $this->to_array($this->select($columns, "WHERE (
                                         (status='undergrad' AND year>'$min_year')
