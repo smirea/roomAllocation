@@ -9,7 +9,6 @@ var messages = $();
 var message_timeout;
 
 $(function message_events () {
-  messages = $('#message-info,#message-error,#message-warning,#message-success');
   $('body').append(''+
     '<div class="message-holder">' +
       '<div id="message-info" class="info message">' +
@@ -30,6 +29,7 @@ $(function message_events () {
       '</div>' +
     '</div>'
   );
+  messages = $('#message-info,#message-error,#message-warning,#message-success');
   $('.message .close').live('click.close', function(){
     var $msg = $(this).parent();
     $msg.fadeOut( 600, function(){ $msg.remove(); } );
