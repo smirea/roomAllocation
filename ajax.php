@@ -63,7 +63,7 @@
               You have requested your random password. You can use it directly with your CampusNET username instead of your normal CampusNET password. <br />
             </p>
             <p>
-              This was mainly implemented due to some login problems of people with funky passwords and with CampusNET failing at providing a proper API, but also to nurture to those conspiracy theorists among you that believe that my sole purpose in life is stealing your CampusNET credentials. I mean, even if that would be true, it wouldn\'t be so obvious ;)
+              This was mainly implemented due to some login problems of people with funky passwords and with CampusNET failing at providing a proper API, but also keep busy those conspiracy theorists among you that believe that my sole purpose in life is stealing your CampusNET credentials. I mean, even if that would be true, it wouldn\'t be so obvious ;)
             </p>
             <div>Random-Password: <b style="display:inline-block; border:1px solid #ccc; border-radius:5px; background:#fff; padding:5px;">'.$person['random_password'].'</b></div>
           </div>
