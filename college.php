@@ -114,9 +114,10 @@
 
               $choice_colleges = $College_Choice_Model->get_choices($_SESSION['info']['eid']);
               if (count($choice_colleges) == 0 || !$choice_colleges) {
-                  $remaining_colleges = array("College-III", "Mercator", "Nordmetall", "Krupp");
+                  $remaining_colleges = array("Mercator", "College-III", "Nordmetall", "Krupp");
                   $info = $Person_Model->get($_SESSION['info']['eid']);
                   $college = $info['college'];
+                  $college = in_array($college, $remaining_colleges, true) ? $college : $remaining_colleges[0];
                   $pos_college = array_search($college, $remaining_colleges);
                   array_splice($remaining_colleges, $pos_college, 1);
                   $initial_choice = array('eid' => $_SESSION['info']['eid']);
