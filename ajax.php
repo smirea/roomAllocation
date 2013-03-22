@@ -46,14 +46,14 @@
   define('MIN_LIMIT', 2);
 
   e_assert( isset($_GET['action']) && strlen($_GET['action']) >= 2, 'No action set' );
-  if( !isset( $_SESSION['eid'] ) ){
+  if( !isset( $_SESSION['info'] ) ){
     jsonOutput(array(
       'error' => 'You were logged off due to timeout',
       'rpc'   => 'RPC.reload();'
     ));
   }
 
-  $eid = $_SESSION['eid'];
+  $eid = $_SESSION['info']['eid'];
 
   $_SESSION['info']['group_id'] = $Groups_Model->get_group_id($eid);
   $allocation = $Allocation_Model->get_allocation($eid);
@@ -327,7 +327,7 @@
 
       e_assert(count($correct) == 0, "Invalid college names.");
 
-      $choices = array('eid' => $_SESSION['eid']);
+      $choices = array('eid' => $_SESSION['info']['eid']);
       for ($i=0; $i<count($_GET['choices']); ++$i) {
         $choices['choice_' . $i] = $_GET['choices'][$i];
       }

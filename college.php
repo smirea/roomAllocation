@@ -100,7 +100,7 @@
           <div class="wrapper">
             <h3>Profile</h3>
             <?php
-                echo getFaceHTML( $info );
+              echo getFaceHTML( $info );
             ?>
 
             <br />
@@ -112,14 +112,14 @@
                 return '<li id="choice_'.$c.'" class="ui-state-default college-choice"><span class="number">'.$position.'</span><span class="name">'.$c.'</span></li>';
               }
 
-              $choice_colleges = $College_Choice_Model->get_choices($_SESSION['eid']);
+              $choice_colleges = $College_Choice_Model->get_choices($_SESSION['info']['eid']);
               if (count($choice_colleges) == 0 || !$choice_colleges) {
                   $remaining_colleges = array("College-III", "Mercator", "Nordmetall", "Krupp");
-                  $info = $Person_Model->get($_SESSION['eid']);
+                  $info = $Person_Model->get($_SESSION['info']['eid']);
                   $college = $info['college'];
                   $pos_college = array_search($college, $remaining_colleges);
                   array_splice($remaining_colleges, $pos_college, 1);
-                  $initial_choice = array('eid' => $_SESSION['eid']);
+                  $initial_choice = array('eid' => $_SESSION['info']['eid']);
                   echo makeCollege($college, 1);
                   $initial_choice['choice_0'] = $college;
                   for ($i=0; $i<count($remaining_colleges); ++$i) {
