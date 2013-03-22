@@ -26,7 +26,7 @@
     'South/East Africa'   => array('Angola','Botswana','Burundi','Comoros','Djibouti','Eritrea','Ethiopia','Kenya','Lesotho','Madagascar','Malawi','Mauritius','Mozambique','Namibia','Rwanda','Seychelles','Somalia','South Africa','Swaziland','Tanzania','Uganda','Zambia','Zimbabwe'),
     'Middle East'         => array('Algeria','Azerbaijan','Bahrain','Egypt','Iran','Iraq','Israel','Jordan','Kuwait','Lebanon','Libya','Morocco','Sudan','North Sudan','Oman','Palestine','Qatar','Saudi Arabia','Syria','Tunisia','Turkey','United Arab Emirates','Yemen'),
     'East Asia'           => array('Brunei','Cambodia','China','East Timor','Indonesia','Japan','South Korea','Korea','Laos','Malaysia','Mongolia','North Korea','Philippines','Singapore','Taiwan','Thailand','Tibet','Vietnam'),
-    'South-East Asia'     => array('Afghanistan','Bangladesh','Bhutan','India','Maldives','Myanmar','Nepal','Pakistan','Sri Lanka'),
+    'South-East Asia'     => array('Afghanistan','Bangladesh','Bhutan','India','Maldives','Myanmar','Nepal','Pakistan','Sri Lanka', 'Hong Kong'),
     'Australia + Oceania' => array('Australia')
   );
   
