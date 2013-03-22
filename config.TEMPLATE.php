@@ -19,7 +19,7 @@
 <?php
 
   /** Admin config */
-  define( 'ADMIN_ACCOUNTS', 'smirea,kgalal,rnjenga,skang,mdiasdasil' );
+  define( 'ADMIN_ACCOUNTS', 'smirea,dkundel,kgalal,rnjenga,skang,mdiasdasil' );
   $admin = explode(',', ADMIN_ACCOUNTS);
 
   /** Bulk config */
@@ -55,7 +55,7 @@
 
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
-    C( 'DEBUG',                     1 );  // mainly disable passwords for all accounts
+    C( 'DEBUG',                     0 );  // mainly disable passwords for all accounts
     C( 'round.active',              0 );  // if students can perform any action in terms of allocation (not choosing)
     C( 'round.number',              1 );  // the current round number. useful for logging
     C( 'round.restrictions',        0 );  // whether to use restrictions or not (i.e. config_allowed.php)
