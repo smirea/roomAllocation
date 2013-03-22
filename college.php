@@ -51,6 +51,7 @@
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.qtip.js"></script>
     <script src="js/jTour.min.js"></script>
+    <script src="js/lib.js"></script>
   </head>
 
   <body>

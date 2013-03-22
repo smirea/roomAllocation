@@ -138,6 +138,34 @@
       <?php if( is_string( $message ) ){ echo $message; } ?>
       <input type="text" name="username" placeholder="username" /><input type="password" name="password" placeholder="password" /><input type="submit" value="Log In" />
     </form>
+    <script>
+      (function ($) {
+        var has_seen_info_message = false;
+        $('#random-password').on('click', function () {
+          var random_password_info_message = function random_password_info_message () {
+            message('info', 'A random password is another way you can login. You can choose for it to be sent to your jacobs email address and you can log in using your campusnet credentials OR with your campusnet username and the random password sent via email.<br />To get your random password, please consider donating a kidney .... just kidding :). Just put your campusnet username in the log-in box and press this button again.', 30 * 1000);
+          }
+          if (has_seen_info_message) {
+            var account = $('input[name="username"]').val();
+            $.get(ajax_file, {
+              action: 'send_random_password',
+              account: account
+            }, function (response) {
+              if (!response || !response.result) {
+                if (!response.error) {
+                  message('error', 'Invalid username or something went wrong on the server');
+                }
+                return;
+              }
+              message('success', 'Mail sent to <b>'+response.email+'</b>, check your inbox');
+            });
+          } else {
+            random_password_info_message();
+          }
+          has_seen_info_message = true;
+        });
+      })(jQuery);
+    </script>
 <?php
   }
 

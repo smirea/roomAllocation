@@ -15,10 +15,7 @@
     along with RoomAllocation.  If not, see <http://www.gnu.org/licenses/>.
 \***************************************************************************/
 
-console = console || {log:function(){}, warn:function(){}, error:function(){}};
-
 var MAX_ROOMS_CHOICES = 9;
-var ajax_file         = 'ajax.php';
 
 var sendResponse;
 
@@ -209,37 +206,6 @@ var RPC = {
       }
     });
     $(checkbox_selector+':checked').parent().addClass('checked');
-
-    var $random_password_input = jq_element('input').attr('type', 'text');
-    var has_seen_info_message = false;
-    $('#random-password').on('click', function () {
-      var random_password_info_message = function random_password_info_message () {
-        message('info', 'A random password is another way you can login. You can choose for it to be sent to your jacobs email address and you can log in using your campusnet credentials OR with your campusnet username and the random password sent via email.<br />To get your random password, please consider donating a kidney .... just kidding :). Just put your campusnet username in the log-in box and press this button again.', 30 * 1000);
-      }
-      if (has_seen_info_message) {
-        var account = $('input[name="username"]').val();
-        $.get(ajax_file, {
-          action: 'send_random_password',
-          account: account
-        }, function (response) {
-          if (!response || !response.result) {
-            if (!response.error) {
-              message('error', 'Invalid username or something went wrong on the server');
-            }
-            return;
-          }
-          message('success', 'Mail sent to <b>'+response.email+'</b>, check your inbox');
-        });
-      } else {
-        random_password_info_message();
-      }
-      has_seen_info_message = true;
-    });
-
-    $('.message .close').live('click.close', function(){
-      var $msg = $(this).parent();
-      $msg.fadeOut( 600, function(){ $msg.remove(); } );
-    });
   }
   
   var init_select_rooms = function(){
@@ -343,8 +309,6 @@ var RPC = {
         top       : 2,
         right     : 7
       }).hide();
-      
-    messages = $('#message-info,#message-error,#message-warning,#message-success');
   };
   
   var init_roommate_search = function(){
@@ -523,30 +487,3 @@ var RPC = {
   })();
   
 })( jQuery );
-
-var messages = $();
-var message_timeout;
-function message (type, message, timeout) {
-  timeout = timeout || 5000 + message.length * 20;
-  var msg = messages.filter('.'+type);
-  if( msg.length > 0 ){
-    var container = msg.parent();
-    var clone     = msg.clone();
-    clone
-      .appendTo( container )
-      .hide()
-      .fadeIn( 800 )
-      .find('.content')
-      .html( message );
-    setTimeout(function(){
-      clone.slideUp();
-    }, timeout);
-    container[0].scrollTop = container[0].scrollHeight;
-  } else {
-    console.warn( 'Unknown message type', arguments );
-  }
-}
-
-function jq_element (type) {
-  return $(document.createElement(type));
-}
