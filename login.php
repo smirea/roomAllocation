@@ -19,6 +19,7 @@
 <?php
 
   require_once 'config.php';
+  require_once 'utils.php';
   require_once 'campusnet.php';
 
   require_once 'models/Allocation_Model.php';
