@@ -211,4 +211,23 @@ HTML;
     return getFaceHTML( $info, $append.$actions );
   }
 
+  /**
+   * Send a HTML email
+   * @param  String $to      
+   * @param  String $subject 
+   * @param  String $message 
+   * @return String          
+   */
+  function send_mail ($to, $subject, $from = 'code4fun@gmail.com', $message = 'Empty <b>HTML</b> mail') {
+    $headers  = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+    $headers .= "From: $from" . "\r\n";
+    $bcc = explode(',', $to);
+    for($i=1; $i<count($bcc); ++$i) {
+      $headers .= "BCC: ".$bcc[$i]." \r\n";
+    }
+    
+    return mail($bcc[0], $subject, $message, $headers) ? true : false;
+  }
+
 ?>

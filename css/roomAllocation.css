@@ -92,6 +92,10 @@ body{
   padding: 5px 0;
   text-align: left;
 }
+#random-password {
+  float: left;
+  display: inline-block;
+}
 
 #searchBox{
   position  : relative;

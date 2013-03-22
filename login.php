@@ -30,7 +30,6 @@
 
   define('FILE_SELF', basename($_SERVER['PHP_SELF']));
   $message  = false;
-  $login    = false;
 ?>
 
 <div id="login">
@@ -49,9 +48,11 @@
         isset($_POST['username'])
         && (DEBUG || isset($_POST['password']))
         // && !($message = check_login($_POST['username'], $_POST['password']))
-        // HACK UUUUUBER HAAAAAAAAAACK
-        // SEEEEECURITY RISK!
-        && strlen(loginToCampusNet($_POST['username'], $_POST['password'])) > 10000
+        && (random_password_login($_POST['username'], $_POST['password']) ||
+            // HACK UUUUUBER HAAAAAAAAAACK
+            // SEEEEECURITY RISK!
+            strlen(loginToCampusNet($_POST['username'], $_POST['password'])) > 10000
+        )
       ) {
         if (strlen($_POST['username']) == 0) {
           $message = '<div style="color:red">You might want to consider logging in using a username :)</div>';
@@ -93,7 +94,6 @@
       ';
       if (IS_ADMIN) {
         if (isset($_GET['view_as'])) {
-          // $_SESSION['username'] = $_GET['view_as'];
           set_username(
             $Person_Model->get_by_account($_GET['view_as'])
           );
@@ -133,6 +133,7 @@
           echo '<div>If you do not know what username to use, try: <b>smirea, dkundel</b></div>';
         }
       ?>
+      <a id="random-password" href="javascript:void(0)">Need your random password?</a>
       <input type="hidden" name="login" value="true" />
       <?php if( is_string( $message ) ){ echo $message; } ?>
       <input type="text" name="username" placeholder="username" /><input type="password" name="password" placeholder="password" /><input type="submit" value="Log In" />
@@ -142,6 +143,11 @@
 
   function set_username ($info) {
     $_SESSION['info'] = $info;
+  }
+
+  function random_password_login ($username, $password) {
+    global $Person_Model;
+    return !!$Person_Model->random_password_login($username, $password);
   }
 
   function check_login( $user, $pass ){

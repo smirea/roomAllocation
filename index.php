@@ -42,12 +42,15 @@
     <link rel="stylesheet" type="text/css" href="css/jquery.qtip.css" />
     <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
+    <link rel="stylesheet" id="themestyle" href="css/jquery-tour/theme2/style.css" />
 
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.qtip.js"></script>
+    <script src="js/jTour.min.js"></script>
     <script src="js/lib.js"></script>
     <script src="js/roomAllocation.js"></script>
+
   </head>
 
   <body>

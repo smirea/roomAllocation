@@ -14,6 +14,7 @@
    * - email
    * - year
    * - status
+   * - random_password
    */
   class Person_Model extends Model {
 
@@ -52,6 +53,14 @@
 
     public function get_countries () {
       return $this->to_array($this->select("DISTINCT country"));
+    }
+
+    public function random_password_login ($account, $password) {
+      return Model::get_first_row($this->select('*', "WHERE account='$account' AND random_password='$password'"));
+    }
+
+    public function set_password ($eid, $password) {
+      return $this->update("random_password='$password'", "WHERE eid='$eid'");
     }
 
   }

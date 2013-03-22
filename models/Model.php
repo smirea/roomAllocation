@@ -114,6 +114,14 @@
       return $result[0];
     }
 
+    public function get_last_query () {
+      return $this->queries[count($this->queries) - 1];
+    }
+
+    public function get_last_error () {
+      return $this->errors[count($this->errors) - 1];
+    }
+
     /**
      * Takes a mysql resource and returns a list of associative arrays
      *          with the results (one for each row)

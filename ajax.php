@@ -29,9 +29,6 @@
   require_once 'models/Apartment_Choice_Model.php';
   require_once 'models/College_Choice_Model.php';
 
-  // make sure user is logged in before accessing this file
-  e_assert_isset($_SESSION, 'eid,username,info');
-
   recursive_escape( $_GET );
 
   $Search = new Search( array( 'fname', 'lname' ) );
@@ -46,6 +43,31 @@
   define('MIN_LIMIT', 2);
 
   e_assert( isset($_GET['action']) && strlen($_GET['action']) >= 2, 'No action set' );
+
+  /**
+   * BEGIN Not Logged-in Actions
+   */
+  switch ($_GET['action']) {
+    case 'send_random_password':
+      e_assert_isset($_GET, 'account');
+      $person = $Person_Model->get_by_account($_GET['account']);
+      e_assert($person, 'Invalid username');
+      $subject = '[Jacobs Room Allocation] Your random password has arrived';
+      $content = 'Password: <b>'.$person['random_password'].'</b>';
+      jsonOutput(array(
+        'result' => send_mail($person['email'], $subject, 'no-point-in-replying@code4fun.de', $content),
+        'email' => $person['email']
+      ));
+      break;
+  }
+
+  /**
+   * BEGIN Logged-in Actions
+   */
+
+  // make sure user is logged in before accessing this file
+  e_assert_isset($_SESSION, 'eid,username,info');
+
   if( !isset( $_SESSION['info'] ) ){
     jsonOutput(array(
       'error' => 'You were logged off due to timeout',
