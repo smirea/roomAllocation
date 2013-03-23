@@ -8,8 +8,39 @@ var ajax_file = 'ajax.php';
 var messages = $();
 var message_timeout;
 
-$(function message_events () {
-  $('body').append(''+
+var global_ajax_handlers = {
+  message: function handle_messages (json) {
+    var types = [ 'error', 'warning', 'info', 'success' ];
+    for (var i in types) {
+      if (check_message_key(types[i], json)) {
+        var value = json[types[i]];
+        if ($.isArray(value)) {
+          value = value.join('<br />');
+        }
+        message(types[i], value);
+        delete json[types[i]];
+        break;
+      }
+    }
+  },
+  rpc: function handle_rpc (json) {
+    if (json.rpc) {
+      eval(json.rpc);
+      delete json.rpc;
+    }
+  }
+};
+
+$(function () {
+  $('body').ajaxSuccess(function (event, xhr, settings, json) {
+    if ($.isPlainObject(json)) {
+      for (var key in global_ajax_handlers) {
+        global_ajax_handlers[key](json);
+      }
+    }
+  });
+
+  $('body').append(
     '<div class="message-holder">' +
       '<div id="message-info" class="info message">' +
         '<div class="content"></div>' +
@@ -29,12 +60,30 @@ $(function message_events () {
       '</div>' +
     '</div>'
   );
+
   messages = $('#message-info,#message-error,#message-warning,#message-success');
-  $('.message .close').live('click.close', function(){
+  $(document).on('click.close', '.message .close', function () {
     var $msg = $(this).parent();
-    $msg.fadeOut( 600, function(){ $msg.remove(); } );
+    $msg.slideUp(600, function(){ $msg.remove(); });
   });
 });
+
+/**
+ * Checks if the key of a specific object is valid message ruturn object.
+ *  It mainly checks if the key exists and it is either an object, a non-empty stirng, a non-empty array or a number
+ * @param {String} key
+ * @param {Object} object
+ * @return {Boolean}
+ */
+function check_message_key (key, object) {
+  return object && object[key] !== undefined && (
+    $.isNumeric(object[key]) ||
+    $.isPlainObject(object[key]) ||
+    (($.isArray(object[key]) || typeof object[key] == 'string') && 
+      object[key].length > 0
+    )
+  );
+}
 
 function message (type, message, timeout) {
   timeout = timeout || 5000 + message.length * 20;

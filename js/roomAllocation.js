@@ -223,63 +223,6 @@ var RPC = {
     
   };
   
-  var register_global_ajax_handlers = (function(){
-    
-    return function(){
-      $('body').ajaxSuccess(function( e, xhr, settings, json ){
-        if( $.isPlainObject( json ) ){
-          handle_rpc( json );
-          handle_messages( json );
-          handle_roommates( json );
-          handle_points( json );
-        }
-      });
-    };
-    
-    function handle_points( json ){
-      if( json.points ){
-        $('#total-points').html( json.points );
-        delete json.points;
-      }
-    };
-    
-    function handle_roommates( json ){
-      if( $.isArray(json.roommates) ){
-        var $cr = $('#current-roommates');
-        if( json.roommates.length > 0 ){
-          $cr.append( json.roommates.join("\n") );
-          $cr.find('.none').slideUp();
-        } else {
-          $cr.find('.none').slideDown();
-        }
-        delete json.roommates;
-      }
-    };
-    
-    function handle_messages( json ){
-      var types = [ 'error', 'warning', 'info', 'success' ];
-      for( var i in types ){
-        if( json[types[i]] ){
-          var value = json[types[i]];
-          if( $.isArray( value ) ){
-            value = value.join('<br />');
-          }
-          message( types[i], value );
-          delete json[types[i]];
-          break;
-        }
-      }
-    };
-    
-    function handle_rpc( json ){
-      if( json.rpc ){
-        eval( json.rpc );
-        delete json.rpc;
-      }
-    };
-    
-  })();
-  
   var alter_jquery_ui = function(){
     /* allows us to pass in HTML tags to autocomplete. Without this they get escaped */
     $[ "ui" ][ "autocomplete" ].prototype["_renderItem"] = function( ul, item ) {
@@ -392,6 +335,29 @@ var RPC = {
       }
     });
   }
+
+  var register_global_ajax_handlers = function register_global_ajax_handlers () {
+    $.extend(global_ajax_handlers, {
+      points: function handle_points (json) {
+        if (json.points) {
+          $('#total-points').html(json.points);
+          delete json.points;
+        }
+      },
+      roommates: function handle_roommates (json) {
+        if ($.isArray(json.roommates)) {
+          var $cr = $('#current-roommates');
+          if (json.roommates.length > 0) {
+            $cr.append( json.roommates.join("\n") );
+            $cr.find('.none').slideUp();
+          } else {
+            $cr.find('.none').slideDown();
+          }
+          delete json.roommates;
+        }
+      }
+    });
+  };
 
   var add_floorplan_events = (function(){
     

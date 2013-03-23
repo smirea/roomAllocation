@@ -34,8 +34,8 @@
       return Model::get_first_row($this->select('*', "WHERE eid='$eid'"));
     }
 
-    public function get_all_choices () {
-      return $this->to_array($this->select('*'));
+    public function get_all_choices ($columns = '*', $query = '') {
+      return $this->to_array($this->select($columns, $query));
     }
 
   }

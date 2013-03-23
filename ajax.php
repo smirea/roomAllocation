@@ -106,10 +106,10 @@
   $output = array(
     'result'  => false,
     'rpc'     => null,
-    'error'   => '',
-    'warning' => '',
-    'info'    => '',
-    'success' => ''
+    'error'   => array(),
+    'warning' => array(),
+    'info'    => array(),
+    'success' => array()
   );
 
   switch($_GET['action']){
@@ -376,8 +376,49 @@
       $choices['exchange'] = intval($_GET['exchange'], 10);
       $choices['quiet'] = intval($_GET['quiet'], 10);
       $output['result'] = $College_Choice_Model->set_choices($choices);
-      $output['error'] .= mysql_error();
+      $output['error'] = mysql_error();
       $output['info'] = 'College prefences updated!';
+      break;
+    case 'remind':
+      e_assert_isset($_GET, 'eids');
+      e_assert(is_array($_GET['eids']), 'Must provide an array if eids');
+      $subject = '[Jacobs Room Allocation] You did not apply for a college!';
+      $emails = array();
+      foreach ($_GET['eids'] as $eid) {
+        $person = $Person_Model->get($eid);
+        e_assert($person, "Invalid eid `$eid`");
+        $content = '
+          <div style="border:1px solid #ccc; border-radius:5px; background:#D1E1F4; max-width:500px; padding:0!important; font-family:tahoma,Verdana,arial; font-size:11pt; overflow:hidden;">
+            <div style="background:rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding:10px; font-size:13pt; font-weight:bold;">
+              Howdy!
+            </div>
+            <div style="padding:10px">
+              <p style="margin-top:0">
+                This is to inform you that you have not specified your college preferences. If you do not do that within the next 24 hours you will be assigned to a college randomly.
+              </p>
+              <p>
+                For more information on college preferences, check the emails sent around by the housing committee.
+              </p>
+              <p>
+                If you have any questions feel free to contact the Jacobs University housing committee directly. If you reply to this email nobody will see it and nothing will happen!
+              </p>
+            </div>
+            <div style="background:rgba(255,255,255,0.9); border-top:1px solid #ccc; padding:10px">
+              Enjoy! <br />
+              Cheerio, <br />
+              Stefan
+            </div>
+          </div>
+        ';
+        if (!$person['email']) {
+          $warnings[] = 'Invalid email for `'.$person['account'].'`';
+        } else {
+          $emails[] = $person['email'];
+        }
+      }
+      $output['result'] = send_mail(implode(',', $emails), $subject, 'no-point-in-replying@code4fun.de', $content);
+      $output['emails'] = $emails;
+      $output['success'][] = 'All emails sent successfully!';
       break;
     default:
       outputError( 'Unknown action' );

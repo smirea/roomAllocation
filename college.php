@@ -52,6 +52,7 @@
     <script src="js/jquery.qtip.js"></script>
     <script src="js/jTour.min.js"></script>
     <script src="js/lib.js"></script>
+    <script src="js/roomAllocation.js"></script>
   </head>
 
   <body>
@@ -173,9 +174,6 @@
         <?php } ?>
 
         <div class="clearBoth"></div>
-        
-        <script src="js/lib.js"></script>
-        <script src="js/roomAllocation.js"></script>
         
         <?php } ?>
 
