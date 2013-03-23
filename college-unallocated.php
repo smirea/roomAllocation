@@ -54,7 +54,7 @@
               $eids_voted[$person['eid']] = true;
             }
             // var_export($eids_voted);
-            $remaining = $Person_Model->get_all('*', "WHERE (year>13 OR account='smirea') AND status='undergrad'");
+            $remaining = $Person_Model->get_all('*', "WHERE year>13 AND status='undergrad'");
             foreach ($remaining as $key => $person) {
               if (isset($eids_voted[$person['eid']])) {
                 unset($remaining[$key]);
