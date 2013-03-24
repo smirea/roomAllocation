@@ -833,6 +833,8 @@
    */
   function college_allocation (array $choices, array $people, array $limits) {
 
+    $choices_control = $choices;
+
     //$limits = array('College-III' => (C('college.limit.College-III')*C('college.limit.threshold')), 'Mercator' => (C('college.limit.Mercator')*C('college.limit.threshold')), 'Krupp' => (C('college.limit.Krupp')*C('college.limit.threshold')), 'Nordmetall' => (C('college.limit.Nordmetall')*C('college.limit.threshold')));
 
     $unallocated          = array();                    // exakt representation of College Choice Table
@@ -928,7 +930,31 @@
       $unallocated = array_merge($unallocated, $choices); 
     }
 
-    return array($allocated, $unallocated, $log);
+    $error = false;
+
+    foreach ($choices_control as $eid => $data) {
+      $found = false;
+      foreach ($unallocated as $unalloc_eid => $unalloc_data) {
+        $found = ($eid == $unalloc_eid);
+      }
+      if (!$found) {
+        foreach ($allocated as $college => $alloc_eids) {
+          $found = in_array($eid, $alloc_eids);
+          if ($found) {
+            break;
+          }
+        }
+      }
+      if (!$found) {
+        $error = true;
+      }
+    }
+
+    if($error) {
+      return null;
+    } 
+
+    return array('allocated' => $allocated, 'unallocated' => $unallocated);
   }
 
 ?>
