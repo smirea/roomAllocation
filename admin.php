@@ -22,8 +22,10 @@
   require_once 'utils.php';
   require_once 'utils_admin.php';
 
+  require_once 'models/Person_Model.php';
   require_once 'models/Allocation_Model.php';
   require_once 'models/Group_Model.php';
+  require_once 'models/College_Choice_Model.php';
 
   require_once 'floorPlan/utils.php';
   require_once 'floorPlan/Mercator.php';
@@ -31,9 +33,12 @@
   require_once 'floorPlan/College3.php';
   require_once 'floorPlan/Nordmetall.php';
 
+  $Person_Model = new Person_Model();
+  $College_Choice_Model = new College_Choice_Model();
   $Allocation_Model = new Allocation_Model();
   $Group_Model = new Group_Model();
 ?>
+
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -52,6 +57,40 @@
     <script src="js/jquery.qtip.js"></script>
     <script src="js/lib.js"></script>
     <script src="js/admin.js"></script>
+    <style>
+      .college-allocation {
+        float: left;
+        border: 1px solid #ccc;
+        background: #fff;
+        margin: 5px;
+      }
+      .college-allocation h3 {
+        background: lightgreen;
+        padding: 5px;
+        font-size: 1.2em;
+        text-align: center;
+      }
+      .college-allocation li:hover {
+        background: lightblue;
+        cursor: pointer;
+      }
+      .college-allocation li,
+      .college-allocation li.ui-state-highlight {
+        height: auto;
+        padding: 2px 0;
+      }
+    </style>
+    <script>
+      $(function () {
+        $('.college-allocation').
+          disableSelection().
+          find('ol').
+          sortable({
+            placeholder: 'ui-state-highlight',
+            connectWith: '.college-allocation ol'
+          });
+    });
+    </script>
   </head>
 
   <body>
@@ -84,6 +123,7 @@
       ?>
 
       <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
+        <a href="javascript:void(0)" onclick="setView(this, $('#display-college-phase'))">College Phase</a> |
         <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
         <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
         <a href="javascript:void(0)" onclick="setView(this, $('.user-choices'))">User Choices</a> |
@@ -210,6 +250,51 @@ HTML;
         }
       ?>
 
+      <div class="view" id="display-college-phase">
+        <?php
+          function dummy_college_allocation ($choices) {
+            $allocations = array(
+              'Mercator' => array(),
+              'College-III' => array(),
+              'Krupp' => array(),
+              'Nordmetall' => array()
+            );
+            foreach ($choices as $choice) {
+              $allocations[$choice['choice_0']][] = $choice['eid'];
+            }
+            return $allocations;
+          }
+          $raw_college_choices = $College_Choice_Model->get_all_choices();
+          $college_choices = array();
+          foreach ($raw_college_choices as $choice) {
+            $college_choices[$choice['eid']] = $choice;
+          }
+          $raw_people = $Person_Model->get_all();
+          $people = array();
+          foreach ($raw_people as $person) {
+            $person['photo_url'] = imageURL($person['eid']);
+            $people[$person['eid']] = $person;
+          }
+          $limits = array();
+          foreach ($colleges as $college => $whatever) {
+            $limits[$college] = C('college.limit.'.$college) * C('college.limit.threshold');
+          }
+          $college_allocations = college_allocation($college_choices, $people, $limits);
+
+          echo '<div class="clearfix">';
+          foreach ($college_allocations as $college_name => $allocations) {
+            echo '<div class="college-allocation clearfix">';
+            echo '<h3>'.$college_name.'</h3>';
+            echo '<ol>';
+            foreach ($allocations as $eid) {
+              echo '<li>'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</li>';
+            }
+            echo '</ol>';
+            echo '</div>';
+          }
+          echo '</div>';
+        ?>
+      </div>
 
       <div class="view" id="admin-config">
         <div class="wrapper">
