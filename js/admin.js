@@ -82,7 +82,7 @@ $(function(){
   
 }); 
 
-function setView( link, $element ){
+function setView (link, $element) {
   $('.view').hide();
   $element.show();
   $(link).siblings().removeClass('selected');

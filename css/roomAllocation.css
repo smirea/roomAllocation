@@ -408,6 +408,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd76b', end
   padding: 10px;
 }
 
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before, clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+
 .clearBoth{
   visibility  : hidden;
   clear       : both;

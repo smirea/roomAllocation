@@ -88,6 +88,7 @@
     if( isset($_SESSION['username']) ){
       define('LOGGED_IN', true);
       define('IS_ADMIN', in_array($_SESSION['username'], $admin));
+      $_SESSION['admin'] = in_array($_SESSION['username'], $admin);
       echo '
         Logged in as <b>'.$_SESSION['username'].'</b>
         <a href="'.FILE_SELF.'?logout=true">[log out]</a>
