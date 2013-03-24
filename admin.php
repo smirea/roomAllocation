@@ -66,6 +66,7 @@
       }
       .college-allocation h3 {
         background: lightgreen;
+        margin: 0!important;
         padding: 5px;
         font-size: 1.2em;
         text-align: center;
@@ -81,6 +82,7 @@
       }
     </style>
     <script>
+      var ajax_url = 'ajax-admin.php';
       $(function () {
         $('.college-allocation').
           disableSelection().
@@ -250,52 +252,6 @@ HTML;
         }
       ?>
 
-      <div class="view" id="display-college-phase">
-        <?php
-          function dummy_college_allocation ($choices) {
-            $allocations = array(
-              'Mercator' => array(),
-              'College-III' => array(),
-              'Krupp' => array(),
-              'Nordmetall' => array()
-            );
-            foreach ($choices as $choice) {
-              $allocations[$choice['choice_0']][] = $choice['eid'];
-            }
-            return $allocations;
-          }
-          $raw_college_choices = $College_Choice_Model->get_all_choices();
-          $college_choices = array();
-          foreach ($raw_college_choices as $choice) {
-            $college_choices[$choice['eid']] = $choice;
-          }
-          $raw_people = $Person_Model->get_all();
-          $people = array();
-          foreach ($raw_people as $person) {
-            $person['photo_url'] = imageURL($person['eid']);
-            $people[$person['eid']] = $person;
-          }
-          $limits = array();
-          foreach ($colleges as $college => $whatever) {
-            $limits[$college] = intval(C('college.limit.'.$college) * C('college.limit.threshold'), 10);
-          }
-          $college_allocations = college_allocation($college_choices, $people, $limits);
-
-          echo '<div class="clearfix">';
-          foreach ($college_allocations[0] as $college_name => $allocations) {
-            echo '<div class="college-allocation clearfix">';
-            echo '<h3>'.$college_name.'</h3>';
-            echo '<ol>';
-            foreach ($allocations as $eid) {
-              echo '<li>'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</li>';
-            }
-            echo '</ol>';
-            echo '</div>';
-          }
-          echo '</div>';
-        ?>
-      </div>
-
       <div class="view" id="admin-config">
         <div class="wrapper">
           <h3>General configuration</h3>
@@ -393,6 +349,70 @@ HTML;
         <?php
           foreach( array_keys( $colleges ) as $college ){
             echo '<a target="_blank" href="download_output.php?college='.$college.'">'.$college.'</a> ';
+          }
+        ?>
+      </div>
+      <div class="wrapper view" id="display-college-phase">
+        <?php
+
+          function print_college_allocations ($college_allocations, $people) {
+            $output = '';
+            $output .= '<div class="clearfix">';
+            foreach ($college_allocations as $college_name => $allocations) {
+              $output .= '<div class="college-allocation clearfix">';
+              $output .= '<h3>'.$college_name.'</h3>';
+              $output .= '<ol>';
+              foreach ($allocations as $eid) {
+                $output .= '<li>'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</li>';
+              }
+              $output .= '</ol>';
+              $output .= '</div>';
+            }
+            $output .= '</div>';
+            return $output;
+          }
+
+          $raw_people = $Person_Model->get_all();
+          $people = array();
+          foreach ($raw_people as $person) {
+            $person['photo_url'] = imageURL($person['eid']);
+            $people[$person['eid']] = $person;
+          }
+          if (C('round.type') == 'college') {
+            $raw_college_choices = $College_Choice_Model->get_all_choices();
+            $college_choices = array();
+            foreach ($raw_college_choices as $choice) {
+              $college_choices[$choice['eid']] = $choice;
+            }
+            $limits = array();
+            foreach ($colleges as $college => $whatever) {
+              $limits[$college] = intval(C('college.limit.'.$college) * C('college.limit.threshold'), 10);
+            }
+            $college_allocations = college_allocation($college_choices, $people, $limits);
+            if (!$college_allocations) {
+              echo '<div style="color:red">Error allocating putas</div>';
+            } else {
+              echo '<input type="button" value="Make college allocations permanent" id="make-college-choices-permanent" />';
+              echo print_college_allocations($college_allocations['allocated'], $people);
+              echo '
+                <script>
+                  var allocations = '.json_encode($college_allocations['allocated']).';
+                  $("#make-college-choices-permanent").on("click.allocate", function allocate () {
+                    $.post(ajax_url, {
+                      action: "set-college-allocations",
+                      allocations: allocations
+                    });
+                  });
+                </script>
+              ';
+            }
+          } else {
+            $raw_college_choices = $Allocation_Model->get_all('*', 'WHERE college IS NOT NULL');
+            $college_choices = array();
+            foreach ($raw_college_choices as $choice) {
+              $college_choices[$choice['college']][] = $choice['eid'];
+            }
+            echo print_college_allocations($college_choices, $people);
           }
         ?>
       </div>

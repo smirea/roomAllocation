@@ -38,5 +38,9 @@
       return $this->to_array($this->select($columns, $query));
     }
 
+    public function delete_all ($query = '') {
+      return $this->delete($query);
+    }
+
   }
 ?>
