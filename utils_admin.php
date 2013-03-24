@@ -934,8 +934,8 @@
 
     foreach ($choices_control as $eid => $data) {
       $found = false;
-      foreach ($unallocated as $unalloc_eid => $unalloc_data) {
-        $found = ($eid == $unalloc_eid);
+      foreach ($unallocated as $unalloc_data) {
+        $found = ($eid == $unalloc_data['eid']);
       }
       if (!$found) {
         foreach ($allocated as $college => $alloc_eids) {
