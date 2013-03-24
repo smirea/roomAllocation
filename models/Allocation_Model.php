@@ -33,6 +33,9 @@
       return $this->update($columns, "WHERE eid='$eid'");
     }
 
+    public function get_all ($columns = '*', $query = '') {
+      return Model::to_array($this->select($columns, $query));
+    }
 
   }
 

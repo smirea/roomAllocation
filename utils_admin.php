@@ -876,8 +876,9 @@
         */
         $applications = array('homeplace' => array('first_and_foundation' => array(), 'second_years' => array()), 'newplace' => array('first_and_foundation' => array(), 'second_years' => array()));
 
+        ksort($choices_college);
         foreach ($choices_college as $eid => $choice_single) {
-          $person = $people[$choice_single['eid']];
+          $person = $people[$eid];
           if ($choice_single['choice_'.$round] != $person['college']) {
             if ($person['status'] == 'foundation-year' || ($person['status'] == 'undergrad' && intval($person['year'], 10) > $min_year)) {
               $applications['newplace']['first_and_foundation'][] = $choice_single;
