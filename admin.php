@@ -80,6 +80,10 @@
         height: auto;
         padding: 2px 0;
       }
+      .Mercator { background:lightblue!important; }
+      .Krupp { background: lightred!important; }
+      .College-III { background: lightgreen!important; } 
+      .Nordmetall { background: yellow!important; }
     </style>
     <script>
       var ajax_url = 'ajax-admin.php';
@@ -89,7 +93,15 @@
           find('ol').
           sortable({
             placeholder: 'ui-state-highlight',
-            connectWith: '.college-allocation ol'
+            connectWith: '.college-allocation ol',
+            receive: function (event, ui) {
+              ui.item.addClass(ui.sender.attr('data-college'));
+              $.post(ajax_url, {
+                action: 'allocate',
+                eid: ui.item.attr('data-eid'),
+                college: ui.item.parent().attr('data-college')
+              });
+            }
           });
     });
     </script>
@@ -361,9 +373,9 @@ HTML;
             foreach ($college_allocations as $college_name => $allocations) {
               $output .= '<div class="college-allocation clearfix">';
               $output .= '<h3>'.$college_name.'</h3>';
-              $output .= '<ol>';
+              $output .= '<ol data-college="'.$college_name.'">';
               foreach ($allocations as $eid) {
-                $output .= '<li>'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</li>';
+                  $output .= '<li data-eid="'.$eid.'">'.$people[$eid]['fname'].' '.$people[$eid]['lname'].'</li>';
               }
               $output .= '</ol>';
               $output .= '</div>';
