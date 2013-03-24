@@ -936,7 +936,9 @@
     foreach ($choices_control as $eid => $data) {
       $found = false;
       foreach ($unallocated as $unalloc_data) {
-        $found = ($eid == $unalloc_data['eid']);
+        if ($eid == $unalloc_data['eid']) {
+          $found = true;
+        }
       }
       if (!$found) {
         foreach ($allocated as $college => $alloc_eids) {
@@ -947,6 +949,7 @@
         }
       }
       if (!$found) {
+        v_export($data);
         $error = true;
       }
     }
