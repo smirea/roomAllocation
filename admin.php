@@ -389,20 +389,23 @@ HTML;
               $limits[$college] = intval(C('college.limit.'.$college) * C('college.limit.threshold'), 10);
             }
             $college_allocations = college_allocation($college_choices, $people, $limits);
-
-            echo '<input type="button" value="Make college allocations permanent" id="make-college-choices-permanent" />';
-            echo print_college_allocations($college_allocations[0], $people);
-            echo '
-              <script>
-                var allocations = '.json_encode($college_allocations[0]).';
-                $("#make-college-choices-permanent").on("click.allocate", function allocate () {
-                  $.post(ajax_url, {
-                    action: "set-college-allocations",
-                    allocations: allocations
+            if (!$college_allocations) {
+              echo '<div style="color:red">Error allocating putas</div>';
+            } else {
+              echo '<input type="button" value="Make college allocations permanent" id="make-college-choices-permanent" />';
+              echo print_college_allocations($college_allocations['allocated'], $people);
+              echo '
+                <script>
+                  var allocations = '.json_encode($college_allocations['allocated']).';
+                  $("#make-college-choices-permanent").on("click.allocate", function allocate () {
+                    $.post(ajax_url, {
+                      action: "set-college-allocations",
+                      allocations: allocations
+                    });
                   });
-                });
-              </script>
-            ';
+                </script>
+              ';
+            }
           } else {
             $raw_college_choices = $Allocation_Model->get_all('*', 'WHERE college IS NOT NULL');
             $college_choices = array();
