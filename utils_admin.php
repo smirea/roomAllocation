@@ -17,6 +17,7 @@
 \***************************************************************************/
 ?>
 <?php
+
   function create_floorPlan( $college, $Map, $classes = array() ){
     $people   = array();  // maps: eid                      -> personal info
     $rooms    = array();  // maps: room_number              -> array( group_id )
@@ -621,7 +622,6 @@
     return array( $allocated, $unallocated, $log );
   }
   
-  
   /**
    * @brief Allocates all the rooms to all the groups and returns a thorough result
    * @param {array} $rooms
@@ -820,5 +820,113 @@
     $h[] = '</span>';
     return implode("\n",$h);
   }
+
+  function filter_college_round ($college, $round) {
+    return function($var) {
+      return ($var['choice_'.$round] === $college);
+    };
+  }
   
+  /**
+   * Allocates the different students into their respective 
+   * @return [type] [description]
+   */
+  function college_allocation (array $choices, array $people, array $limits) {
+    //$limits = array('College-III' => (C('college.limit.College-III')*C('college.limit.threshold')), 'Mercator' => (C('college.limit.Mercator')*C('college.limit.threshold')), 'Krupp' => (C('college.limit.Krupp')*C('college.limit.threshold')), 'Nordmetall' => (C('college.limit.Nordmetall')*C('college.limit.threshold')));
+
+    $choices              = array();                    // keys: (id, eid, choice_0, choice_1, choice_2, choice_3, exchange, quiet, year, status, account, college)
+    $unallocated          = array();                    // exakt representation of College Choice Table
+    $allocated            = array();                    // maps: eid -> new college
+    $college_buffers      = array();                    // maps: college -> choices row
+    $limits               = array();                    // maps: college -> limit of students
+    $round                = 0;                          // current choice round
+    $max_round            = 4;                          // maximum number of choices
+    $min_year             = 14;                         // current graduation year of second years
+
+
+    /** Set default values */
+    $allocated = array('College-III' => array(), 'Mercator' => array(), 'Krupp' => array(), 'Nordmetall' => array());
+    $college_buffers = array('College-III' => array(), 'Mercator' => array(), 'Krupp' => array(), 'Nordmetall' => array());
+    
+
+    /** Loop until all choices are gone or all colleges are full */
+    while (
+      count($choices) > 0 && 
+      $round < $max_round &&
+      !(
+        $limits['College-III'] <= 0 && 
+        $limits['Mercator'] <= 0 && 
+        $limits['Krupp'] <= 0 &&
+        $limits['Nordmetall'] <= 0
+      )
+      ) {
+
+      /** go through all colleges and fill it with people who have that college as choice_$round */
+      foreach ($college_buffers as $college => $alloc_buffer) {
+        
+        /** filter for applications that choose a certain college as their $round choice */
+        $choices_college = array_filter($choices, filter_college_round($college, $round));
+
+        /** Split up the applications into 4 categories: 
+          ['homeplace']['first_and_foundation'] -> First year and Foundation year students currently living in that college
+          ['homeplace']['second_year'] -> Students living longer in the college
+          ['newplace']['first_and_foundation'] -> First year and Foundation year students coming new to the college
+          ['newplace']['second_year'] -> Students living longer on campus but not in that college
+        */
+        $applications = array('homeplace' => array('first_and_foundation' => array(), 'second_years' => array()), 'newplace' => array('first_and_foundation' => array(), 'second_years' => array()));
+
+        foreach ($choices_college as $choice_single) {
+          $person = $people[$c['eid']];
+          if ($choice_single['choice_'.$round] != $person['college']) {
+            if ($person['status'] == 'foundation-year' || ($person['status'] == 'undergrad' && intval($person['year'], 10) !== $min_year)) {
+              $applications['newplace']['first_and_foundation'][] = $choice_single;
+
+            } elseif ($person['status'] == 'undergrad') {
+              $applications['newplace']['second_years'][] = $choice_single;
+            }
+          } else {
+            if ($person['status'] == 'foundation-year' || ($person['status'] == 'undergrad' && intval($person['year'], 10) !== $min_year)) {
+              $applications['homeplace']['first_and_foundation'][] = $choice_single;
+
+            } elseif ($person['status'] == 'undergrad') {
+              $applications['homeplace']['second_years'][] = $choice_single;
+            }
+          }
+        }
+
+        /** loop through all categories and check if all applicants of the round fit into that round else take randomly people */
+        foreach ($applications as $apply_category => $apply_years) {
+          foreach ($apply_years as $year => $app) {
+            if (count($app) <= $limits[$college]) {
+              $alloc_buffer = array_merge($alloc_buffer, $app);
+              $limits[$college] -= count($app);
+            } else {
+              while (count($app) > 0 && $limits[$college] > 0) {
+                $random = rand(0, count($app)-1);
+                $alloc_buffer[] = $app[$random];
+                array_splice($app, $random, 1);
+                $limits[$college]--;
+              }
+            }
+          }
+        }
+
+        /** After allocating the people remove their choices from the database and add them to the allocated array */
+        foreach ($alloc_buffer as $a) {
+          $allocated[$college][] = $a['eid'];
+          unset($choices[$a['eid']]);
+        } 
+        
+      }
+      $round++;
+    }
+
+    /** check for unallocated people */
+    if (count($choices) > 0) {
+      $unallocated = array_merge($unallocated, $choices); 
+    }
+
+    return array($allocated, $unallocated, $log);
+  }
+
 ?>
