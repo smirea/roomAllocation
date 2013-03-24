@@ -277,12 +277,12 @@ HTML;
           }
           $limits = array();
           foreach ($colleges as $college => $whatever) {
-            $limits[$college] = C('college.limit.'.$college) * C('college.limit.threshold');
+            $limits[$college] = intval(C('college.limit.'.$college) * C('college.limit.threshold'), 10);
           }
           $college_allocations = college_allocation($college_choices, $people, $limits);
 
           echo '<div class="clearfix">';
-          foreach ($college_allocations as $college_name => $allocations) {
+          foreach ($college_allocations[0] as $college_name => $allocations) {
             echo '<div class="college-allocation clearfix">';
             echo '<h3>'.$college_name.'</h3>';
             echo '<ol>';
