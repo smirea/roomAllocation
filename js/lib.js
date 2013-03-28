@@ -124,3 +124,10 @@ function get_apartment( $element ){
   }
   return $r;
 } 
+
+function C (key, value) {
+  if (value !== undefined) {
+    configuration[key] = value;
+  }
+  return configuration[key];
+}
