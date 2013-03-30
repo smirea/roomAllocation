@@ -21,8 +21,10 @@
   require_once 'config.php';
   require_once 'WorldRegions.php';
   require_once 'models/Group_Model.php';
+  require_once 'models/Allocation_Model.php';
 
   $Group_Model = new Group_Model();
+  $Allocation_Model = new Allocation_Model();
 
   /**
    * @brief Applies input sanitizing functions for every value in the array, recursively
@@ -103,20 +105,27 @@
     return mysql_fetch_assoc( mysql_query( $q ) );
   }
 
-  function get_points( array $people ){
+  function get_points( array $people, $college = null ){
     global $WorldRegions;
     global $WorldRegions_Inv;
     $year               = ((int)date('Y')) % 100;
     $countries          = array();
+    $majors             = array();
     $individual_points  = 0;
     $individual         = array();
     foreach( $people as $v ){
+      if ($college === null) {
+        $alloc = $Allocation_Model.get_allocation($v['eid']);
+        $college = $alloc['college'];
+      }
       if( $v['eid'] != FRESHMAN_EID ){
         if( $v['status'] == 'undergrad' )
           $p = min(2, max(1, 3-($v['year']-$year) ) );
         else
           $p = 1;
         $countries[$v['country']] = true;
+        $majors[$v['major']] = true;
+        $p += ($college == $v['college']) ? 0.5 : 0;
         $individual[] = $p;
         $individual_points += $p;
       } else {
@@ -124,15 +133,17 @@
       }
     }
     $country_points = count($countries) > 1 ? count($countries) : 0;
+    $major_points   = count($majors) > 1 ? count($majors)*0.25 : 0;
     $world_regions  = array_map(function($v){global $WorldRegions_Inv; return $WorldRegions_Inv[$v];}, array_keys($countries));
     $world_regions  = array_unique( $world_regions );
     $world_regions  = count( $world_regions ) * 0.5;
     $world_regions  = $world_regions > 0.5 ? $world_regions : 0;
-    $total          = $individual_points + $country_points + $world_regions;
+    $total          = $individual_points + $country_points + $major_points + $world_regions;
     return array(
       'people'      => $individual,
       'individual'  => $individual_points,
       'country'     => $country_points,
+      'major'       => $major_points,
       'world'       => $world_regions,
       'total'       => $total
     );
@@ -143,10 +154,17 @@
     $h = '<table class="points" cellspacing="0" cellpadding="0">';
     $h .= '<tr><td colspan="2" class="section">Individual points</td></tr>';
     foreach( $points['people'] as $k => $value ){
+      $spiritpoint = ($value%1 == 0.5) ? " + College Spirit-Point" : "";
       $h .= "<tr>
-              <td>".$people[$k]['fname'].", ".$people[$k]['lname']."</td>
+              <td>".$people[$k]['fname'].", ".$people[$k]['lname'].$spiritpoint."</td>
               <td class=\"value\">".$value."</td>
              </tr>";
+      if (($value % 1) == 0.5) {
+        $h .= "<tr>
+                <td> + College Spirit-Point</td>
+                <td class=\"value\">0.5</td>
+              </tr>";
+      }
     }
     $h .= '<tr><td colspan="2" class="section">Bonus points</td></tr>';
     $h .= '<tr><td>Nationalities</td><td class="value">'.$points['country'].'</td></tr>';
