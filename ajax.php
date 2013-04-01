@@ -126,7 +126,7 @@
       }
       break;
     case 'addRoommate':
-      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert(C('round.active'), 'No round is currently active');
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to             = $_GET['eid'];
@@ -151,7 +151,7 @@
       $output['success']  = 'Roommate request sent successfully!';
       break;
     case 'requestSent':
-      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert_round_is_active();
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
@@ -159,7 +159,7 @@
       $output['error']  = mysql_error();
       break;
     case 'requestReceived':
-      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert_round_is_active();
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
@@ -225,7 +225,7 @@
       $output['error'] .= $Request_Model->accept_request($eid, $eid_to) ? '' : '<div>'.mysql_error().'</div>';
       break;
     case 'addFreshman':
-      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert( C('roommates.freshman'), 'You cannot choose a freshman as a roommate this round' );
       e_assert( $_SESSION['info']['group_id'] === null, 'You are already in a group with someone' );
       $_SESSION['info']['group_id'] = add_to_group( FRESHMAN_EID, add_to_group( $_SESSION['info']['eid'] ) );
@@ -233,7 +233,7 @@
       $output['rpc']  = 'RPC.reload();';
       break;
     case 'removeFreshman':
-      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       e_assert( $roommates[0]['eid'] == FRESHMAN_EID, 'You have not chosen a freshman as your roommate' );
       $output['info']   = 'Freshman slaughtered successfully!';
