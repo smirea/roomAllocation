@@ -175,12 +175,14 @@
       $country_flag   = flagURL( $country );
       $d              = 3-((2000+(int)$year)-(int)date("Y"));
       $year_of_study  = $d."<sup>".($d==1?'st':($d==2?'nd':($d==3?'rd':'th')))."</sup>";
+      $email          = $info['email'];
+      $short_email    = substr($email, 0, strrpos($email, '-'));
       return <<<HTML
         <table class="face" cellspacing="0" cellpadding="0" id="face-eid-$eid">
           <tr>
-            <td rowspan="3" class="photo"><img src="$img" height="64" /></td>
+            <td rowspan="4" class="photo"><img src="$img" height="64" /></td>
             <td class="name"><b>$fname, $lname</b></td>
-            <td rowspan="3" class="country-photo">
+            <td rowspan="4" class="country-photo">
               <img height="64" alt="$country" src="$country_flag">
             </td>
           </tr>
@@ -189,6 +191,9 @@
           </tr>
           <tr>
             <td class="country">$country</td>
+          </tr>
+          <tr>
+            <td class="email"><a href="mailto:$email">$short_email</a></td>
           </tr>
           $append
         </table>
