@@ -15,7 +15,7 @@
   /** Extract info from jPeople and re-create the initial db connection*/
   mysql_close();
   dbConnect( JP_DB_USER, JP_DB_PASS, JP_DB_NAME );
-  $columns = "id,eid,account,fname,lname,country,college,email,year,status";
+  $columns = "id,eid,account,fname,lname,country,college,email,year,status,major";
   $q = mysql_query( "SELECT $columns FROM ".JP_TABLE_SEARCH."" );
   if( !$q ){ exit( 'Unable to connect to the jPeople database' ); }
 
@@ -27,7 +27,6 @@
   mysql_query( "DELETE FROM ".TABLE_PEOPLE );
 
   /** Add info to the database */
-  mysql_query( "DELETE FROM ".TABLE_PEOPLE );
   $columns .= ',query';
   $h = '<table>';
   $h .= '<tr><td>status</td><td>name</td><td>eid</td><td>mysql_error()</td></tr>';

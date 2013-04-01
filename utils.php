@@ -108,6 +108,7 @@
   function get_points( array $people, $college = null ){
     global $WorldRegions;
     global $WorldRegions_Inv;
+    global $Allocation_Model;
     $year               = ((int)date('Y')) % 100;
     $countries          = array();
     $majors             = array();
@@ -115,7 +116,7 @@
     $individual         = array();
     foreach( $people as $v ){
       if ($college === null) {
-        $alloc = $Allocation_Model.get_allocation($v['eid']);
+        $alloc = $Allocation_Model->get_allocation($v['eid']);
         $college = $alloc['college'];
       }
       if( $v['eid'] != FRESHMAN_EID ){
