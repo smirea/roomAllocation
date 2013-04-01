@@ -72,7 +72,7 @@
             define( 'HAS_ROOM', $allocation['room'] != null );
 
             if( !HAS_ROOM ){
-              $rooms_taken  = extract_column('room', $Allocation_Model->get_all_rooms_from_college($info['college']));
+              $rooms_taken  = extract_column('room', $Allocation_Model->get_all_rooms_from_college($allocation['college']));
               $rooms_locked = array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) );
             }
 
@@ -260,7 +260,7 @@
                     foreach( $choices as $number => $value ){
                       sort( $choices[$number] );
                     }
-                    if( $info['college'] == 'Nordmetall' ){
+                    if( $allocation['college'] == 'Nordmetall' ){
                       $nm     = $Nordmetall_apartments;
                       $taken  = array_merge( $rooms_locked, $rooms_taken );
                       // remove all rooms that are already taken/disabled
@@ -306,7 +306,7 @@
                 <h3>How it works</h3>
                 <ul>
                   <li>Decide on the apartments you want</li>
-                  <?php if( $info['college'] != 'Nordmetall' ){ ?>
+                  <?php if( $allocation['college'] != 'Nordmetall' ){ ?>
                   <li>
                     Fill in the fields with all the rooms that belong
                     to the apartment( 1, 2 or 3 rooms depending on the
@@ -330,7 +330,7 @@
 
               <div class="clearBoth"></div>
 
-              <?php if($info['college'] != 'Nordmetall'){ ?>
+              <?php if($allocation['college'] != 'Nordmetall'){ ?>
                 <br />
                 <h3>Floor Plan</h3>
                 <?php

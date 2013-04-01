@@ -74,7 +74,7 @@
             define( 'HAS_ROOM', $allocation['room'] != null );
 
             if( !HAS_ROOM ){
-              $rooms_taken  = extract_column('room', $Allocation_Model->get_all_rooms_from_college($info['college']));
+              $rooms_taken  = extract_column('room', $Allocation_Model->get_all_rooms_from_college($allocation['college']));
               $rooms_locked = array_map( 'trim', explode( ',', C("disabled.${info['college']}") ) );
             }
 
@@ -99,7 +99,7 @@
               if (count($choice_colleges) == 0 || !$choice_colleges) {
                   $remaining_colleges = array("Mercator", "College-III", "Nordmetall", "Krupp");
                   $info = $Person_Model->get($_SESSION['info']['eid']);
-                  $college = $info['college'];
+                  $college = $allocation['college'];
                   $college = in_array($college, $remaining_colleges, true) ? $college : $remaining_colleges[0];
                   $pos_college = array_search($college, $remaining_colleges);
                   array_splice($remaining_colleges, $pos_college, 1);

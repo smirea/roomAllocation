@@ -142,7 +142,7 @@
       e_assert( !$allocation_from['room'], "You already have a room" );
       e_assert( !$allocation_to['room'], "Your roommate  already has a room" );
 
-      e_assert( !$Request_Model->request_exists($eid, $eid), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
+      e_assert( !$Request_Model->request_exists($eid, $eid_to), "A requests between you two already exists! You need to check your notifications and accept/reject it..." );
 
       $Request_Model->send_request($eid, $eid_to);
 
