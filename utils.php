@@ -155,21 +155,15 @@
     $h = '<table class="points" cellspacing="0" cellpadding="0">';
     $h .= '<tr><td colspan="2" class="section">Individual points</td></tr>';
     foreach( $points['people'] as $k => $value ){
-      $spiritpoint = ($value%1 == 0.5) ? " + College Spirit-Point" : "";
       $h .= "<tr>
-              <td>".$people[$k]['fname'].", ".$people[$k]['lname'].$spiritpoint."</td>
+              <td>".$people[$k]['fname'].", ".$people[$k]['lname']."</td>
               <td class=\"value\">".$value."</td>
              </tr>";
-      if (($value % 1) == 0.5) {
-        $h .= "<tr>
-                <td> + College Spirit-Point</td>
-                <td class=\"value\">0.5</td>
-              </tr>";
-      }
     }
     $h .= '<tr><td colspan="2" class="section">Bonus points</td></tr>';
     $h .= '<tr><td>Nationalities</td><td class="value">'.$points['country'].'</td></tr>';
     $h .= '<tr><td>World Regions</td><td class="value">'.$points['world'].'</td></tr>';
+    $h .= '<tr><td>Majors</td><td class="value">'.$points['major'].'</td></tr>';
     $h .= '<tr><td class="section">Total</td><td class="value">'.$points['total'].'</td></tr>';
     $h .= '</table>';
     return $h;
