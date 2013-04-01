@@ -68,9 +68,9 @@
               || ($info['status'] == STATUS_UNDERGRAD && $info['year'] > $min_year)
               || ($info['status'] == STATUS_FOUNDATION && $info['year'] == $min_year)
           ) {
-            $college  = $Allocation_Model->get_allocation($info['eid']);
-            $college  = $college['college'];
-            $info['college']      = $college;
+            // $college  = $Allocation_Model->get_allocation($info['eid']);
+            // $college  = $college['college'];
+            // $info['college']      = $college;
             $_SESSION['username'] = $info['account'];
             $_SESSION['eid'] = $info['eid'];
             set_username($info);
