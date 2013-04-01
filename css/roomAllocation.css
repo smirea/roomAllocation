@@ -145,7 +145,7 @@ body{
 .face {
   font-size: 9pt;
 }
-.face .name, .face .year, .face .country{
+.face .name, .face .year, .face .country, .face .email {
   padding : 1px 3px;
 }
 .face .name{
