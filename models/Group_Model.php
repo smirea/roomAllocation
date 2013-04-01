@@ -51,7 +51,7 @@
     }
 
     public function get_group_id ($eid) {
-      $result = Model::get_first_row($this->select("group_id", "eid='$eid'"));
+      $result = Model::get_first_row($this->In_Group_Model->select("group_id", "WHERE eid='$eid'"));
       if (!$result || !count($result) === 0) {
         return Model::SQL_FAILED;
       }

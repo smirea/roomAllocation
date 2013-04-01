@@ -280,7 +280,7 @@
         }
       }
 
-      e_assert( count($rooms) > 0, "You have not submitted any room choice!");
+      e_assert( count($rooms) > 0, "You have not submitted any room choice. Invalid room choices are: ".implode(',', $invalid_rooms));
 
       $taken = extract_column(
         'eid',
@@ -294,17 +294,17 @@
 
       if( count($taken) > 0 ){
         $intersect = array_intersect( $rooms, $taken );
-        $output['error'] .= '<div>The following rooms are already taken by someone else:
+        $output['error'][] = '<div>The following rooms are already taken by someone else:
                               '.implode(', ',$intersect).'.
                             </div>';
       }
 
       if( count($invalid_rooms) > 0 ){
-        $output['error'] .= '<div>You are not allowed to apply for these apartments:
+        $output['error'][] = '<div>You are not allowed to apply for these apartments:
                               <b>'.implode(', ', $invalid_rooms).'</b>.</div>';
       }
 
-      e_assert( $output['error'] == '', $output['error'] );
+      e_assert( empty($output['error']), $output['error'] );
 
       $group_id = $_SESSION['info']['group_id'];
       $values   = array();
@@ -317,8 +317,8 @@
 
       $Apartment_Choice_Model->remove_all_choices($group_id);
       $output['result'] = $Apartment_Choice_Model->insert("(number,college,group_id,choice) VALUES $values");
-      $output['error'] .= mysql_error();
-      $output['info']   = 'Rooms updated successfully!';
+      $output['error'] = !empty($output['error']) ? $output['error'] : mysql_error();
+      $output['info'] = 'Rooms updated successfully!';
       break;
     case 'selectRooms':
       e_assert(C('round.type') === 'apartment', 'You are not in the apartment round!');
