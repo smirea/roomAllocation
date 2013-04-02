@@ -146,19 +146,6 @@
                 $requests = array();
                 if( count($res) > 0 ){
                   $requests [] = $res;
-                  //TODO: Would be very nice but has a lot of problems
-                  //you really need to merge groups in forder for this to work
-                  //so, for now, i'll leave the above think, which, of course,
-                  //is a HACK!!!
-                  /**
-                  $eids = extract_column( 'eid', $res );
-                  foreach( $eids as $v ){
-                      $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i
-                              WHERE i.group_id=(SELECT j.group_id FROM ".TABLE_IN_GROUP." j WHERE j.eid='$v')
-                                AND p.eid=i.eid";
-                      $requests[] = sqlToArray( mysql_query( $q ) );
-                  }
-                  **/
                   $hidden = 'display:none';
                 }
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
@@ -267,8 +254,11 @@
                       sort( $choices[$number] );
                     }
                     if( $allocation['college'] == 'Nordmetall' ){
-                      $nm     = $Nordmetall_apartments;
-                      $taken  = array_merge( $rooms_locked, $rooms_taken );
+                      $nm = $Nordmetall_apartments;
+                      if (C('round.restrictions')) {
+                        $nm = array_map(function ($v) { return array($v); }, $allowed_rooms['Nordmetall']);
+                      }
+                      $taken = array_merge( $rooms_locked, $rooms_taken );
                       // remove all rooms that are already taken/disabled
                       foreach( $Nordmetall_apartments as $key => $apartment ){
                         foreach( $apartment as $room ){
@@ -340,25 +330,45 @@
                 <br />
                 <h3>Floor Plan</h3>
                 <?php
-
                   if ($allocation['college']) {
-                    $classes = array();
+                    $college_map = null;
+                    switch( $allocation['college'] ){
+                      case 'Mercator': 
+                        $college_map = $Mercator; 
+                        break;
+                      case 'Krupp': 
+                        $college_map = $Krupp; 
+                        break;
+                      case 'College-III': 
+                        $college_map = $College3; 
+                        break;
+                      default: $college_map = null;
+                    }
 
-                    if( C('round.restrictions') )
-                      add_class( 'available', $allowed_rooms[$allocation['college']], $classes );
-                    add_class( 'taken', $rooms_taken, $classes );
-                    add_class( 'taken', $rooms_locked, $classes );
-                    add_class( 'chosen', extract_column( 'number', $apartment_choices ), $classes );
+                    $classes = array();
+                    $college_rooms = get_floorplan_rooms($college_map);
+                    if( C('round.restrictions') ) {
+                      add_class(
+                        'taken', 
+                        array_diff($college_rooms, $allowed_rooms[$allocation['college']]),
+                        $classes
+                      );
+                    }
+                    $tall_rooms = array();
+                    foreach ($college_rooms as $room) {
+                      if (is_tall_apartment($room)) {
+                        $tall_rooms[] = $room;
+                      }
+                    }
+                    add_class('tallRoom', $tall_rooms, $classes);
+                    add_class('taken', $rooms_taken, $classes);
+                    add_class('taken', $rooms_locked, $classes);
+                    add_class('chosen', extract_column( 'number', $apartment_choices ), $classes);
+
 
                     $classes = array_map(function($v){return implode(' ',$v);}, $classes);
 
-                    switch( $allocation['college'] ){
-                      case 'Krupp':       echo renderMap( $Krupp, $classes ); break;
-                      case 'Mercator':    echo renderMap( $Mercator, $classes ); break;
-                      case 'College-III': echo renderMap( $College3, $classes ); break;
-                      //case 'Nordmetall':  echo renderMap( $Nordmetall, $classes ); break;
-                      default:            echo "Unknown college: <b>${d['college']}<br />";
-                    }
+                    echo renderMap( $college_map, $classes ); break;
                   } else {
                     echo 'You are not assigned to any college';
                   }

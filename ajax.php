@@ -245,6 +245,8 @@
 
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
 
+      e_assert(count($roommates) <= MAX_ROOMMATES && count($roommates) >= MIN_ROOMMATES, 'You are either too many or too little people applying in this round');
+
       // check for tall rooms and if people are eligible for tall rooms
       if (C('round.restrictions')) {
         $too_small_images = array('condi.jpg', 'consuela.jpg', 'morpheus.jpg');
@@ -287,7 +289,7 @@
           $tmp = array_map( 'trim', $tmp );
           sort($tmp);
           e_assert($tmp == get_apartment($tmp[0]), 'Invalid apartment <b>'.$v.'</b>');
-          e_assert(count($tmp) <= MAX_ROOMMATES+1, 'Apartment <b>'.$v.'</b> is bigger than the maximum allowed for this round');
+          e_assert(count($tmp) <= MAX_ROOMMATES+1 && count($tmp) >= MIN_ROOMMATES+1, 'Apartment <b>'.$v.'</b> is either too big or too small for you and your group');
           e_assert(count($roommates)+1 != count($tmp), 'You are either too many or too little people applying for the <b>'.$v.'</b> apartment');
           e_assert(!in_array($tmp[0], $disabled), 'The apartment <b>'.$v.'</b> is disabled for this round');
           e_assert(!C('round.restrictions') || in_array($tmp[0], $allowed_rooms[$college]), 'You are not allowed to apply for this apartment (<b>'.$v.'</b>) in this round');
