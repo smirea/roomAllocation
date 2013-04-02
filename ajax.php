@@ -278,28 +278,23 @@
       }
 
       $disabled = array_map( 'trim', explode( ',', C("disabled.$college") ) );
-
       $rooms          = array();
       $invalid_rooms  = array();
       $bitmask        = array();
-      foreach( $_GET['choices'] as $k => $v ){
+      foreach ($_GET['choices'] as $k => $v) {
         if( $v && $v != '' ){
           $tmp = explode(',', $v);
           $tmp = array_map( 'trim', $tmp );
-          if(
-            count($tmp) > MAX_ROOMMATES+1
-            || count($roommates)+1 != count($tmp)
-            || in_array( $tmp[0], $disabled )
-            || (C('round.restrictions') && !in_array( $tmp[0], $allowed_rooms[$college] ) )
-          ){
-            $invalid_rooms[] = "($v)";
-          } else {
-            sort($tmp);
-            $hash = implode(',',$tmp);
-            if( !isset($bitmask[$hash]) ){
-              $rooms[] = $tmp;
-              $bitmask[$hash] = true;
-            }
+          sort($tmp);
+          e_assert($tmp == get_apartment($tmp[0]), 'Invalid apartment <b>'.$v.'</b>');
+          e_assert(count($tmp) <= MAX_ROOMMATES+1, 'Apartment <b>'.$v.'</b> is bigger than the maximum allowed for this round');
+          e_assert(count($roommates)+1 != count($tmp), 'You are either too many or too little people applying for the <b>'.$v.'</b> apartment');
+          e_assert(!in_array($tmp[0], $disabled), 'The apartment <b>'.$v.'</b> is disabled for this round');
+          e_assert(!C('round.restrictions') || in_array($tmp[0], $allowed_rooms[$college]), 'You are not allowed to apply for this apartment (<b>'.$v.'</b>) in this round');
+          $hash = implode(',',$tmp);
+          if( !isset($bitmask[$hash]) ){
+            $rooms[] = $tmp;
+            $bitmask[$hash] = true;
           }
         }
       }
