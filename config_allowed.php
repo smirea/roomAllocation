@@ -51,13 +51,16 @@
       )
     ),
     'Nordmetall'  => array_unique(
-      array_merge(
-        explode(',','B-439,C-218,C-219,C-318,C-319,C-418,C-419'),
-        prepend('B-',
-          apartment_pattern( 5, 402, 2, 1 ),
-          apartment_pattern( 4, 426, 2, 1 )
-        )
+      array(
+        'A-303','A-305','A-307','A-309','A-311','A-313','A-315','A-317','A-319','A-321','A-323','A-325','A-327','A-329','A-331','A-333','A-335', 'A-523','A-525','A-527','A-529','A-531','A-533','A-535'
       )
+      // array_merge(
+      //   explode(',','B-439,C-218,C-219,C-318,C-319,C-418,C-419'),
+      //   prepend('B-',
+      //     apartment_pattern( 5, 402, 2, 1 ),
+      //     apartment_pattern( 4, 426, 2, 1 )
+      //   )
+      // )
     )
   
   );
