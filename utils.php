@@ -232,7 +232,7 @@ HTML;
   function is_tall_apartment (array $apartment) {
     $tall_room_regexp = '/^[MKC][ABCD]-(137|[123]08)$/i';
     foreach ($apartment as $room_number) {
-      if (preg_match($tall_room_regexp, $room_number) {
+      if (preg_match($tall_room_regexp, $room_number)) {
         return true;
       }
     }
