@@ -27,8 +27,11 @@
     'Krupp' => array_unique(
       array_merge(
         prepend('A-', 
+          apartment_pattern( 4, 108, 2, 1 ),
           apartment_pattern( 4, 124, 2, 1 ),
+          apartment_pattern( 5, 208, 2, 1 ),
           apartment_pattern( 5, 224, 2, 1 ),
+          apartment_pattern( 5, 308, 2, 1 ),
           apartment_pattern( 5, 324, 2, 1 )
         ),
         explode(',','A-208,A-209,A-308,A-309,B-108,B-109,B-208,B-209,B-308,B-309,C-108,C-109,C-208,C-209,C-308,C-309'),
