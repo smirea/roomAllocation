@@ -49,14 +49,20 @@
     <script src="js/jquery.qtip.js"></script>
     <script src="js/jTour.min.js"></script>
     <script src="js/lib.js"></script>
+
     <script src="js/roomAllocation.js"></script>
 
   </head>
 
   <body>
+
     <div id="main">
       <?php require_once 'login.php'; ?>
-
+      <?php
+        if (LOGGED_IN) {
+          echo '<script src="js/tour_roomphase.js"></script>';
+        }
+      ?>
       <div id="wrapper">
         <?php
           if( LOGGED_IN ){
