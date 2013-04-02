@@ -343,38 +343,6 @@
   }
   
   /**
-   * @brief Returns all room numbers in the apartment with the given room
-   * @param {string} $number  The given room number
-   * @returns {array}
-   */
-  function get_apartment( $number ){
-    list( $block, $number ) = explode('-', $number);
-    $number = (int)$number;
-    if( $number <= 103 ){
-      return array( "$block-101", "$block-102", "$block-103" );
-    } else if( $number % 2 == 0 ){
-      return array( "$block-$number", "$block-".($number+1) );
-    } else {
-      return array( "$block-".($number-1), "$block-$number" );
-    }
-  }
-  
-  /**
-   * @brief Returns all room numbers in the apartment with the given room
-   * @param {string} $number  The given room number
-   * @returns {array}
-   */
-  function get_apartment_NM( $number ){
-    list( $block, $number ) = explode('-', $number);
-    $number = (int)$number;
-    if( $number % 2 == 0 ){
-      return array( "$block-$number", "$block-".($number+1) );
-    } else {
-      return array( "$block-".($number-1), "$block-$number" );
-    }
-  }
-  
-  /**
    * @brief Allocates all the rooms to all the groups and returns a thorough result
    * @param {array} $rooms
    * @param {array} $choice
