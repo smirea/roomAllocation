@@ -356,11 +356,12 @@
                     }
                     $tall_rooms = array();
                     foreach ($college_rooms as $room) {
-                      if (is_tall_apartment($room)) {
-                        $tall_rooms[] = $room;
+                      $ap = get_apartment($room);
+                      if (is_tall_apartment($ap)) {
+                        $tall_rooms = array_merge($tall_rooms, $ap);
                       }
                     }
-                    add_class('tallRoom', $tall_rooms, $classes);
+                    add_class('tall', $tall_rooms, $classes);
                     add_class('taken', $rooms_taken, $classes);
                     add_class('taken', $rooms_locked, $classes);
                     add_class('chosen', extract_column( 'number', $apartment_choices ), $classes);

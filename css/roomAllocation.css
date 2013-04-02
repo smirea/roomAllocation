@@ -228,6 +228,9 @@ body{
 .room .person{
   display : none;
 }
+.room.tall {
+  background: lightblue;
+}
 
 #apartment-selection{
   border      : 1px solid #ccc;
