@@ -79,6 +79,23 @@ HTML;
     }
   }
   
+  function get_floorplan_rooms (array $map) {
+    $result = array();
+    foreach ($map as $name => $block) {
+      foreach ($block as $number => $floor) {
+        foreach ($floor as $columns) {
+          foreach ($columns as $apartment) {
+            if (!$apartment[0]) {
+              continue;
+            }
+            $result[] = $name."-".$apartment[0];
+          }
+        }
+      }
+    }
+    return $result;
+  }
+
   function renderMap( array $map, array $classes = array(), array $args = array() ){
     $h = '';
     $emptyRoom = new Room();
@@ -274,6 +291,38 @@ HTML;
       }
     }
     return $apartments;
+  }
+  
+  /**
+   * @brief Returns all room numbers in the apartment with the given room
+   * @param {string} $number  The given room number
+   * @returns {array}
+   */
+  function get_apartment( $number ){
+    list( $block, $number ) = explode('-', $number);
+    $number = (int)$number;
+    if( $number <= 103 ){
+      return array( "$block-101", "$block-102", "$block-103" );
+    } else if( $number % 2 == 0 ){
+      return array( "$block-$number", "$block-".($number+1) );
+    } else {
+      return array( "$block-".($number-1), "$block-$number" );
+    }
+  }
+  
+  /**
+   * @brief Returns all room numbers in the apartment with the given room
+   * @param {string} $number  The given room number
+   * @returns {array}
+   */
+  function get_apartment_NM( $number ){
+    list( $block, $number ) = explode('-', $number);
+    $number = (int)$number;
+    if( $number % 2 == 0 ){
+      return array( "$block-$number", "$block-".($number+1) );
+    } else {
+      return array( "$block-".($number-1), "$block-$number" );
+    }
   }
   
 ?>
