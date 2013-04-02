@@ -21,7 +21,7 @@
   /**
    * @brief A room is for one person
    */
-  class Room extends AutoSetGet{
+  class Room extends AutoSetGet {
     protected $eid      = '';
     protected $fname    = '';
     protected $lname    = '';
@@ -30,18 +30,18 @@
     protected $country  = '';
     protected $status   = '';
 
-    public function __construct( array $info = array() ){
-      foreach( $info as $k => $v ){
+    public function __construct (array $info = array()) {
+      foreach ($info as $k => $v) {
         $this->{"set$k"}($v);
       }
     }
 		
-    public function toString( $classes = '' ){
+    public function toString ($classes = '', $attributes = '') {
       foreach( array('eid', 'fname', 'lname', 'phone', 'number', 'country', 'status') as $v ){
         $$v = $this->{"get$v"}();
       }
       return <<<HTML
-        <table cellspacing="0" cellpadding="0" id="room-$number" class="room $status $classes">
+        <table cellspacing="0" cellpadding="0" id="room-$number" class="room $status $classes" $attributes>
           <tr>
             <td class="info">
               <div class="number">$number</div>
@@ -121,10 +121,11 @@ HTML;
                   $arguments = array_merge( $args[$roomNumber], $arguments );
                 }
                 $tmp = new Room( $arguments );
+                $apartment_tag = 'apartment="'.implode(',', get_apartment($roomNumber)).'"';
                 if( isset($classes[$roomNumber]) )
-                  $h .= $tmp->toString( $classes[$roomNumber] );
+                  $h .= $tmp->toString($classes[$roomNumber], $apartment_tag);
                 else
-                  $h .= $tmp->toString();
+                  $h .= $tmp->toString(null, $apartment_tag);
             }
             $h .= '</td>';
           }
