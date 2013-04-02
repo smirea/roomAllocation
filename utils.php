@@ -153,23 +153,23 @@
   function print_score( array $people, $points = null ){
     $points = $points ? $points : get_points( $people );
     $h = '<table class="points" cellspacing="0" cellpadding="0">';
-    $h .= '<tr><td colspan="2" class="section">Individual points</td></tr>';
+    $h .= '<tr class="individual-points"><td colspan="2" class="section">Individual points</td></tr>';
     foreach( $points['people'] as $k => $value ){
-      $h .= "<tr>
+      $h .= "<tr class=\"individual-points\">
               <td>".$people[$k]['fname'].", ".$people[$k]['lname']."</td>
               <td class=\"value\">".$value."</td>
              </tr>";
     }
-    $h .= '<tr><td colspan="2" class="section">Bonus points</td></tr>';
-    $h .= '<tr><td>Nationalities</td><td class="value">'.$points['country'].'</td></tr>';
-    $h .= '<tr><td>World Regions</td><td class="value">'.$points['world'].'</td></tr>';
-    $h .= '<tr><td>Majors</td><td class="value">'.$points['major'].'</td></tr>';
-    $h .= '<tr><td class="section">Total</td><td class="value">'.$points['total'].'</td></tr>';
+    $h .= '<tr class="bonus-points"><td colspan="2" class="section">Bonus points</td></tr>';
+    $h .= '<tr class="bonus-points"><td>Nationalities</td><td class="value">'.$points['country'].'</td></tr>';
+    $h .= '<tr class="bonus-points"><td>World Regions</td><td class="value">'.$points['world'].'</td></tr>';
+    $h .= '<tr class="bonus-points"><td>Majors</td><td class="value">'.$points['major'].'</td></tr>';
+    $h .= '<tr class="total-points"><td class="section">Total</td><td class="value">'.$points['total'].'</td></tr>';
     $h .= '</table>';
     return $h;
   }
 
-  function getFaceHTML( $info, $append = '' ){
+  function getFaceHTML( $info, $append = '', $classes = '' ){
     foreach( $info as $k => $v ){ $$k = $v; }
       $img            = imageUrl( $eid );
       $country_flag   = flagURL( $country );
@@ -178,7 +178,7 @@
       $email          = $info['email'];
       $short_email    = substr($email, 0, strrpos($email, '-'));
       return <<<HTML
-        <table class="face" cellspacing="0" cellpadding="0" id="face-eid-$eid">
+        <table class="face $classes" cellspacing="0" cellpadding="0" id="face-eid-$eid">
           <tr>
             <td rowspan="4" class="photo"><img src="$img" height="64" /></td>
             <td class="name"><b>$fname, $lname</b></td>
@@ -200,7 +200,7 @@
 HTML;
   }
 
-  function getFaceHTML_received( $info, $append = '' ){
+  function getFaceHTML_received( $info, $append = '', $classes = '' ){
     $actions = '
       <tr class="actions">
         <td colspan="3" style="padding:3px;border-top:1px solid #999;background:#fff;text-align:center">
@@ -212,10 +212,10 @@ HTML;
         </td>
       </tr>
     ';
-    return getFaceHTML( $info, $actions.$append );
+    return getFaceHTML( $info, $actions.$append, $classes );
   }
 
-  function getFaceHTML_sent( $info, $append = '' ){
+  function getFaceHTML_sent( $info, $append = '', $classes ){
     $actions = '
       <tr class="actions">
         <td colspan="3" style="padding:3px;border-top:1px solid #999;background:#fff;text-align:center">
@@ -226,7 +226,7 @@ HTML;
         </td>
       </tr>
     ';
-    return getFaceHTML( $info, $append.$actions );
+    return getFaceHTML( $info, $append.$actions, $classes );
   }
 
   function is_tall_apartment (array $apartment) {

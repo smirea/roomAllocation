@@ -87,7 +87,7 @@
           <div class="wrapper">
             <h3>Profile</h3>
             <?php
-                echo getFaceHTML( $info );
+                echo getFaceHTML( $info, '', 'my-profile' );
             ?>
 
             <br />
@@ -130,7 +130,7 @@
                 $hidden = count( $roommates ) > 0 ? 'display:none' : '';
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
                 foreach( $roommates as $person ){
-                  echo getFaceHTML( $person );
+                  echo getFaceHTML( $person, '', 'roommate-profile');
                 }
               ?>
             </div>
@@ -164,7 +164,7 @@
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
                 foreach( $requests as $group ){
                   foreach( $group as $person ){
-                    echo getFaceHTML_received( $person );
+                    echo getFaceHTML_received( $person, '', 'request-recieved-profile' );
                   }
                 }
               ?>
@@ -179,7 +179,7 @@
                 $hidden = count( $res ) == 1 ? 'display:none' : '';
                 echo '<div class="none" style="text-indent:10px;'.$hidden.'">none so far...</div>';
                 foreach( $res as $person ){
-                  echo getFaceHTML_sent( $person );
+                  echo getFaceHTML_sent( $person, '', 'request-sent-profile' );
                 }
               ?>
             </div>
