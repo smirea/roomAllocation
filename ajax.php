@@ -210,14 +210,6 @@
         $output['result'] = $Request_Model->remove_remaining($eid);
 
         $Apartment_Choice_Model->remove_all_choices($_SESSION['info']['group_id']);
-
-        /* NOTE:  must check if limit is reach and all that bull
-        $q    = "SELECT eid FROM ".TABLE_REQUESTS." WHERE eid_to='$eid'";
-        $res  = sqlToArray( mysql_query( $q_getRejected ) );
-        foreach( $res as $person ){
-          notifyPerson( $person['eid'], $_SESSION['fname']." has choosen another roommate" );
-        }
-        */
       } else {
         notifyPerson( $_GET['eid'], $_SESSION['info']['fname']." rejected your roommate request" );
       }
@@ -252,6 +244,38 @@
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
 
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
+
+      // check for tall rooms and if people are eligible for tall rooms
+      if (C('round.restrictions')) {
+        $too_small_images = array('condi.jpg', 'consuela.jpg', 'morpheus.jpg');
+        $image_dir = 'images/memes/too-small-';
+        function too_small_error ($apartment) {
+          global $image_dir;
+          global $too_small_images;
+          $image = $image_dir.$too_small_images[rand(0, count($too_small_images)-1)];
+          return '<div style="clerfix">
+            <img src="'.$image.'" alt="Too small image" style="float:left; max-width:300px; max-height:140px; margin-right: 15px;" />
+            You are not allowed to apply for <b>'.$apartment.'</b>.<br />Neither your nor your roommate(s) is tall enough for it.<br />
+            For a better explanation of this phenomenon, please reference the provided image on the side
+            <div style="clear:both"></div>
+          </div>';
+        }
+        $whole_group = array_merge(array($_SESSION['info']), $roommates);
+        foreach ($_GET['choices'] as $apartment) {
+          if (is_tall_apartment(explode(',', $apartment))) {
+            $ok = false;
+            foreach ($whole_group as $person) {
+              if ($person['isTall']) {
+                $ok = true;
+                break;
+              }
+            }
+            if (!$ok) {
+              $output['error'][] = too_small_error($apartment);
+            }
+          }
+        }
+      }
 
       $disabled = array_map( 'trim', explode( ',', C("disabled.$college") ) );
 
