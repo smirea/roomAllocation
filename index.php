@@ -368,8 +368,7 @@
 
 
                     $classes = array_map(function($v){return implode(' ',$v);}, $classes);
-
-                    echo renderMap( $college_map, $classes ); break;
+                    echo renderMap( $college_map, $classes );
                   } else {
                     echo 'You are not assigned to any college';
                   }
