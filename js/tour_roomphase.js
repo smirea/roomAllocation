@@ -125,7 +125,7 @@ var setup_tutorial = function(exports) {
     ],
     end: [
       {
-        html: 'Every time you click <b style="color:red">Save Changes</b>, your preferences are updated and a confirmation message will be shown on the top of the page. <br /><b style="color:red">Please take not of error messages!</b>',
+        html: 'Every time you click <b style="color:red">Save Changes</b>, your preferences are updated and a confirmation message will be shown on the top of the page. <br /><b style="color:red">Please take note of error messages!</b>',
         element: $('#choose_rooms'),
         overlayOpacity: 0.8,
         position: 'e',
