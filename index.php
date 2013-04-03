@@ -337,7 +337,6 @@
                         break;
                       default: $college_map = null;
                     }
-
                     $classes = array();
                     $college_rooms = get_floorplan_rooms($college_map);
                     if( C('round.restrictions') ) {
