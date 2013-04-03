@@ -101,6 +101,9 @@ function message (type, message, timeout) {
       clone.slideUp();
     }, timeout);
     container[0].scrollTop = container[0].scrollHeight;
+    clone.find('img').on('load', function () {
+      container[0].scrollTop = container[0].scrollHeight;
+    });
   } else {
     console.warn( 'Unknown message type', arguments );
   }

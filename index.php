@@ -42,7 +42,7 @@
     <link rel="stylesheet" type="text/css" href="css/jquery.qtip.css" />
     <link rel="stylesheet" type="text/css" href="css/floorPlan.css" />
     <link rel="stylesheet" type="text/css" href="css/roomAllocation.css" />
-    <link rel="stylesheet" id="themestyle" href="css/jquery-tour/theme2/style.css" />
+    <link rel="stylesheet" id="themestyle" href="css/jquery-tour/theme4/style.css" />
 
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui.js"></script>
@@ -293,7 +293,7 @@
                         echo '</li>';
                       }
                     }
-                    echo '<li style="list-style-type:none"><input type="submit" value="Save Changes!" id="choose_rooms" /></li>';
+                    echo '<li style="list-style-type:none; text-align:center; margin-top:5px;"><div id="choose_rooms" class="gh-button">Save Changes!</div></li>';
                   ?>
                 </ol>
               </div>
@@ -303,25 +303,18 @@
                 <ul>
                   <li>Decide on the apartments you want</li>
                   <?php if( $allocation['college'] != 'Nordmetall' ){ ?>
-                  <li>
-                    Fill in the fields with all the rooms that belong
-                    to the apartment( 1, 2 or 3 rooms depending on the
-                    apartment type ), <b style="color:red">separated with a comma</b>
-                  </li>
                   <li>You can use the floor-plan bellow to choose your rooms more easily</li>
                   <li>
-                    Just click on the apartment you want
-                    and then select it as what choice you want it to be
+                    Just click on the apartment you want and then select it as what choice you want it to be
                   </li>
                   <?php } ?>
                   <li>
-                    Make sure to fill as many options as possible,
-                    because if you do not get assigned any room,
-                    you will get one at random
+                    Make sure to fill as many options as possible, because if you do not get assigned any room, you will get one at random
                   </li>
                   <li>Also, you can change the rooms at any time while the round is open</li>
-                  <li><b>Don't forget</b> to hit the <b>Save Changes!</b> button!</li>
+                  <li style="color:red"><b>Don't forget</b> to hit the <b>Save Changes!</b> button!</li>
                 </ul>
+                <div id="beginTour" class="gh-button">Start Tour</div>
               </div>
 
               <div class="clearBoth"></div>

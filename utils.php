@@ -215,7 +215,7 @@ HTML;
     return getFaceHTML( $info, $actions.$append, $classes );
   }
 
-  function getFaceHTML_sent( $info, $append = '', $classes ){
+  function getFaceHTML_sent( $info, $append = '', $classes = '' ){
     $actions = '
       <tr class="actions">
         <td colspan="3" style="padding:3px;border-top:1px solid #999;background:#fff;text-align:center">
