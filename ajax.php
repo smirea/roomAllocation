@@ -288,7 +288,7 @@
           $tmp = explode(',', $v);
           $tmp = array_map( 'trim', $tmp );
           sort($tmp);
-          e_assert($tmp == get_apartment($tmp[0]), 'Invalid apartment <b>'.$v.'</b>');
+          e_assert($college == 'Nordmetall' || $tmp == get_apartment($tmp[0]), 'Invalid apartment <b>'.$v.'</b>');
           e_assert(count($tmp) <= MAX_ROOMMATES+1 && count($tmp) >= MIN_ROOMMATES+1, 'Apartment <b>'.$v.'</b> is either too big or too small for you and your group');
           e_assert(count($roommates)+1 === count($tmp), 'You are either too many or too little people applying for the <b>'.$v.'</b> apartment');
           e_assert(!in_array($tmp[0], $disabled), 'The apartment <b>'.$v.'</b> is disabled for this round');
