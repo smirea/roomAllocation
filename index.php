@@ -274,15 +274,18 @@
                       for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
                         echo '<li>';
                         echo '<select name="choice[]" id="input-room-choice-'.$i.'">';
-                        echo '<option></option>';
+                        $options = array();
+                        $has_default = false;
                         foreach( $nm as $apartment ){
                           $selected = '';
                           if( isset($choice_map[$apartment]) && $choice_map[$apartment] == $i ){
                             $selected = 'selected="selected"';
+                            $has_default = true;
                           }
-                          echo '<option '.$selected.'>'.$apartment.'</option>';
+                          $options[] = '<option '.$selected.'>'.$apartment.'</option>';
                         }
-                        //    <input type="text" id="input-room-choice-'.$i.'" name="choice[]" value="'.implode(',',$choices[$i]).'" />
+                        array_unshift($options, '<option '.($has_default ? '' : 'selected="selected"').'></option>');
+                        echo implode(' ', $options);
                         echo '</select>';
                         echo '</li>';
                       }
