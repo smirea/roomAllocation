@@ -55,29 +55,33 @@
 
   if( !file_exists( DYNAMIC_CONFIG_FILE ) ){
     file_put_contents( DYNAMIC_CONFIG_FILE, '<?php /** Needs to be generated **/ ?>' );
-    C( 'DEBUG',                     0 );  // mainly disable passwords for all accounts
-    C( 'round.active',              0 );  // if students can perform any action in terms of allocation (not choosing)
-    C( 'round.number',              1 );  // the current round number. useful for logging
-    C( 'round.restrictions',        0 );  // whether to use restrictions or not (i.e. config_allowed.php)
-    C( 'round.type',                0 );
-    C( 'roommates.min',             1 );
-    C( 'roommates.max',             1 );
-    C( 'roommates.freshman',        0 );  // whether to allow rooming with a freshman
-    C( 'apartment.choices',         9 );
-    C( 'points.min',                1 );
-    C( 'points.max',                7 );
-    C( 'points.cap',                7 );  // points < points.cap ? points : points.cap
-    C( 'allocation.allocateRandom', 0 );
-    C( 'allocation.nationalityCap', 8 );  // max number of people of the same nationality on a floor (hardcoded to 40%)
-    C( 'disabled.Mercator'        , '');  // custom disabled rooms (like reserver for CMs , etc)
-    C( 'disabled.Krupp'           , '');  // custom disabled rooms (like reserver for CMs , etc)
-    C( 'disabled.College-III'     , '');  // custom disabled rooms (like reserver for CMs , etc)
-    C( 'disabled.Nordmetall'      , '');  // custom disabled rooms (like reserver for CMs , etc)
-    C( 'college.limit.College-III', 240);
-    C( 'college.limit.Mercator'   , 188);
-    C( 'college.limit.Krupp'      , 188);
-    C( 'college.limit.Nordmetall' , 240);
-    C( 'college.limit.threshold'  , 0.8);
+    C('DEBUG',                     0);  // mainly disable passwords for all accounts
+    C('round.active',              0);  // if students can perform any action in terms of allocation (not choosing)
+    C('round.number',              1);  // the current round number. useful for logging
+    C('round.restrictions',        0);  // whether to use restrictions or not (i.e. config_allowed.php)
+    C('round.type',                0);
+    C('roommates.min',             1);
+    C('roommates.max',             1);
+    C('roommates.freshman',        0);  // whether to allow rooming with a freshman
+    C('apartment.choices',         9);
+    C('points.min',                1);
+    C('points.max',                7);
+    C('points.cap',                7);  // points < points.cap ? points : points.cap
+    C('allocation.allocateRandom', 0);
+    C('allocation.nationalityCap', 8);  // max number of people of the same nationality on a floor (hardcoded to 40%)
+    C('disabled.Mercator'        , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C('disabled.Krupp'           , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C('disabled.College-III'     , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C('disabled.Nordmetall'      , '');  // custom disabled rooms (like reserver for CMs , etc)
+    C('college.limit.College-III', 240);
+    C('college.limit.Mercator'   , 188);
+    C('college.limit.Krupp'      , 188);
+    C('college.limit.Nordmetall' , 240);
+    C('college.limit.threshold'  , 0.8);
+    C('message.info'             , '');   // display a global info message to all users
+    C('message.warning'          , '');   // display a global warning message to all users
+    C('message.error'            , '');   // display a global error message to all users
+
   }
   require_once( DYNAMIC_CONFIG_FILE );
   require_once( 'config_allowed.php' );

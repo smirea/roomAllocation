@@ -288,7 +288,10 @@ HTML;
                 'Disabled rooms in Mercator'      => 'disabled.Mercator/string',
                 'Disabled rooms in Krupp'         => 'disabled.Krupp/string',
                 'Disabled rooms in College-III'   => 'disabled.College-III/string',
-                'Disabled rooms in Nordmetall'    => 'disabled.Nordmetall/string'
+                'Disabled rooms in Nordmetall'    => 'disabled.Nordmetall/string',
+                'Global Info message'             => 'message.info/string',
+                'Global Warning message'          => 'message.warning/string',
+                'Global Error message'            => 'message.error'
               );
               $h = array();
               foreach( $fields as $label => $properties ){
