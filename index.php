@@ -88,7 +88,9 @@
             foreach ($message_types as $message_name) {
               $message = C("message.$message_name");
               if (!empty($message)) {
-                echo '<div class="clerafix message '.$message_name.'">'.$message.'</div>';
+                echo '<div class="clerafix message '.$message_name.'">
+                  <div class="content">'.$message.'</div>
+                </div>';
               }
             }
           ?>
