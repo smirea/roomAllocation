@@ -267,7 +267,16 @@
                     if( $allocation['college'] == 'Nordmetall' ){
                       $nm = $Nordmetall_apartments;
                       if (C('round.restrictions')) {
-                        $nm = array_map(function ($v) { return array($v); }, $allowed_rooms['Nordmetall']);
+                        $tmp_apts = array();
+                        foreach ($allowed_rooms['Nordmetall'] as $room_number) {
+                          $apt = get_apartment_NM($room_number);
+                          if (count($apt) <= 1) {
+                            continue;
+                          }
+                          $apt = implode(',', $apt);
+                          $tmp_apts[$apt] = true;
+                        }
+                        $nm = array_map(function ($v) { return explode(',',$v); }, array_keys($tmp_apts));
                       }
                       $taken = array_merge( $rooms_locked, $rooms_taken );
                       // remove all rooms that are already taken/disabled
@@ -280,7 +289,7 @@
                         }
                       }
                       $hash       = function($v){ sort($v); return implode(',', $v); };
-                      $nm         = array_map($hash, $nm);
+                      // $nm         = array_map($hash, $nm);
                       $choice_map = array_flip( array_map($hash, $choices) );
                       for( $i=0; $i<MAX_ROOM_CHOICES; ++$i ){
                         echo '<li>';
@@ -289,11 +298,13 @@
                         $has_default = false;
                         foreach( $nm as $apartment ){
                           $selected = '';
-                          if( isset($choice_map[$apartment]) && $choice_map[$apartment] == $i ){
+                          $apt_hash = $hash($apartment);
+                          if( isset($choice_map[$apt_hash]) && $choice_map[$apt_hash] == $i ){
                             $selected = 'selected="selected"';
                             $has_default = true;
                           }
-                          $options[] = '<option '.$selected.'>'.$apartment.'</option>';
+                          $tall = is_tall_apartment($apartment) ? ' [tall]' : '';
+                          $options[] = '<option value="'.$apt_hash.'" '.$selected.'>'.$apt_hash.$tall.'</option>';
                         }
                         array_unshift($options, '<option '.($has_default ? '' : 'selected="selected"').'></option>');
                         echo implode(' ', $options);
@@ -349,7 +360,8 @@
                       case 'College-III': 
                         $college_map = $College3; 
                         break;
-                      default: $college_map = null;
+                      default: 
+                        $college_map = null;
                     }
                     $classes = array();
                     $college_rooms = get_floorplan_rooms($college_map);
@@ -383,6 +395,7 @@
               <?php } ?>
 
             <?php
+                // End IF ($college != 'Nordmetall')
               } else {
                 echo '<div style="color:red">You need to have "'.MAX_ROOMMATES.'"
                         roommate(s) for this phase in order to be eligible to apply for a room';

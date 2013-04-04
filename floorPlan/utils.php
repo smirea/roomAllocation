@@ -299,7 +299,7 @@ HTML;
    * @param {string} $number  The given room number
    * @returns {array}
    */
-  function get_apartment( $number ){
+  function get_apartment ($number) {
     list( $block, $number ) = explode('-', $number);
     $number = (int)$number;
     if( $number <= 103 ){
@@ -316,13 +316,32 @@ HTML;
    * @param {string} $number  The given room number
    * @returns {array}
    */
-  function get_apartment_NM( $number ){
-    list( $block, $number ) = explode('-', $number);
+  function get_apartment_NM ($number) {
+    list($block, $number) = explode('-', $number);
     $number = (int)$number;
-    if( $number % 2 == 0 ){
-      return array( "$block-$number", "$block-".($number+1) );
-    } else {
-      return array( "$block-".($number-1), "$block-$number" );
+    $pos = $number % 100;
+    $single_room_apartment = function ($no) use ($block) { return array("$block-$no"); };
+    $double_room_apartment = function ($no) use ($block) {
+      return $no % 2 == 0 ? array( "$block-$no", "$block-".($no+1) ) : array( "$block-".($no-1), "$block-$no" );
+    };
+    switch ($block) {
+      case 'A':
+        return $single_room_apartment($number);
+      case 'B':
+        // double apartments
+        if ($pos <= 19 || ($number >= 26 && $pos <= 35) || ($pos >= 47 && $pos <= 51) || ($pos >= 60 && $pos <= 74) || $pos >= 80) {
+          return $double_room_apartment($number);
+        }
+        // if not, then it is a single-room
+        return $single_room_apartment($number);
+      case 'C':
+        // single rooms are multiples of 8 or number x03
+        if ($pos == 3 || $pos % 8 == 0) {
+          return $single_room_apartment($number);
+        }
+        return $double_room_apartment($number);
+      default:
+        return null;
     }
   }
   
