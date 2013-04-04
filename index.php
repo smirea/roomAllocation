@@ -257,7 +257,6 @@
                 <ol class="room-choices">
                   <?php
                     $choices            = array_fill( 0, MAX_ROOM_CHOICES, array() );
-                    v_export($group['group_id']);
                     $apartment_choices  = $Apartment_Choice_Model->get_all_choices($group['group_id']);
                     foreach( $apartment_choices as $row ){
                       $choices[(int)$row['choice']][] = $row['number'];
