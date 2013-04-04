@@ -35,13 +35,15 @@
   -moz-box-shadow     : inset 0 -1px 0 rgba(255,255,255,.4);
   -webkit-box-shadow  : inset 0 -1px 0 rgba(255,255,255,.4);   
   box-shadow          : inset 0 -1px 0 rgba(255,255,255,.4);
-  display     : none;
   border      : 1px solid;
   padding     : 12px;
   text-shadow : 0 1px 0 rgba(0,0,0,.5);
   color       : #fff;
   -webkit-animation : animate-bg 5s linear infinite;
   -moz-animation    : animate-bg 5s linear infinite;
+}
+.message-holder .message {
+  display     : none;
 }
 
 .message{
