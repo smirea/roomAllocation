@@ -31,6 +31,28 @@ var global_ajax_handlers = {
   }
 };
 
+(function text_selection_plugin () {
+  $.fn.disableTextSelect = function() {
+    return this.each(function() {
+      $(this).css({
+        'MozUserSelect':'none',
+        'webkitUserSelect':'none'
+      }).attr('unselectable','on').bind('selectstart', function() {
+        return false;
+      });
+    });
+  };
+   
+  $.fn.enableTextSelect = function() {
+    return this.each(function() {
+      $(this).css({
+        'MozUserSelect':'',
+        'webkitUserSelect':''
+      }).attr('unselectable','off').unbind('selectstart');
+    });
+  };
+})();
+
 $(function () {
   $('body').ajaxSuccess(function (event, xhr, settings, json) {
     if ($.isPlainObject(json)) {
