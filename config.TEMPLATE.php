@@ -104,11 +104,16 @@
   ******************/
 
   function imageURL( $eid ){
+    if ($eid == FRESHMAN_EID) {
+      return 'images/freshman.jpg';
+    }
     return "http://swebtst01.public.jacobs-university.de/jPeople/image.php?id=$eid";
-//    return "http://localhost/jPeople/images/faces/$eid.png";
   }
 
-  function flagURL( $country ){
+  function flagURL ($country) {
+    if ($country == 'Freshmania') {
+      return 'images/Freshmania.gif';
+    }
     $country = str_replace( " ", '%20', $country );
     return "http://swebtst01.public.jacobs-university.de/jPeople//embed_assets/flags/$country.png";
   }
