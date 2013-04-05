@@ -22,9 +22,11 @@
   require_once 'WorldRegions.php';
   require_once 'models/Group_Model.php';
   require_once 'models/Allocation_Model.php';
+  require_once 'models/Person_Model.php';
 
   $Group_Model = new Group_Model();
   $Allocation_Model = new Allocation_Model();
+  $Person_Model = new Person_Model();
 
   /**
    * @brief Applies input sanitizing functions for every value in the array, recursively
@@ -48,10 +50,39 @@
    * @param {string} $group_id
    */
   function get_roommates( $eid, $group_id ){
-    $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i
-            WHERE i.group_id='$group_id'
-            AND p.eid=i.eid AND i.eid<>'$eid' ";
-    return sqlToArray( mysql_query( $q ) );
+    global $Group_Model;
+    global $Person_Model;
+    $roommates = $Group_Model->get_group_members_eid($eid);
+    $result = array();
+    foreach ($roommates as $member_eid) {
+      if ($member_eid == $eid) {
+        continue;
+      }
+      if ($member_eid == FRESHMAN_EID) {
+        $result[] = array(
+          'id' => -1,
+          'eid' => 0,
+          'account' => 'i-have-a-bo$$-account',
+          'fname' => 'Freshman',
+          'lname' => 'Cage',
+          'country' => 'Freshmania',
+          'college' => 'Everywhere',
+          'email' => 'fresh.man@jacobs-university.de',
+          'year' => date('y') + 3,
+          'status' => 'undergrad',
+          'major' => 'Freshman Studies',
+          'isTall' => 0,
+          'group_id' => $group_id
+        );
+        continue;
+      }
+      $result[] = $Person_Model->get($member_eid);
+    }
+    // $q = "SELECT p.* FROM ".TABLE_PEOPLE." p, ".TABLE_IN_GROUP." i
+    //         WHERE i.group_id='$group_id'
+    //         AND p.eid=i.eid AND i.eid<>'$eid' ";
+    // $roommates = sqlToArray( mysql_query( $q ) );
+    return $result;
   }
 
   /**

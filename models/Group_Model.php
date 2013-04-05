@@ -41,13 +41,13 @@
 
     public function remove_from_group ($eid = null, $group_id = null) {
       $conditions = array();
-      if ($eid === null) {
+      if ($eid !== null) {
         $conditions[] = "eid='$eid'";
       }
-      if ($group_id === null) {
-        $conditions[] = "group_id='$eid'";
+      if ($group_id !== null) {
+        $conditions[] = "group_id='$group_id'";
       }
-      return $this->delete("WHERE ".implode(' AND ', $conditions));
+      return $this->In_Group_Model->delete("WHERE ".implode(' AND ', $conditions));
     }
 
     public function get_group_id ($eid) {
@@ -56,6 +56,14 @@
         return Model::SQL_FAILED;
       }
       return $result['group_id'];
+    }
+
+    public function get_group_members_eid ($eid) {
+      $group_id = $this->get_group_id($eid);
+      return $this->to_array(
+        $this->In_Group_Model->select('eid', "WHERE group_id='$group_id'"),
+        'eid'
+      );
     }
 
   }

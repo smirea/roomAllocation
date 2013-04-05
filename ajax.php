@@ -221,16 +221,17 @@
       e_assert( C('roommates.freshman'), 'You cannot choose a freshman as a roommate this round' );
       e_assert( $_SESSION['info']['group_id'] === null, 'You are already in a group with someone' );
       $_SESSION['info']['group_id'] = add_to_group( FRESHMAN_EID, add_to_group( $_SESSION['info']['eid'] ) );
-      $output['info'] = 'Successfully added a freshman roommate';
-      $output['rpc']  = 'RPC.reload();';
+      $output['info'] = 'Successfully added a freshman roommate. Please refresh to see him :)';
+      // $output['rpc']  = 'RPC.reload();';
       break;
     case 'removeFreshman':
       //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       e_assert( $roommates[0]['eid'] == FRESHMAN_EID, 'You have not chosen a freshman as your roommate' );
-      $output['info']   = 'Freshman slaughtered successfully!';
+      $output['info']   = 'Freshman slaughtered successfully! Refresh if you are tired of his face';
       $output['error']  = $Groups_Model->remove_from_group(null, $_SESSION['info']['group_id']) ? false : 'Unable to slaughter freshman! ('.mysql_error().')';
-      $output['rpc']    = 'RPC.reload();';
+      $output['sql'] = $Groups_Model->get_last_query();
+      // $output['rpc']    = 'RPC.reload();';
       break;
     case 'getFaceHTML':
       e_assert_isset( $_GET, 'eid,fname,lname,country,year' );
@@ -244,7 +245,6 @@
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
 
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
-
       e_assert(count($roommates) <= MAX_ROOMMATES && count($roommates) >= MIN_ROOMMATES, 'You are either too many or too little people applying in this round');
 
       // check for tall rooms and if people are eligible for tall rooms
