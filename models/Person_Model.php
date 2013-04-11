@@ -63,6 +63,10 @@
       return $this->update("random_password='$password'", "WHERE eid='$eid'");
     }
 
+    public function set_absent ($eid, $value) {
+      return $this->update("absent='$value'", "WHERE eid='$eid'");
+    }
+
   }
 
 ?>

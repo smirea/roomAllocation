@@ -366,6 +366,12 @@
       }
       $output['info'] = 'Rooms update successfully!';
       break;
+    case 'setAbsent':
+      e_assert_isset($_GET, 'absent');
+      $output['result'] = $Person_Model->set_absent($eid, $_GET['absent'] ? 1 : 0);
+      $output['info'] = 'You option has been saved. Refresh to update the score';
+      $output['error'] = mysql_error();
+      break;
     case 'setCollegeChoices':
       e_assert(C('round.type') === 'college', 'You are not in the college round!');
       e_assert_round_is_active();

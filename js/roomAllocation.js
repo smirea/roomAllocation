@@ -37,13 +37,14 @@ var RPC = {
   var $eid;
   var $addRoommate;
   var $freshman;
+  var $absent;
   var $loading;
   
   $(function(){
     alter_jquery_ui();
     set_variables();
     init_roommate_search();
-    init_freshman_toggle();
+    init_toggles();
     init_select_rooms();
     add_floorplan_events();
     register_global_ajax_handlers();
@@ -136,11 +137,12 @@ var RPC = {
   };
   
   var set_variables = function(){
-    $searchBox    = $('#searchBox');
-    $search       = $('#search');
-    $eid          = $('#roommate-eid');
-    $addRoommate  = $('#addRoommate');
-    $freshman     = $('#toggle_freshman');
+    $searchBox = $('#searchBox');
+    $search = $('#search');
+    $eid = $('#roommate-eid');
+    $addRoommate = $('#addRoommate');
+    $freshman = $('#toggle_freshman');
+    $absent = $('#toggle_absent');
     
     $loading      = jq_element('img');
     $loading
@@ -207,15 +209,20 @@ var RPC = {
     });
   };
   
-  var init_freshman_toggle = function(){
-    if( $freshman.length > 0 ){
-      $freshman.bind('click', function(){
-        if( $(this).attr('checked') == 'checked' )
-          $.get( ajax_file, {action:'addFreshman'} );
-        else
-          $.get( ajax_file, {action:'removeFreshman'} );
+  var init_toggles = function(){
+    $freshman.bind('click', function(){
+      if( $(this).attr('checked') == 'checked' )
+        $.get( ajax_file, {action:'addFreshman'} );
+      else
+        $.get( ajax_file, {action:'removeFreshman'} );
+    });
+    $absent.bind('click', function () {
+      console.log($(this).attr('checked') == 'checked');
+      $.get(ajax_file, {
+        action: 'setAbsent', 
+        absent: $(this).attr('checked') == 'checked'
       });
-    }
+    });
   };
   
   sendResponse = function( type, eid, msg ){

@@ -109,10 +109,11 @@
               <input type="submit" id="addRoommate" value="Add" />
             </form>
             <?php
-              if( C('roommates.freshman') ){
+              if (C('roommates.freshman')) {
                 $checked = '';
-                if( count($roommates) == 1 && $roommates[0]['eid'] == FRESHMAN_EID )
+                if (count($roommates) == 1 && $roommates[0]['eid'] == FRESHMAN_EID) {
                   $checked =  'checked="checked"';
+                }
                 echo '
                   <label for="toggle_freshman" style="display:block;margin:4px 0;">
                     <input type="checkbox" name="toggle_freshman" id="toggle_freshman" '.$checked.' />
@@ -120,6 +121,12 @@
                   </label>
                 ';
               }
+              echo '
+                <label for="toggle_absent" style="display:block;margin:4px 0;">
+                  <input type="checkbox" name="toggle_absent" id="toggle_absent" '.($info['absent'] ? 'checked="checked"' : '').' />
+                  I am going to be absent for a semester
+                </label>
+              ';
             ?>
 
             <br />
