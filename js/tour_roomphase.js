@@ -15,6 +15,20 @@ var setup_tutorial = function(exports) {
         position: 's'
       },
       {
+        html: "You can send rommate requests from here",
+        element: $('#searchBox'),
+        overlayOpacity: 0.8,
+        expose: true,
+        position: 'e',
+      },
+      {
+        html: "Make sure to check these options if they apply for you.",
+        element: $('#options'),
+        overlayOpacity: 0.8,
+        expose: true,
+        position: 'e',
+      },
+      {
         html: "You find your current roommates here.",
         element: $('#current-roommates'),
         overlayOpacity: 0.8,
