@@ -126,8 +126,8 @@
       }
       break;
     case 'addRoommate':
-      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
-      e_assert(C('round.active'), 'No round is currently active');
+      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      // e_assert(C('round.active'), 'No round is currently active');
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to             = $_GET['eid'];
       $info_to            = $Person_Model->get($eid_to);
@@ -151,7 +151,7 @@
       $output['success']  = 'Roommate request sent successfully!';
       break;
     case 'requestSent':
-      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      // e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       e_assert_round_is_active();
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
@@ -160,7 +160,7 @@
       break;
     case 'requestReceived':
       //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
-      e_assert_round_is_active();
+      // e_assert_round_is_active();
       e_assert_isset( $_GET, 'eid,msg' );
       $eid_to = $_GET['eid'];
 
@@ -199,12 +199,10 @@
         }
         $new_roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
 
-        $output['roommates']  = array_map(function($v){ return getFaceHTML($v); }, $new_roommates);
-        $output['points']     = print_score( array_merge( array($_SESSION['info']), $new_roommates ) );
-        $output['info']       = 'You and <b>'.$info_to['fname'].'</b> are now roommates!
-                                  You need to reload the page in order to apply for rooms.';
-          $output['rpc']        = 'RPC.reload();';
-
+        $output['roommates'] = array_map(function($v){ return getFaceHTML($v); }, $new_roommates);
+        $output['points'] = print_score( array_merge( array($_SESSION['info']), $new_roommates ) );
+        $output['info'] = 'You and <b>'.$info_to['fname'].'</b> are now roommates! You need to reload the page in order to apply for rooms.';
+        // $output['rpc']        = 'RPC.reload();';
         notifyPerson( $eid_to, $_SESSION['info']['fname']." accepted your roommate request" );
 
         $output['result'] = $Request_Model->remove_remaining($eid);
@@ -213,8 +211,7 @@
       } else {
         notifyPerson( $_GET['eid'], $_SESSION['info']['fname']." rejected your roommate request" );
       }
-
-      $output['error'] .= $Request_Model->accept_request($eid, $eid_to) ? '' : '<div>'.mysql_error().'</div>';
+      $output['error'] = $Request_Model->accept_request($eid, $eid_to) ? '' : '<div>'.mysql_error().'</div>';
       break;
     case 'addFreshman':
       //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
