@@ -368,7 +368,7 @@
       break;
     case 'setAbsent':
       e_assert_isset($_GET, 'absent');
-      $absent = $_GET['absent'] ? 1 : 0;
+      $absent = $_GET['absent'];
       $_SESSION['info']['absent'] = $absent;
       $output['result'] = $Person_Model->set_absent($eid, $absent);
       $output['info'] = 'You option has been saved. Refresh to update the score';

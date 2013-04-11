@@ -217,7 +217,6 @@ var RPC = {
         $.get( ajax_file, {action:'removeFreshman'} );
     });
     $absent.bind('click', function () {
-      console.log($(this).attr('checked') == 'checked');
       $.get(ajax_file, {
         action: 'setAbsent', 
         absent: $(this).attr('checked') == 'checked'
