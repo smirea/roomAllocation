@@ -64,6 +64,7 @@
     }
 
     public function set_absent ($eid, $value) {
+      $value = $value == 'true' ? 1 : 0;
       return $this->update("absent='$value'", "WHERE eid='$eid'");
     }
 
