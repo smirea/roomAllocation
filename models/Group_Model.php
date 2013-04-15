@@ -66,5 +66,13 @@
       );
     }
 
+    public function get_all_group_ids () {
+      return $this->to_array($this->select('id'), 'id');
+    }
+
+    public function get_all_in_groups () {
+      return $this->to_array($this->In_Group_Model->select('*'));
+    }
+
   }
 ?>

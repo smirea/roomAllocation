@@ -37,6 +37,15 @@
       return Model::to_array($this->select($columns, $query));
     }
 
+    public function get_all_assoc ($fields = '*', $query = '') {
+      $all = $this->get_all($fields, $query);
+      $results = array();
+      foreach ($all as $person) {
+        $result[$person['eid']] = $person;
+      }
+      return $result;
+    }
+
   }
 
 ?>
