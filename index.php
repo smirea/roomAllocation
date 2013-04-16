@@ -384,7 +384,9 @@
                     $tall_rooms = array();
                     foreach ($college_rooms as $room) {
                       $ap = get_apartment($room);
-                      if (is_tall_apartment($ap)) {
+                      $p = substr($allocation['college'], 0, 1);
+                      $full_ap = array_map(function ($room) use ($p) { return $p.$room; }, $ap);
+                      if (is_tall_apartment($full_ap)) {
                         $tall_rooms = array_merge($tall_rooms, $ap);
                       }
                     }
