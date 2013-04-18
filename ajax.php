@@ -420,7 +420,7 @@
           $emails[] = $person['email'];
         }
       }
-      $output['result'] = send_mail(implode(',', $emails), $subject, 'no-point-in-replying@code4fun.de', $content);
+      $output['result'] = send_mail(implode(',', $emails), $subject, 'no-reply@code4fun.de', $content);
       $output['emails'] = $emails;
       $output['success'][] = 'All emails sent successfully!';
       break;
