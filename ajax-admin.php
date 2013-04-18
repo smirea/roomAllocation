@@ -62,6 +62,20 @@
   $colleges = explode(' ', 'Mercator Krupp College-III Nordmetall');
 
   switch ($_REQUEST['action']) {
+    case 'email':
+      e_assert_isset($_REQUEST, 'emails,subject,content');
+      e_assert(is_array($_REQUEST['emails']), 'Must provide an array of emails');
+      e_assert(!empty($_REQUEST['content']), 'content is empty');
+      e_assert(!empty($_REQUEST['subject']), 'subject is empty');
+      $output['result'] = send_mail(
+        implode(',', $_REQUEST['emails']), 
+        $_REQUEST['subject'], 
+        'no-reply@code4fun.de', 
+        isset($_REQUEST['no_template']) && $_REQUEST['no_template'] ? $_REQUEST['content'] : email_template($_REQUEST['content'])
+      );
+      $output['emails'] = $_REQUEST['emails'];
+      $output['success'][] = 'All emails sent successfully!';
+      break;
     case 'set-college-allocations':
       e_assert_isset($_REQUEST, 'allocations');
       e_assert(!C('round.active'), 'You must close the round before making the allocations permanent');
