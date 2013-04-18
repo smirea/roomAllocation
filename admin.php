@@ -306,7 +306,7 @@ HTML;
                 $form_attr  = 'name="'.$name.'" value="'.$value.'"';
                 switch( $type ){
                   case 'int':
-                    $field = '<input type="text" maxlength="2" size="1" '.$form_attr.' />';
+                    $field = '<input type="text" maxlength="4" size="2" '.$form_attr.' />';
                     break;
                   case 'select':
                     $arr = explode(',', $extra);
