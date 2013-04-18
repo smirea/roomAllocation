@@ -16,7 +16,7 @@
     along with RoomAllocation.  If not, see <http://www.gnu.org/licenses/>.
 \***************************************************************************/
 ?>
-<?
+<?php
   $WorldRegions = array(
     'North America'       => array('Canada','United States', 'USA'),
     'Latin America'       => array('Argentina','Bahamas','Barbados','Belize','Bolivia','Brazil','Chile','Colombia','Costa Rica','Cuba','Dominican Republic','Ecuador','El Salvador','Grenada','Guatemala','Guyana','Haiti','Honduras','Jamaica','Mexico','Nicaragua','Panama','Paraguay','Peru','Saint Vincent & the Grenadines','St Kitts & Nevis','St Lucia','Suriname','Trinidad & Tobago','Trinidad and Tobago','Uruguay','Venezuela'),

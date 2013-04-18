@@ -126,7 +126,7 @@
       }
       break;
     case 'addRoommate':
-      e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
       // e_assert(C('round.active'), 'No round is currently active');
       e_assert_isset( $_GET, array('eid'=>'Roommate not specified') );
       $eid_to             = $_GET['eid'];
