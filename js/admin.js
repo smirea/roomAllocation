@@ -18,7 +18,7 @@
 $(function(){
   
   var $rooms = $('.room');
-  
+
   if( $().qtip ){
     $('<div />').qtip({
       overwrite : false,
@@ -78,13 +78,24 @@ $(function(){
       $(this).data('expanded', !$(this).data('expanded'));
     });
   
-  $('#menu a').eq(0).trigger('click');
+  add_view_events();
   
-}); 
+  function add_view_events () {
+    $('.view-toggle').on('click.toggle_view', function () {
+      var $element = $($(this).attr('view'));
+      var $link = $(this);
+      $('.view').hide();
+      $element.show();
+      $link.siblings().removeClass('selected');
+      $link.addClass('selected');
+    });
 
-function setView (link, $element) {
-  $('.view').hide();
-  $element.show();
-  $(link).siblings().removeClass('selected');
-  $(link).addClass('selected');
-}
+    var view_prefix = '#view-';
+    if (window.location.hash.slice(0, view_prefix.length) == view_prefix) {
+      $('.view-toggle[href="'+window.location.hash+'"]').click();
+    } else {
+      $('.view-toggle').eq(0).trigger('click');
+    }
+  }
+
+}); 

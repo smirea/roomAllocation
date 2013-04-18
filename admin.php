@@ -139,12 +139,12 @@
       ?>
 
       <div id="menu" style="padding:5px 10px;border-bottom:1px solid #ccc;background:#fff">
-        <a href="javascript:void(0)" onclick="setView(this, $('#display-college-phase'))">College Phase</a> |
-        <a href="javascript:void(0)" onclick="setView(this, $('.college-floorPlan'))">Floor Plan</a> |
-        <a href="javascript:void(0)" onclick="setView(this, $('.display-floorPlan'))">Choice List</a> |
-        <a href="javascript:void(0)" onclick="setView(this, $('.user-choices'))">User Choices</a> |
-        <a href="javascript:void(0)" onclick="setView(this, $('.display-final'))">Final Result</a> |
-        <a href="javascript:void(0)" onclick="setView(this, $('#admin-config'))" style="color:red!important;">Config</a>
+        <a href="#view-college" class="view-toggle" view="#display-college-phase">College Phase</a> |
+        <a href="#view-floorPlan" class="view-toggle" view=".college-floorPlan">Floor Plan</a> |
+        <a href="#view-choiceList" class="view-toggle" view=".display-floorPlan">Choice List</a> |
+        <a href="#view-userChoices" class="view-toggle" view=".user-choices">User Choices</a> |
+        <a href="#view-finalResult" class="view-toggle" view=".display-final">Final Result</a> |
+        <a href="#view-config" class="view-toggle" view="#admin-config" style="color:red!important;">Config</a>
       </div>
 
       <?php
