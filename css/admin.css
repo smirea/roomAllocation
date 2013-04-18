@@ -60,6 +60,8 @@ body{
   background  : #fff;
   margin      : 5px;
   padding     : 2px;
+  font-family : inherit;
+  font-size: inherit;
 }
 .allocation-table th{
   border-bottom : 1px solid #ccc;
