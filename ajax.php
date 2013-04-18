@@ -53,29 +53,19 @@
       $person = $Person_Model->get_by_account($_GET['account']);
       e_assert($person, 'Invalid username');
       $subject = '[Jacobs Room Allocation] Your random password has arrived';
-      $content = '
-        <div style="border:1px solid #ccc; border-radius:5px; background:#D1E1F4; max-width:500px; padding:0!important; font-family:tahoma,Verdana,arial; font-size:11pt; overflow:hidden;">
-          <div style="background:rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding:10px; font-size:13pt; font-weight:bold;">
-            Hello World!
-          </div>
-          <div style="padding:10px">
-            <p style="margin-top:0">
-              You have requested your random password. You can use it directly with your CampusNET username instead of your normal CampusNET password. <br />
-            </p>
-            <p>
-              This was mainly implemented due to some login problems of people with funky passwords and with CampusNET failing at providing a proper API, but also keep busy those conspiracy theorists among you that believe that my sole purpose in life is stealing your CampusNET credentials. I mean, even if that would be true, it wouldn\'t be so obvious ;)
-            </p>
-            <div>Random-Password: <b style="display:inline-block; border:1px solid #ccc; border-radius:5px; background:#fff; padding:5px;">'.$person['random_password'].'</b></div>
-          </div>
-          <div style="background:rgba(255,255,255,0.9); border-top:1px solid #ccc; padding:10px">
-            Enjoy! <br />
-            Cheerio, <br />
-            Stefan
-          </div>
-        </div> 
-      ';
+      $content = email_template('
+        <p style="margin-top:0">
+          You have requested your random password. You can use it directly with your CampusNET username instead of your normal CampusNET password. <br />
+        </p>
+        <p>
+          This was mainly implemented due to some login problems of people with funky passwords and with CampusNET failing at providing a proper API, but also keep busy those conspiracy theorists among you that believe that my sole purpose in life is stealing your CampusNET credentials. I mean, even if that would be true, it wouldn\'t be so obvious ;)
+        </p>
+        <div>
+          Random-Password: <b style="display:inline-block; border:1px solid #ccc; border-radius:5px; background:#fff; padding:5px;">'.$person['random_password'].'</b>
+        </div>'
+      );
       jsonOutput(array(
-        'result' => send_mail($person['email'], $subject, 'no-point-in-replying@code4fun.de', $content),
+        'result' => send_mail($person['email'], $subject, 'no-reply@code4fun.de', $content),
         'email' => $person['email']
       ));
       break;
@@ -413,29 +403,17 @@
       foreach ($_GET['eids'] as $eid) {
         $person = $Person_Model->get($eid);
         e_assert($person, "Invalid eid `$eid`");
-        $content = '
-          <div style="border:1px solid #ccc; border-radius:5px; background:#D1E1F4; max-width:500px; padding:0!important; font-family:tahoma,Verdana,arial; font-size:11pt; overflow:hidden;">
-            <div style="background:rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding:10px; font-size:13pt; font-weight:bold;">
-              Howdy!
-            </div>
-            <div style="padding:10px">
-              <p style="margin-top:0">
-                This is to inform you that you have not specified your college preferences. If you do not do that within the next 24 hours you will be assigned to a college randomly.
-              </p>
-              <p>
-                For more information on college preferences, check the emails sent around by the housing committee.
-              </p>
-              <p>
-                If you have any questions feel free to contact the Jacobs University housing committee directly. If you reply to this email nobody will see it and nothing will happen!
-              </p>
-            </div>
-            <div style="background:rgba(255,255,255,0.9); border-top:1px solid #ccc; padding:10px">
-              Enjoy! <br />
-              Cheerio, <br />
-              Stefan
-            </div>
-          </div>
-        ';
+        $content = email_template('
+          <p style="margin-top:0">
+            This is to inform you that you have not specified your college preferences. If you do not do that within the next 24 hours you will be assigned to a college randomly.
+          </p>
+          <p>
+            For more information on college preferences, check the emails sent around by the housing committee.
+          </p>
+          <p>
+            If you have any questions feel free to contact the Jacobs University housing committee directly. If you reply to this email nobody will see it and nothing will happen!
+          </p>'
+        );
         if (!$person['email']) {
           $warnings[] = 'Invalid email for `'.$person['account'].'`';
         } else {
