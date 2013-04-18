@@ -166,7 +166,14 @@
     }
     $country_points = count($countries) > 1 ? count($countries) : 0;
     $major_points   = count($majors) > 1 ? count($majors)*0.25 : 0;
-    $world_regions  = array_map(function($v){global $WorldRegions_Inv; return $WorldRegions_Inv[$v];}, array_keys($countries));
+    $world_regions  = array_map(function ($v) use ($WorldRegions_Inv, $countries) {
+        if (isset($WorldRegions_Inv[$v])) {
+          return $WorldRegions_Inv[$v];
+        }
+        return null;
+      }, 
+      array_keys($countries)
+    );
     $world_regions  = array_unique( $world_regions );
     $world_regions  = count( $world_regions ) * 0.5;
     $world_regions  = $world_regions > 0.5 ? $world_regions : 0;
