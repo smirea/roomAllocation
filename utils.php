@@ -277,6 +277,29 @@ HTML;
     return false;
   }
 
+  function include_freshman (array $people) {
+    if (!isset($people[FRESHMAN_EID])) {
+      $people[FRESHMAN_EID] = array(
+        'id' => '-1',
+        'eid' => FRESHMAN_EID,
+        'account' => 'freshamn-invalid-account',
+        'fname' => 'Freshman',
+        'lname' => 'Cage',
+        'country' => 'Freshmania',
+        'college' => null,
+        'email' => null,
+        'year' => date('y') + 3,
+        'status' => 'undergrad',
+        'major' => null,
+        'absent' => '1',
+        'isTall' => '0',
+        'random_password' => NULL,
+        'query' => '',
+      );
+    }
+    return $people;
+  }
+
   /**
    * Send a HTML email
    * @param  String $to      
