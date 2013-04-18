@@ -31,8 +31,7 @@
       continue;
     }
     $points = get_points(
-      array_map(function($eid)use($people){ return $people[$eid]; }, $group),
-      $allocations[$person['eid']]['college']
+      array_map(function($eid)use($people){ return $people[$eid]; }, $group)
     );
     $distribution[(string)$points['total']][] = implode(',', $group);
     if ($points['total'] < $min_points || $points['total'] > $max_points) {
