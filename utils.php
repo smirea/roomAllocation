@@ -300,6 +300,22 @@ HTML;
     return $people;
   }
 
+  function email_template ($content) {
+    return '<div style="border:1px solid #ccc; border-radius:5px; background:#D1E1F4; max-width:500px; padding:0!important; font-family:tahoma,Verdana,arial; font-size:11pt; overflow:hidden;">
+  <div style="background:rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding:10px; font-size:13pt; font-weight:bold;">
+    Hello World!
+  </div>
+  <div style="padding:10px">
+    '.$content.'
+  </div>
+  <div style="background:rgba(255,255,255,0.9); border-top:1px solid #ccc; padding:10px">
+    Enjoy! <br />
+    Cheerio, <br />
+    Stefan
+  </div>
+</div> ';
+  }
+
   /**
    * Send a HTML email
    * @param  String $to      
