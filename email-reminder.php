@@ -49,7 +49,7 @@
         });
         $('#email-selected').on('click.email-all', function () {
           var emails = $emailable.filter('.selected').find('a').map(function () {return $(this).attr('href').slice(7);}).get();
-          $.get(ajax_url, {
+          $.post(ajax_url, {
             action: 'email', 
             subject: '[Room Allocation] Personal Notice: Your round is open', 
             emails: emails, 
