@@ -220,6 +220,23 @@
       $output['sql'] = $Groups_Model->get_last_query();
       // $output['rpc']    = 'RPC.reload();';
       break;
+    case 'setSingleRoom':
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      e_assert( $_SESSION['info']['group_id'] === null, 'You are already in a group with someone' );
+      $_SESSION['info']['group_id'] = add_to_group( $_SESSION['info']['eid'] );
+      $output['info'] = 'You can now apply for a single room '.$_SESSION['info']['group_id'];
+      // $output['rpc']  = 'RPC.reload();';
+      break;
+    case 'unsetSingleRoom':
+      //e_assert(C('round.type') === 'roommate', 'You are not in the roommate round!');
+      $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
+      $number_roommates = count($Groups_Model->get_group_members_eid($_SESSION['info']['eid']));
+      e_assert( $number_roommates == 1, 'You didn\'t choose to live alone.' );
+      $output['info']   = 'You can now again apply with other people :)';
+      $output['error']  = $Groups_Model->remove_from_group(null, $_SESSION['info']['group_id']) ? false : 'Unable to undo living alone! ('.mysql_error().')';
+      $output['sql'] = $Groups_Model->get_last_query();
+      // $output['rpc']    = 'RPC.reload();';
+      break;
     case 'getFaceHTML':
       e_assert_isset( $_GET, 'eid,fname,lname,country,year' );
       $output['result'] = getFaceHTML( $_GET );

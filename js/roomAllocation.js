@@ -37,6 +37,7 @@ var RPC = {
   var $eid;
   var $addRoommate;
   var $freshman;
+  var $singleroom;
   var $absent;
   var $loading;
   
@@ -142,6 +143,7 @@ var RPC = {
     $eid = $('#roommate-eid');
     $addRoommate = $('#addRoommate');
     $freshman = $('#toggle_freshman');
+    $singleroom = $('#toggle_singleroom');
     $absent = $('#toggle_absent');
     
     $loading      = jq_element('img');
@@ -215,6 +217,12 @@ var RPC = {
         $.get( ajax_file, {action:'addFreshman'} );
       else
         $.get( ajax_file, {action:'removeFreshman'} );
+    });
+    $singleroom.bind('click', function(){
+      if ($(this).attr('checked') == 'checked')
+        $.get( ajax_file, {action:'setSingleRoom'});
+      else
+        $.get( ajax_file, {action:'unsetSingleRoom'});
     });
     $absent.bind('click', function () {
       $.get(ajax_file, {

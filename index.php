@@ -122,6 +122,18 @@
                     </label>
                   ';
                 }
+                if (C('round.restrictions')) {
+                  $checked = '';
+                  if (count($roommates) == 0 && $group['group_id'] !== null) {
+                    $checked =  'checked="checked"';
+                  }
+                  echo '
+                    <label for="toggle_singleroom" style="display:block;margin:4px 0;">
+                      <input type="checkbox" name="toggle_singleroom" id="toggle_singleroom" '.$checked.' />
+                      I want to apply for a single room
+                    </label>
+                  ';
+                }
                 echo '
                   <label for="toggle_absent" style="display:block;margin:4px 0;">
                     <input type="checkbox" name="toggle_absent" id="toggle_absent" '.($info['absent'] ? 'checked="checked"' : '').' />
@@ -279,9 +291,9 @@
                         $tmp_apts = array();
                         foreach ($allowed_rooms['Nordmetall'] as $room_number) {
                           $apt = get_apartment_NM($room_number);
-                          if (count($apt) <= 1) {
-                            continue;
-                          }
+                          // if (count($apt) <= 1) {
+                          //   continue;
+                          // }
                           $apt = implode(',', $apt);
                           $tmp_apts[$apt] = true;
                         }
