@@ -248,6 +248,7 @@
       e_assert( is_array( $_GET['choices'] ), "Invalid format for room choices" );
       e_assert( count($_GET['choices']) <= MAX_ROOM_CHOICES, "Too many room selections. You are allowed a max of '".MAX_ROOM_CHOICES."'!");
 
+      e_assert($_SESSION['info']['group_id'] !== null, "You have to have a roommate or choose the single room box.");
       $roommates = get_roommates( $_SESSION['info']['eid'], $_SESSION['info']['group_id'] );
       e_assert(count($roommates) <= MAX_ROOMMATES && count($roommates) >= MIN_ROOMMATES, 'You are either too many or too little people applying in this round');
 
