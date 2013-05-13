@@ -301,7 +301,7 @@
                       }
                       $taken = array_merge( $rooms_locked, $rooms_taken );
                       // remove all rooms that are already taken/disabled
-                      foreach( $Nordmetall_apartments as $key => $apartment ){
+                      foreach( $nm as $key => $apartment ){
                         foreach( $apartment as $room ){
                           if( in_array( $room, $taken ) ){
                             unset( $nm[$key] );
