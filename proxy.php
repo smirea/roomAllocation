@@ -7,8 +7,12 @@
   require_once 'config.php';
   require_once 'utils.php';
 
-  e_assert_isset($_GET, 'q');
-
-  require_once $_GET['q'];
+  if (isset($_GET['q']) && strpos($_GET['q'], '../' . DS) === false) {
+    /* Avoid NULL byte poisoning for servers running PHP < 5.3.4 */
+    $cleanedPath = dirname(__FILE__) . '/' . str_replace(chr(0), '', $_GET['q']);
+    if (file_exists($cleanedPath)) {
+      require_once $cleanedPath;
+    }
+  }
 
 ?>
